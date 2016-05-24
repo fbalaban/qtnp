@@ -1,0 +1,8 @@
+prefix=/home/fotis/Dev/Workspaces/ROS/qTnP/install
+
+Name: qtnp
+Description: Description of qtnp
+Version: 0.1.1
+Cflags: -I/home/fotis/Dev/Workspaces/ROS/qTnP/install/include
+Libs: -L/home/fotis/Dev/Workspaces/ROS/qTnP/install/lib 
+Requires: roscpp rospy std_msgs message_runtime visualization_msgs
