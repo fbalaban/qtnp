@@ -45,6 +45,7 @@ c6b93011e16a964a9d23af270e79fc34 qtnp/CMakeFiles/_qtnp_generate_messages_check_d
 fc37bc63ba1b9c89c6d7295ecf01dc1a qtnp/include/qtnp/moc_qnode.cxx
 051fe898084fa9287d14d5d59b17a5dd qtnp/include/qtnp/moc_rviz_objects.cxx
 b2837d235e7f35efe4099ffd767a5df7 qtnp/include/qtnp/moc_tnp_update.cxx
+d48b22edbed4c1362b22ef04f02e8aaa qtnp/include/qtnp/moc_uas_model.cxx
 93f9304ef288b112c57275aab1f9b6ef qtnp/include/qtnp/moc_utilities.cxx
 c42ac9ca2e0c53380ea8aefb716cd181 qtnp/qrc_images.cxx
 c368aa446fd347b3d2c4d0100761e24b qtnp/ui_main_window.h

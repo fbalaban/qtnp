@@ -39,7 +39,14 @@ public:
 	void WriteSettings(); // Save qt program settings when closing
 
 	void closeEvent(QCloseEvent *event); // Overloaded function
-	void showNoMasterMessage();
+
+    bool validate_connection();
+
+    void showNoMasterMessage();
+    void showNoKmlMessage();
+
+    void set_kml_filename(QString filename){ kml_filename = filename; }
+    QString get_kml_filename(){ return kml_filename; }
 
 public Q_SLOTS:
 	/******************************************
@@ -49,6 +56,11 @@ public Q_SLOTS:
 	void on_button_connect_clicked(bool check );
 	void on_checkbox_use_environment_stateChanged(int state);
 
+    // extra - fb
+    void on_button_browse_clicked(bool check );
+    void on_button_validate_kml_clicked(bool check );
+    void on_button_perform_cdt_clicked(bool check );
+
     /******************************************
     ** Manual connections
     *******************************************/
@@ -57,6 +69,8 @@ public Q_SLOTS:
 private:
 	Ui::MainWindowDesign ui;
 	QNode qnode;
+
+    QString kml_filename;
 };
 
 }  // namespace qtnp

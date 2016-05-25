@@ -88,6 +88,7 @@
             <Add option="-DROS_PACKAGE_NAME=&quot;qtnp&quot;" />
             <Add option="-DROSCONSOLE_BACKEND_LOG4CXX" />
             <Add option="-DQT_GUI_LIB" />
+            <Add option="-DQT_XML_LIB" />
             <Add option="-DQT_CORE_LIB" />
             <Add option="-DQT_NO_KEYWORDS" />
             <Add option="-DQT_DEBUG" />
@@ -98,6 +99,7 @@
             <Add directory="/usr/include/qt4" />
             <Add directory="/usr/include/qt4/QtCore" />
             <Add directory="/usr/include/qt4/QtGui" />
+            <Add directory="/usr/include/qt4/QtXml" />
          </Compiler>
          <MakeCommands>
             <Build command="/usr/bin/make -f &quot;/home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/Makefile&quot;  VERBOSE=1 qtnp" />
@@ -117,6 +119,7 @@
             <Add option="-DROS_PACKAGE_NAME=&quot;qtnp&quot;" />
             <Add option="-DROSCONSOLE_BACKEND_LOG4CXX" />
             <Add option="-DQT_GUI_LIB" />
+            <Add option="-DQT_XML_LIB" />
             <Add option="-DQT_CORE_LIB" />
             <Add option="-DQT_NO_KEYWORDS" />
             <Add option="-DQT_DEBUG" />
@@ -127,6 +130,7 @@
             <Add directory="/usr/include/qt4" />
             <Add directory="/usr/include/qt4/QtCore" />
             <Add directory="/usr/include/qt4/QtGui" />
+            <Add directory="/usr/include/qt4/QtXml" />
          </Compiler>
          <MakeCommands>
             <Build command="/usr/bin/make -f &quot;/home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/Makefile&quot;  VERBOSE=1 qtnp/fast" />
@@ -335,6 +339,8 @@
       <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/rviz_objects.cpp">
       </Unit>
       <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/tnp_update.cpp">
+      </Unit>
+      <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp">
       </Unit>
       <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/resources/images.qrc">
       </Unit>

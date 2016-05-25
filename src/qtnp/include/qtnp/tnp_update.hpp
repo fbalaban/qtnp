@@ -66,6 +66,7 @@ class Tnp_update {
 
     void path_planning_callback(const InitialCoordinates::ConstPtr& msg);
     void polygon_def_callback(const Placemarks::ConstPtr& msg);
+    void perform_polygon_definition(std::vector<Coordinates> placemarks_array);
 
     void initialize_mesh(CDT &cdt);
     void hop_cost_attribution(CDT &cdt);

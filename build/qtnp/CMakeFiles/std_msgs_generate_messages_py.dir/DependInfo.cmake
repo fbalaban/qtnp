@@ -9,6 +9,7 @@ SET(CMAKE_TARGET_DEFINITIONS
   "QT_DEBUG"
   "QT_GUI_LIB"
   "QT_NO_KEYWORDS"
+  "QT_XML_LIB"
   "ROSCONSOLE_BACKEND_LOG4CXX"
   "ROS_BUILD_SHARED_LIBS=1"
   "ROS_PACKAGE_NAME=\"qtnp\""
@@ -26,6 +27,7 @@ SET(CMAKE_C_TARGET_INCLUDE_PATH
   "/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp"
   "/usr/include/qt4"
   "/usr/include/qt4/QtGui"
+  "/usr/include/qt4/QtXml"
   "/usr/include/qt4/QtCore"
   )
 SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

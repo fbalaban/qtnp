@@ -22,7 +22,7 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       7,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -33,7 +33,10 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
       18,   17,   17,   17, 0x0a,
       51,   45,   17,   17, 0x0a,
       89,   83,   17,   17, 0x0a,
-     135,   17,   17,   17, 0x0a,
+     135,   45,   17,   17, 0x0a,
+     166,   45,   17,   17, 0x0a,
+     203,   45,   17,   17, 0x0a,
+     239,   17,   17,   17, 0x0a,
 
        0        // eod
 };
@@ -42,6 +45,9 @@ static const char qt_meta_stringdata_qtnp__MainWindow[] = {
     "qtnp::MainWindow\0\0on_actionAbout_triggered()\0"
     "check\0on_button_connect_clicked(bool)\0"
     "state\0on_checkbox_use_environment_stateChanged(int)\0"
+    "on_button_browse_clicked(bool)\0"
+    "on_button_validate_kml_clicked(bool)\0"
+    "on_button_perform_cdt_clicked(bool)\0"
     "updateLoggingView()\0"
 };
 
@@ -54,7 +60,10 @@ void qtnp::MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 0: _t->on_actionAbout_triggered(); break;
         case 1: _t->on_button_connect_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 2: _t->on_checkbox_use_environment_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 3: _t->updateLoggingView(); break;
+        case 3: _t->on_button_browse_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 4: _t->on_button_validate_kml_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 5: _t->on_button_perform_cdt_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 6: _t->updateLoggingView(); break;
         default: ;
         }
     }
@@ -92,9 +101,9 @@ int qtnp::MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 7;
     }
     return _id;
 }

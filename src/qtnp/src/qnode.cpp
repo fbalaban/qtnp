@@ -108,9 +108,9 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
 
     init_publishers(n);
 
-    // subscribing to the tnp_release_spot (lon,lat, agent_id)
+    // subscribing to the tnp_release_spot (lon,lat, agent_id) for service calls
     home_spot_sub = n.subscribe("tnp_release_spot", 1000, bound_path_planning_callback);
-    // subscribing to kml area definition
+    // subscribing to kml area definition for service calls
     polygon_def_sub = n.subscribe("tnp_polygon_def", 1000, bound_polygon_def_callback);
 
 	start();
@@ -119,7 +119,9 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
 
 void QNode::run() {
 
-	ros::Rate loop_rate(1);
+    //std::cout << "in run" << std::endl;
+
+    ros::Rate loop_rate(1);
 	int count = 0;
 	while ( ros::ok() ) {
 
@@ -129,8 +131,7 @@ void QNode::run() {
         msg.data = ss.str();
 		chatter_publisher.publish(msg);
 		log(Info,std::string("I sent: ")+msg.data);
-        log(Info,std::string("Rviz edges header frame_id is: ") + rviz_objects.get_frame_id()); // done :)
-        // todo : initialize also tnpobject
+        log(Info,std::string("Rviz edges header frame_id is: ") + rviz_objects.get_frame_id());
 
         // check if something has been called:
         if (rviz_objects.is_polygon_ready()){
@@ -192,7 +193,6 @@ void QNode::log( const LogLevel &level, const std::string &msg) {
 	logging_model.setData(logging_model.index(logging_model.rowCount()-1),new_row);
 	Q_EMIT loggingUpdated(); // used to readjust the scrollbar
 }
-
 
 void QNode::init_publishers(ros::NodeHandle n){
 

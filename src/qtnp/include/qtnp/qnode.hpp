@@ -22,6 +22,7 @@
 #include <string>
 #include <QThread>
 #include <QStringListModel>
+#include <QString>
 
 #include "rviz_objects.hpp"
 #include "tnp_update.hpp"
@@ -46,6 +47,8 @@ public:
 	void run();
 
     void init_publishers(ros::NodeHandle n);
+
+    Tnp_update *get_tnp_update_pointer(){ return &tnp_update; }
 
 	/*********************
 	** Logging

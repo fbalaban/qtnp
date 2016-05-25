@@ -46,10 +46,16 @@ void Tnp_update::init(){
 // custom callback function of the ROS listener for polygpn definition
 void Tnp_update::polygon_def_callback(const Placemarks::ConstPtr &msg){
 
+    std::vector<Coordinates> placemarks_array = msg->placemark;
+
+    perform_polygon_definition(placemarks_array);
+}
+
+void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_array){
+
     init();
 
     std::cout << std::setprecision(7);
-    std::vector<Coordinates> placemarks_array = msg->placemark;
 
     // define minimum and maximum values of the constrained area so to convert lat,lon to visualization ranges
     for (std::vector<Coordinates>::iterator it = placemarks_array.begin(); it<placemarks_array.end(); it++){
