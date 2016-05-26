@@ -25,11 +25,15 @@ struct Coordinates_
 
   Coordinates_()
     : placemark_type()
+    , seed_longitude(0.0)
+    , seed_latitude(0.0)
     , longitude()
     , latitude()  {
     }
   Coordinates_(const ContainerAllocator& _alloc)
     : placemark_type(_alloc)
+    , seed_longitude(0.0)
+    , seed_latitude(0.0)
     , longitude(_alloc)
     , latitude(_alloc)  {
   (void)_alloc;
@@ -39,6 +43,12 @@ struct Coordinates_
 
    typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _placemark_type_type;
   _placemark_type_type placemark_type;
+
+   typedef double _seed_longitude_type;
+  _seed_longitude_type seed_longitude;
+
+   typedef double _seed_latitude_type;
+  _seed_latitude_type seed_latitude;
 
    typedef std::vector<double, typename ContainerAllocator::template rebind<double>::other >  _longitude_type;
   _longitude_type longitude;
@@ -123,12 +133,12 @@ struct MD5Sum< ::qtnp::Coordinates_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "5233f15c788dc5823ec41234899f903f";
+    return "0c53d7b4e0233648a057076b6c290607";
   }
 
   static const char* value(const ::qtnp::Coordinates_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x5233f15c788dc582ULL;
-  static const uint64_t static_value2 = 0x3ec41234899f903fULL;
+  static const uint64_t static_value1 = 0x0c53d7b4e0233648ULL;
+  static const uint64_t static_value2 = 0xa057076b6c290607ULL;
 };
 
 template<class ContainerAllocator>
@@ -148,6 +158,8 @@ struct Definition< ::qtnp::Coordinates_<ContainerAllocator> >
   static const char* value()
   {
     return "string placemark_type\n\
+float64 seed_longitude\n\
+float64 seed_latitude\n\
 float64[] longitude\n\
 float64[] latitude\n\
 ";
@@ -169,6 +181,8 @@ namespace serialization
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
       stream.next(m.placemark_type);
+      stream.next(m.seed_longitude);
+      stream.next(m.seed_latitude);
       stream.next(m.longitude);
       stream.next(m.latitude);
     }
@@ -191,6 +205,10 @@ struct Printer< ::qtnp::Coordinates_<ContainerAllocator> >
   {
     s << indent << "placemark_type: ";
     Printer<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > >::stream(s, indent + "  ", v.placemark_type);
+    s << indent << "seed_longitude: ";
+    Printer<double>::stream(s, indent + "  ", v.seed_longitude);
+    s << indent << "seed_latitude: ";
+    Printer<double>::stream(s, indent + "  ", v.seed_latitude);
     s << indent << "longitude[]" << std::endl;
     for (size_t i = 0; i < v.longitude.size(); ++i)
     {

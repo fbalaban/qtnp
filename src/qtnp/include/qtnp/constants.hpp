@@ -25,8 +25,8 @@ namespace constants
     const double rviz_range_min(0.0);
     const double rviz_range_max(500.0);
 
-    const double angle_criterion(0.125);
-    const double edge_criterion(25.0);
+    const double angle_criterion_default(0.125);
+    const double edge_criterion_default(50.0);
 }
 
 #endif /* qtnp_CONSTANTS_HPP_ */

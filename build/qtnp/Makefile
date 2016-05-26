@@ -657,30 +657,6 @@ include/qtnp/moc_tnp_update.cxx.s:
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_tnp_update.cxx.s
 .PHONY : include/qtnp/moc_tnp_update.cxx.s
 
-include/qtnp/moc_uas_model.o: include/qtnp/moc_uas_model.cxx.o
-.PHONY : include/qtnp/moc_uas_model.o
-
-# target to build an object file
-include/qtnp/moc_uas_model.cxx.o:
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o
-.PHONY : include/qtnp/moc_uas_model.cxx.o
-
-include/qtnp/moc_uas_model.i: include/qtnp/moc_uas_model.cxx.i
-.PHONY : include/qtnp/moc_uas_model.i
-
-# target to preprocess a source file
-include/qtnp/moc_uas_model.cxx.i:
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.i
-.PHONY : include/qtnp/moc_uas_model.cxx.i
-
-include/qtnp/moc_uas_model.s: include/qtnp/moc_uas_model.cxx.s
-.PHONY : include/qtnp/moc_uas_model.s
-
-# target to generate assembly for a file
-include/qtnp/moc_uas_model.cxx.s:
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.s
-.PHONY : include/qtnp/moc_uas_model.cxx.s
-
 include/qtnp/moc_utilities.o: include/qtnp/moc_utilities.cxx.o
 .PHONY : include/qtnp/moc_utilities.o
 
@@ -849,30 +825,6 @@ src/tnp_update.cpp.s:
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.s
 .PHONY : src/tnp_update.cpp.s
 
-src/uas_model.o: src/uas_model.cpp.o
-.PHONY : src/uas_model.o
-
-# target to build an object file
-src/uas_model.cpp.o:
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o
-.PHONY : src/uas_model.cpp.o
-
-src/uas_model.i: src/uas_model.cpp.i
-.PHONY : src/uas_model.i
-
-# target to preprocess a source file
-src/uas_model.cpp.i:
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.i
-.PHONY : src/uas_model.cpp.i
-
-src/uas_model.s: src/uas_model.cpp.s
-.PHONY : src/uas_model.s
-
-# target to generate assembly for a file
-src/uas_model.cpp.s:
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.s
-.PHONY : src/uas_model.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -930,9 +882,6 @@ help:
 	@echo "... include/qtnp/moc_tnp_update.o"
 	@echo "... include/qtnp/moc_tnp_update.i"
 	@echo "... include/qtnp/moc_tnp_update.s"
-	@echo "... include/qtnp/moc_uas_model.o"
-	@echo "... include/qtnp/moc_uas_model.i"
-	@echo "... include/qtnp/moc_uas_model.s"
 	@echo "... include/qtnp/moc_utilities.o"
 	@echo "... include/qtnp/moc_utilities.i"
 	@echo "... include/qtnp/moc_utilities.s"
@@ -954,9 +903,6 @@ help:
 	@echo "... src/tnp_update.o"
 	@echo "... src/tnp_update.i"
 	@echo "... src/tnp_update.s"
-	@echo "... src/uas_model.o"
-	@echo "... src/uas_model.i"
-	@echo "... src/uas_model.s"
 .PHONY : help
 
 

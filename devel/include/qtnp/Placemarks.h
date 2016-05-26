@@ -25,17 +25,17 @@ struct Placemarks_
   typedef Placemarks_<ContainerAllocator> Type;
 
   Placemarks_()
-    : placemark()  {
+    : placemarks()  {
     }
   Placemarks_(const ContainerAllocator& _alloc)
-    : placemark(_alloc)  {
+    : placemarks(_alloc)  {
   (void)_alloc;
     }
 
 
 
-   typedef std::vector< ::qtnp::Coordinates_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::qtnp::Coordinates_<ContainerAllocator> >::other >  _placemark_type;
-  _placemark_type placemark;
+   typedef std::vector< ::qtnp::Coordinates_<ContainerAllocator> , typename ContainerAllocator::template rebind< ::qtnp::Coordinates_<ContainerAllocator> >::other >  _placemarks_type;
+  _placemarks_type placemarks;
 
 
 
@@ -114,12 +114,12 @@ struct MD5Sum< ::qtnp::Placemarks_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "b4349b45ce3a0b7fe1423d1ecf4c71cb";
+    return "d412150a28aefbf6a830287329e8685d";
   }
 
   static const char* value(const ::qtnp::Placemarks_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xb4349b45ce3a0b7fULL;
-  static const uint64_t static_value2 = 0xe1423d1ecf4c71cbULL;
+  static const uint64_t static_value1 = 0xd412150a28aefbf6ULL;
+  static const uint64_t static_value2 = 0xa830287329e8685dULL;
 };
 
 template<class ContainerAllocator>
@@ -138,11 +138,13 @@ struct Definition< ::qtnp::Placemarks_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "qtnp/Coordinates[] placemark \n\
+    return "qtnp/Coordinates[] placemarks \n\
 \n\
 ================================================================================\n\
 MSG: qtnp/Coordinates\n\
 string placemark_type\n\
+float64 seed_longitude\n\
+float64 seed_latitude\n\
 float64[] longitude\n\
 float64[] latitude\n\
 ";
@@ -163,7 +165,7 @@ namespace serialization
   {
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
-      stream.next(m.placemark);
+      stream.next(m.placemarks);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER;
@@ -182,13 +184,13 @@ struct Printer< ::qtnp::Placemarks_<ContainerAllocator> >
 {
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::qtnp::Placemarks_<ContainerAllocator>& v)
   {
-    s << indent << "placemark[]" << std::endl;
-    for (size_t i = 0; i < v.placemark.size(); ++i)
+    s << indent << "placemarks[]" << std::endl;
+    for (size_t i = 0; i < v.placemarks.size(); ++i)
     {
-      s << indent << "  placemark[" << i << "]: ";
+      s << indent << "  placemarks[" << i << "]: ";
       s << std::endl;
       s << indent;
-      Printer< ::qtnp::Coordinates_<ContainerAllocator> >::stream(s, indent + "    ", v.placemark[i]);
+      Printer< ::qtnp::Coordinates_<ContainerAllocator> >::stream(s, indent + "    ", v.placemarks[i]);
     }
   }
 };

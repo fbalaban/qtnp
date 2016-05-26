@@ -13,6 +13,7 @@
 *****************************************************************************/
 
 #include <QtGui/QMainWindow>
+#include <QtGui/QStandardItemModel>
 #include "ui_main_window.h"
 #include "qnode.hpp"
 
@@ -60,6 +61,8 @@ public Q_SLOTS:
     void on_button_browse_clicked(bool check );
     void on_button_validate_kml_clicked(bool check );
     void on_button_perform_cdt_clicked(bool check );
+    void on_button_add_clicked(bool check);
+    void on_button_remove_clicked(bool check);
 
     /******************************************
     ** Manual connections
@@ -70,6 +73,7 @@ private:
 	Ui::MainWindowDesign ui;
 	QNode qnode;
 
+    QStandardItemModel *model;
     QString kml_filename;
 };
 

@@ -7,15 +7,17 @@ import struct
 
 
 class Coordinates(genpy.Message):
-  _md5sum = "5233f15c788dc5823ec41234899f903f"
+  _md5sum = "0c53d7b4e0233648a057076b6c290607"
   _type = "qtnp/Coordinates"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """string placemark_type
+float64 seed_longitude
+float64 seed_latitude
 float64[] longitude
 float64[] latitude
 """
-  __slots__ = ['placemark_type','longitude','latitude']
-  _slot_types = ['string','float64[]','float64[]']
+  __slots__ = ['placemark_type','seed_longitude','seed_latitude','longitude','latitude']
+  _slot_types = ['string','float64','float64','float64[]','float64[]']
 
   def __init__(self, *args, **kwds):
     """
@@ -25,7 +27,7 @@ float64[] latitude
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       placemark_type,longitude,latitude
+       placemark_type,seed_longitude,seed_latitude,longitude,latitude
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -36,12 +38,18 @@ float64[] latitude
       #message fields cannot be None, assign default values for those that are
       if self.placemark_type is None:
         self.placemark_type = ''
+      if self.seed_longitude is None:
+        self.seed_longitude = 0.
+      if self.seed_latitude is None:
+        self.seed_latitude = 0.
       if self.longitude is None:
         self.longitude = []
       if self.latitude is None:
         self.latitude = []
     else:
       self.placemark_type = ''
+      self.seed_longitude = 0.
+      self.seed_latitude = 0.
       self.longitude = []
       self.latitude = []
 
@@ -66,6 +74,8 @@ float64[] latitude
         buff.write(struct.pack('<I%sB'%length, length, *_x))
       else:
         buff.write(struct.pack('<I%ss'%length, length, _x))
+      _x = self
+      buff.write(_struct_2d.pack(_x.seed_longitude, _x.seed_latitude))
       length = len(self.longitude)
       buff.write(_struct_I.pack(length))
       pattern = '<%sd'%length
@@ -93,6 +103,10 @@ float64[] latitude
         self.placemark_type = str[start:end].decode('utf-8')
       else:
         self.placemark_type = str[start:end]
+      _x = self
+      start = end
+      end += 16
+      (_x.seed_longitude, _x.seed_latitude,) = _struct_2d.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
@@ -128,6 +142,8 @@ float64[] latitude
         buff.write(struct.pack('<I%sB'%length, length, *_x))
       else:
         buff.write(struct.pack('<I%ss'%length, length, _x))
+      _x = self
+      buff.write(_struct_2d.pack(_x.seed_longitude, _x.seed_latitude))
       length = len(self.longitude)
       buff.write(_struct_I.pack(length))
       pattern = '<%sd'%length
@@ -156,6 +172,10 @@ float64[] latitude
         self.placemark_type = str[start:end].decode('utf-8')
       else:
         self.placemark_type = str[start:end]
+      _x = self
+      start = end
+      end += 16
+      (_x.seed_longitude, _x.seed_latitude,) = _struct_2d.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
@@ -175,3 +195,4 @@ float64[] latitude
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
+_struct_2d = struct.Struct("<2d")

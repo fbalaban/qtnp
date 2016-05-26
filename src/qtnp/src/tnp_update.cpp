@@ -46,7 +46,7 @@ void Tnp_update::init(){
 // custom callback function of the ROS listener for polygpn definition
 void Tnp_update::polygon_def_callback(const Placemarks::ConstPtr &msg){
 
-    std::vector<Coordinates> placemarks_array = msg->placemark;
+    std::vector<Coordinates> placemarks_array = msg->placemarks;
 
     perform_polygon_definition(placemarks_array);
 }
@@ -78,6 +78,7 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         }
     }
 
+    std::list<CDT::Point> list_of_seeds;
     // convert ranges, draw CDT and visualization objects
     for (std::vector<qtnp::Coordinates>::iterator it = placemarks_array.begin(); it<placemarks_array.end(); it++){
 
@@ -85,6 +86,12 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         std::vector<double> longitude_array(size);
         std::vector<double> latitude_array(size);
         bool is_an_obstacle = (it->placemark_type == "hole") ? true :false;
+
+        if (is_an_obstacle) list_of_seeds.push_back(CDT::Point(
+                    utilities::convert_range(area_extremes.min_lat,area_extremes.max_lat,
+                                constants::rviz_range_min,constants::rviz_range_max,it->seed_latitude),
+                    utilities::convert_range(area_extremes.min_lon,area_extremes.max_lon,
+                                constants::rviz_range_min,constants::rviz_range_max,it->seed_longitude)));
 
         longitude_array = it->longitude;
         latitude_array  = it->latitude;
@@ -133,8 +140,8 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     // 0.125 is the default shape bound. It corresponds to abound 20.6 degree.
     // 0.5 is the upper bound on the length of the longest edge.(now 40)
     // TODO: these should go in an editable field in qt form. for now is a constant
-    double crAngle = constants::angle_criterion;// 0.125; -- the angle criteria for meshing constrains
-    double crEdge = constants::edge_criterion; // 25.0; -- the edge criteria (25m footprint) (using coordinates, has to change accordingly)
+    double crAngle = constants::angle_criterion_default;// 0.125; -- the angle criteria for meshing constrains
+    double crEdge = constants::edge_criterion_default; // 25.0; -- the edge criteria (25m footprint) (using coordinates, has to change accordingly)
     std::cout << "Number of vertices before meshing and refining: " << cdt.number_of_vertices() << std::endl;
     std::cout << "Meshing the triangulation with default criteria..." << std::endl;
     Mesher mesher(cdt);
@@ -147,24 +154,14 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     std::cout << "Number of vertices after meshing and refining with new criteria: "
             << cdt.number_of_vertices() << std::endl;
 
-    //Adding a seed, inside the hole that was defined in the creation of the triangulation constrains.
-    std::list<CDT::Point> list_of_seeds;
-    list_of_seeds.push_back(CDT::Point(250, 250));
-    std::cout << "Refining and meshing the domain with a seed defining the hole..." << std::endl;
-    CGAL::refine_Delaunay_mesh_2(cdt, list_of_seeds.begin(), list_of_seeds.end(), Criteria());
-    std::cout << "Number of vertices after meshing and refining with Delaunay triangulation: " << cdt.number_of_vertices() << std::endl;
+    //  Adding the seeds which define the holes.
+    if (!list_of_seeds.empty()){
+        std::cout << "Refining and meshing the domain including seeds defining holes" << std::endl;
+        CGAL::refine_Delaunay_mesh_2(cdt, list_of_seeds.begin(), list_of_seeds.end(), Criteria());
+        std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << cdt.number_of_vertices() << std::endl;
+    }
     // dataFile << cdt.number_of_vertices() << " ";
     ROS_INFO_STREAM("# of vertices after meshing and refining with CDT: " + cdt.number_of_vertices());
-
-    // TODO: remove next commented section
-//    std::vector<kernel_Point_2>::iterator iterator;
-
-//    for(iterator=polygon_edges.begin(); iterator < polygon_edges.end(); iterator++ ){
-
-//      geometry_msgs::Point new_point = cgal_point_to_ros_geometry_point(*iterator);
-//      this->rvizRef.edges.points.push_back(new_point);
-//      this->rvizRef.polygon.points.push_back(point_to_point_32(new_point));
-//    }
 
     // ------------- rviz coloring schema ----------------//
     // also counting the biggest and smalest side //

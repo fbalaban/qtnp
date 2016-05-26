@@ -522,8 +522,6 @@
       </Unit>
       <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/tnp_update.cpp">
       </Unit>
-      <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp">
-      </Unit>
       <Unit filename="/usr/src/gtest/src/gtest-all.cc">
       </Unit>
       <Unit filename="/usr/src/gtest/src/gtest_main.cc">

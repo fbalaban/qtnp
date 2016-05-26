@@ -175,6 +175,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /usr/include/qt4/QtGui/QFrame
  /usr/include/qt4/QtGui/QGridLayout
  /usr/include/qt4/QtGui/QGroupBox
+ /usr/include/qt4/QtGui/QHBoxLayout
  /usr/include/qt4/QtGui/QHeaderView
  /usr/include/qt4/QtGui/QLabel
  /usr/include/qt4/QtGui/QLineEdit
@@ -185,6 +186,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /usr/include/qt4/QtGui/QPlatformWindow
  /usr/include/qt4/QtGui/QPushButton
  /usr/include/qt4/QtGui/QSpacerItem
+ /usr/include/qt4/QtGui/QStandardItemModel
  /usr/include/qt4/QtGui/QStatusBar
  /usr/include/qt4/QtGui/QStringListModel
  /usr/include/qt4/QtGui/QTabWidget
@@ -246,6 +248,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /usr/include/qt4/QtGui/qrubberband.h
  /usr/include/qt4/QtGui/qsizepolicy.h
  /usr/include/qt4/QtGui/qslider.h
+ /usr/include/qt4/QtGui/qstandarditemmodel.h
  /usr/include/qt4/QtGui/qstatusbar.h
  /usr/include/qt4/QtGui/qstringlistmodel.h
  /usr/include/qt4/QtGui/qstyle.h
@@ -469,64 +472,6 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_rviz_objects.cxx.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_rviz_objects.cxx
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_tnp_update.cxx.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_tnp_update.cxx
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o
- /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_uas_model.cxx
- /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
- /usr/include/qt4/Qt3Support/q3cstring.h
- /usr/include/qt4/QtCore/QAbstractTableModel
- /usr/include/qt4/QtCore/qabstractitemmodel.h
- /usr/include/qt4/QtCore/qalgorithms.h
- /usr/include/qt4/QtCore/qatomic.h
- /usr/include/qt4/QtCore/qatomic_aarch64.h
- /usr/include/qt4/QtCore/qatomic_alpha.h
- /usr/include/qt4/QtCore/qatomic_arch.h
- /usr/include/qt4/QtCore/qatomic_arm.h
- /usr/include/qt4/QtCore/qatomic_armv5.h
- /usr/include/qt4/QtCore/qatomic_armv6.h
- /usr/include/qt4/QtCore/qatomic_armv7.h
- /usr/include/qt4/QtCore/qatomic_avr32.h
- /usr/include/qt4/QtCore/qatomic_bfin.h
- /usr/include/qt4/QtCore/qatomic_bootstrap.h
- /usr/include/qt4/QtCore/qatomic_generic.h
- /usr/include/qt4/QtCore/qatomic_i386.h
- /usr/include/qt4/QtCore/qatomic_ia64.h
- /usr/include/qt4/QtCore/qatomic_integrity.h
- /usr/include/qt4/QtCore/qatomic_m68k.h
- /usr/include/qt4/QtCore/qatomic_macosx.h
- /usr/include/qt4/QtCore/qatomic_mips.h
- /usr/include/qt4/QtCore/qatomic_parisc.h
- /usr/include/qt4/QtCore/qatomic_powerpc.h
- /usr/include/qt4/QtCore/qatomic_s390.h
- /usr/include/qt4/QtCore/qatomic_sh.h
- /usr/include/qt4/QtCore/qatomic_sh4a.h
- /usr/include/qt4/QtCore/qatomic_sparc.h
- /usr/include/qt4/QtCore/qatomic_symbian.h
- /usr/include/qt4/QtCore/qatomic_vxworks.h
- /usr/include/qt4/QtCore/qatomic_windows.h
- /usr/include/qt4/QtCore/qatomic_windowsce.h
- /usr/include/qt4/QtCore/qatomic_x86_64.h
- /usr/include/qt4/QtCore/qbasicatomic.h
- /usr/include/qt4/QtCore/qbytearray.h
- /usr/include/qt4/QtCore/qchar.h
- /usr/include/qt4/QtCore/qconfig.h
- /usr/include/qt4/QtCore/qcoreevent.h
- /usr/include/qt4/QtCore/qdatastream.h
- /usr/include/qt4/QtCore/qfeatures.h
- /usr/include/qt4/QtCore/qglobal.h
- /usr/include/qt4/QtCore/qhash.h
- /usr/include/qt4/QtCore/qiodevice.h
- /usr/include/qt4/QtCore/qiterator.h
- /usr/include/qt4/QtCore/qlist.h
- /usr/include/qt4/QtCore/qmap.h
- /usr/include/qt4/QtCore/qmetatype.h
- /usr/include/qt4/QtCore/qnamespace.h
- /usr/include/qt4/QtCore/qobject.h
- /usr/include/qt4/QtCore/qobjectdefs.h
- /usr/include/qt4/QtCore/qpair.h
- /usr/include/qt4/QtCore/qscopedpointer.h
- /usr/include/qt4/QtCore/qstring.h
- /usr/include/qt4/QtCore/qstringbuilder.h
- /usr/include/qt4/QtCore/qvariant.h
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_utilities.cxx.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_utilities.cxx
 qtnp/CMakeFiles/qtnp.dir/qrc_images.cxx.o
@@ -803,6 +748,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o
  /usr/include/qt4/QtGui/QFrame
  /usr/include/qt4/QtGui/QGridLayout
  /usr/include/qt4/QtGui/QGroupBox
+ /usr/include/qt4/QtGui/QHBoxLayout
  /usr/include/qt4/QtGui/QHeaderView
  /usr/include/qt4/QtGui/QLabel
  /usr/include/qt4/QtGui/QLayout
@@ -817,6 +763,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o
  /usr/include/qt4/QtGui/QPrinter
  /usr/include/qt4/QtGui/QPushButton
  /usr/include/qt4/QtGui/QSpacerItem
+ /usr/include/qt4/QtGui/QStandardItemModel
  /usr/include/qt4/QtGui/QStatusBar
  /usr/include/qt4/QtGui/QStringListModel
  /usr/include/qt4/QtGui/QTabWidget
@@ -1070,7 +1017,6 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qnode.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/rviz_objects.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/tnp_update.hpp
- /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/main_window.cpp
  /opt/ros/indigo/include/XmlRpcDecl.h
  /opt/ros/indigo/include/XmlRpcValue.h
@@ -1143,7 +1089,6 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /opt/ros/indigo/include/visualization_msgs/Marker.h
  /usr/include/qt4/Qt3Support/q3cstring.h
  /usr/include/qt4/Qt3Support/q3valuelist.h
- /usr/include/qt4/QtCore/QAbstractTableModel
  /usr/include/qt4/QtCore/QDate
  /usr/include/qt4/QtCore/QFile
  /usr/include/qt4/QtCore/QIODevice
@@ -1334,6 +1279,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /usr/include/qt4/QtGui/QFrame
  /usr/include/qt4/QtGui/QGridLayout
  /usr/include/qt4/QtGui/QGroupBox
+ /usr/include/qt4/QtGui/QHBoxLayout
  /usr/include/qt4/QtGui/QHeaderView
  /usr/include/qt4/QtGui/QLabel
  /usr/include/qt4/QtGui/QLayout
@@ -1349,6 +1295,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /usr/include/qt4/QtGui/QPrinter
  /usr/include/qt4/QtGui/QPushButton
  /usr/include/qt4/QtGui/QSpacerItem
+ /usr/include/qt4/QtGui/QStandardItemModel
  /usr/include/qt4/QtGui/QStatusBar
  /usr/include/qt4/QtGui/QStringListModel
  /usr/include/qt4/QtGui/QTabWidget
@@ -1946,66 +1893,3 @@ qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o
  /opt/ros/indigo/include/std_msgs/ColorRGBA.h
  /opt/ros/indigo/include/std_msgs/Header.h
  /opt/ros/indigo/include/visualization_msgs/Marker.h
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o
- /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
- /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp
- /usr/include/qt4/Qt3Support/q3cstring.h
- /usr/include/qt4/QtCore/QAbstractTableModel
- /usr/include/qt4/QtCore/QTime
- /usr/include/qt4/QtCore/qabstractitemmodel.h
- /usr/include/qt4/QtCore/qalgorithms.h
- /usr/include/qt4/QtCore/qatomic.h
- /usr/include/qt4/QtCore/qatomic_aarch64.h
- /usr/include/qt4/QtCore/qatomic_alpha.h
- /usr/include/qt4/QtCore/qatomic_arch.h
- /usr/include/qt4/QtCore/qatomic_arm.h
- /usr/include/qt4/QtCore/qatomic_armv5.h
- /usr/include/qt4/QtCore/qatomic_armv6.h
- /usr/include/qt4/QtCore/qatomic_armv7.h
- /usr/include/qt4/QtCore/qatomic_avr32.h
- /usr/include/qt4/QtCore/qatomic_bfin.h
- /usr/include/qt4/QtCore/qatomic_bootstrap.h
- /usr/include/qt4/QtCore/qatomic_generic.h
- /usr/include/qt4/QtCore/qatomic_i386.h
- /usr/include/qt4/QtCore/qatomic_ia64.h
- /usr/include/qt4/QtCore/qatomic_integrity.h
- /usr/include/qt4/QtCore/qatomic_m68k.h
- /usr/include/qt4/QtCore/qatomic_macosx.h
- /usr/include/qt4/QtCore/qatomic_mips.h
- /usr/include/qt4/QtCore/qatomic_parisc.h
- /usr/include/qt4/QtCore/qatomic_powerpc.h
- /usr/include/qt4/QtCore/qatomic_s390.h
- /usr/include/qt4/QtCore/qatomic_sh.h
- /usr/include/qt4/QtCore/qatomic_sh4a.h
- /usr/include/qt4/QtCore/qatomic_sparc.h
- /usr/include/qt4/QtCore/qatomic_symbian.h
- /usr/include/qt4/QtCore/qatomic_vxworks.h
- /usr/include/qt4/QtCore/qatomic_windows.h
- /usr/include/qt4/QtCore/qatomic_windowsce.h
- /usr/include/qt4/QtCore/qatomic_x86_64.h
- /usr/include/qt4/QtCore/qbasicatomic.h
- /usr/include/qt4/QtCore/qbytearray.h
- /usr/include/qt4/QtCore/qchar.h
- /usr/include/qt4/QtCore/qconfig.h
- /usr/include/qt4/QtCore/qcoreevent.h
- /usr/include/qt4/QtCore/qdatastream.h
- /usr/include/qt4/QtCore/qdatetime.h
- /usr/include/qt4/QtCore/qfeatures.h
- /usr/include/qt4/QtCore/qglobal.h
- /usr/include/qt4/QtCore/qhash.h
- /usr/include/qt4/QtCore/qiodevice.h
- /usr/include/qt4/QtCore/qiterator.h
- /usr/include/qt4/QtCore/qlist.h
- /usr/include/qt4/QtCore/qmap.h
- /usr/include/qt4/QtCore/qmetatype.h
- /usr/include/qt4/QtCore/qnamespace.h
- /usr/include/qt4/QtCore/qobject.h
- /usr/include/qt4/QtCore/qobjectdefs.h
- /usr/include/qt4/QtCore/qpair.h
- /usr/include/qt4/QtCore/qscopedpointer.h
- /usr/include/qt4/QtCore/qshareddata.h
- /usr/include/qt4/QtCore/qsharedpointer.h
- /usr/include/qt4/QtCore/qsharedpointer_impl.h
- /usr/include/qt4/QtCore/qstring.h
- /usr/include/qt4/QtCore/qstringbuilder.h
- /usr/include/qt4/QtCore/qvariant.h

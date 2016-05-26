@@ -21,7 +21,6 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <iostream>
 #include "../include/qtnp/main_window.hpp"
-#include "../include/qtnp/uas_model.hpp"
 
 /*****************************************************************************
 ** Namespaces
@@ -48,12 +47,27 @@ qtnp::Placemarks kml_parsing(const QString &filename) {
     for (int i = 0; i < placemarks.size(); i++) {
 
         QDomNode placemark = placemarks.item(i);
+        char split_char = ',';
 
+        // setting the placemark type (constrain or hole)
         qtnp::Coordinates placemark_coordinates;
         placemark_coordinates.placemark_type = placemark.firstChildElement("name").text().toStdString();
+
+        // if the placemark is a hole, we need to also add the coordinates of the seed inside the hole
+        if (placemark_coordinates.placemark_type == "hole"){
+
+            std::istringstream split_seed(placemark.firstChildElement("seed").text().toStdString());
+            std::vector<std::string> seed_tokens;
+            for (std::string each; std::getline(split_seed, each, split_char); seed_tokens.push_back(each));
+
+            placemark_coordinates.seed_latitude = ::atof(seed_tokens[0].c_str());
+            placemark_coordinates.seed_longitude = ::atof(seed_tokens[1].c_str());
+        }
+
+        // pushing all coordinates to form the shape
         std::string all_coordinates = placemark.namedItem("Polygon").namedItem("LinearRing")
                 .firstChildElement("coordinates").text().toStdString();
-        char split_char = '\n';
+        split_char = '\n';
         boost::algorithm::trim(all_coordinates);
         std::istringstream split(all_coordinates);
         std::vector<std::string> tokens;
@@ -67,7 +81,7 @@ qtnp::Placemarks kml_parsing(const QString &filename) {
             placemark_coordinates.longitude.push_back(::atof(tokens2[1].c_str()));
         }
 
-        placemarks_msg.placemark.push_back(placemark_coordinates);
+        placemarks_msg.placemarks.push_back(placemark_coordinates);
     }
     return placemarks_msg;
 }
@@ -83,9 +97,9 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
 	ui.setupUi(this); // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
 
     /*********************
-    ** Table view uas
+    ** a simple uas table view
     **********************/
-    QStandardItemModel *model = new QStandardItemModel(2,4,this); //2 Rows and 4 Columns
+    model = new QStandardItemModel(2,4,this); //2 Rows and 4 Columns
 
     model->setHorizontalHeaderItem(0, new QStandardItem(QString("Sensor type")));
     model->setHorizontalHeaderItem(1, new QStandardItem(QString("Footprint size")));
@@ -206,14 +220,31 @@ void MainWindow::on_button_validate_kml_clicked(bool check ) {
 
 void MainWindow::on_button_perform_cdt_clicked(bool check ) {
 
+    double angle_constr(constants::angle_criterion_default);
+    double edge_constr(constants::edge_criterion_default);
+
     if ( get_kml_filename() == "" ) {
         showNoKmlMessage();
     } else {
         if (validate_connection()) {
-            qnode.get_tnp_update_pointer()->perform_polygon_definition(kml_parsing(kml_filename).placemark);
+            // TODO validate inputs
+            angle_constr = ui.line_edit_angle_constr->text() == "" ?
+                        angle_constr : ui.line_edit_angle_constr->text().remove(QRegExp(" .*")).toDouble();
+            edge_constr = ui.line_edit_edge_constr->text() == "" ?
+                        angle_constr : ui.line_edit_edge_constr->text().remove(QRegExp(" .*")).toDouble();
+
+            qnode.get_tnp_update_pointer()->perform_polygon_definition(kml_parsing(kml_filename).placemarks);
         }
     }
 
+}
+
+void MainWindow::on_button_add_clicked(bool check ) {
+    model->appendRow(new QStandardItem(QString("")));
+}
+
+void MainWindow::on_button_remove_clicked(bool check ) {
+    model->takeRow((model->rowCount()) -1);
 }
 
 /*****************************************************************************

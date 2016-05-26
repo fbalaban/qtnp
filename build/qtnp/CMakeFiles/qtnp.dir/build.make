@@ -96,14 +96,9 @@ qtnp/include/qtnp/moc_qnode.cxx: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/in
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating include/qtnp/moc_qnode.cxx"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp && /usr/lib/x86_64-linux-gnu/qt4/bin/moc @/home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_qnode.cxx_parameters
 
-qtnp/include/qtnp/moc_uas_model.cxx: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_10)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating include/qtnp/moc_uas_model.cxx"
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp && /usr/lib/x86_64-linux-gnu/qt4/bin/moc @/home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_uas_model.cxx_parameters
-
 qtnp/CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/rviz_objects.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_11)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_10)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/rviz_objects.cpp
 
@@ -126,7 +121,7 @@ qtnp/CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o.provides.build: qtnp/CMakeFiles/
 
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/qnode.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_12)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_11)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/src/qnode.cpp.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/qnode.cpp
 
@@ -149,7 +144,7 @@ qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o.provides.build: qtnp/CMakeFiles/qtnp.di
 
 qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/tnp_update.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_13)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_12)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/src/tnp_update.cpp.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/tnp_update.cpp
 
@@ -170,32 +165,9 @@ qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o.provides: qtnp/CMakeFiles/qtnp.dir
 
 qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o.provides.build: qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o
 
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o: qtnp/CMakeFiles/qtnp.dir/flags.make
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_14)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o"
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/src/uas_model.cpp.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp
-
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/qtnp.dir/src/uas_model.cpp.i"
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp > CMakeFiles/qtnp.dir/src/uas_model.cpp.i
-
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/qtnp.dir/src/uas_model.cpp.s"
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp -o CMakeFiles/qtnp.dir/src/uas_model.cpp.s
-
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.requires:
-.PHONY : qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.requires
-
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.provides: qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.requires
-	$(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.provides.build
-.PHONY : qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.provides
-
-qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.provides.build: qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o
-
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/main.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_15)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_13)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/src/main.cpp.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/main.cpp
 
@@ -218,7 +190,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o.provides.build: qtnp/CMakeFiles/qtnp.dir
 
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/main_window.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_16)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_14)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/src/main_window.cpp.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/main_window.cpp
 
@@ -241,7 +213,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o.provides.build: qtnp/CMakeFiles/q
 
 qtnp/CMakeFiles/qtnp.dir/qrc_images.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/qrc_images.cxx.o: qtnp/qrc_images.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_17)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_15)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/qrc_images.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/qrc_images.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/qrc_images.cxx
 
@@ -264,7 +236,7 @@ qtnp/CMakeFiles/qtnp.dir/qrc_images.cxx.o.provides.build: qtnp/CMakeFiles/qtnp.d
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: qtnp/include/qtnp/moc_main_window.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_18)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_16)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_main_window.cxx
 
@@ -287,7 +259,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o.provides.build: qtnp
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_tnp_update.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_tnp_update.cxx.o: qtnp/include/qtnp/moc_tnp_update.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_19)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_17)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_tnp_update.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_tnp_update.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_tnp_update.cxx
 
@@ -310,7 +282,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_tnp_update.cxx.o.provides.build: qtnp/
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_rviz_objects.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_rviz_objects.cxx.o: qtnp/include/qtnp/moc_rviz_objects.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_20)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_18)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_rviz_objects.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_rviz_objects.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_rviz_objects.cxx
 
@@ -333,7 +305,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_rviz_objects.cxx.o.provides.build: qtn
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_utilities.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_utilities.cxx.o: qtnp/include/qtnp/moc_utilities.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_21)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_19)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_utilities.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_utilities.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_utilities.cxx
 
@@ -356,7 +328,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_utilities.cxx.o.provides.build: qtnp/C
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o: qtnp/include/qtnp/moc_cdt_types.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_22)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_20)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_cdt_types.cxx
 
@@ -379,7 +351,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o.provides.build: qtnp/C
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o: qtnp/include/qtnp/moc_constants.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_23)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_21)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_constants.cxx
 
@@ -402,7 +374,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o.provides.build: qtnp/C
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o: qtnp/include/qtnp/moc_qnode.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_24)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_22)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o"
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_qnode.cxx
 
@@ -423,35 +395,11 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o.provides: qtnp/CMakeFiles/
 
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o.provides.build: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o
 
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o: qtnp/CMakeFiles/qtnp.dir/flags.make
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o: qtnp/include/qtnp/moc_uas_model.cxx
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_25)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o"
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o -c /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_uas_model.cxx
-
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.i"
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_uas_model.cxx > CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.i
-
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.s"
-	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp && /usr/lib/ccache/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/include/qtnp/moc_uas_model.cxx -o CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.s
-
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.requires:
-.PHONY : qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.requires
-
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.provides: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.requires
-	$(MAKE) -f qtnp/CMakeFiles/qtnp.dir/build.make qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.provides.build
-.PHONY : qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.provides
-
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.provides.build: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o
-
 # Object files for target qtnp
 qtnp_OBJECTS = \
 "CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o" \
 "CMakeFiles/qtnp.dir/src/qnode.cpp.o" \
 "CMakeFiles/qtnp.dir/src/tnp_update.cpp.o" \
-"CMakeFiles/qtnp.dir/src/uas_model.cpp.o" \
 "CMakeFiles/qtnp.dir/src/main.cpp.o" \
 "CMakeFiles/qtnp.dir/src/main_window.cpp.o" \
 "CMakeFiles/qtnp.dir/qrc_images.cxx.o" \
@@ -461,8 +409,7 @@ qtnp_OBJECTS = \
 "CMakeFiles/qtnp.dir/include/qtnp/moc_utilities.cxx.o" \
 "CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o" \
 "CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o" \
-"CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o" \
-"CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o"
+"CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o"
 
 # External object files for target qtnp
 qtnp_EXTERNAL_OBJECTS =
@@ -470,7 +417,6 @@ qtnp_EXTERNAL_OBJECTS =
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o
-/home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/qrc_images.cxx.o
@@ -481,7 +427,6 @@ qtnp_EXTERNAL_OBJECTS =
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o
-/home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: qtnp/CMakeFiles/qtnp.dir/build.make
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: /usr/lib/x86_64-linux-gnu/libQtGui.so
 /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qtnp/qtnp: /usr/lib/x86_64-linux-gnu/libQtXml.so
@@ -514,7 +459,6 @@ qtnp/CMakeFiles/qtnp.dir/build: /home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/qt
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/src/rviz_objects.cpp.o.requires
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o.requires
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o.requires
-qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/src/uas_model.cpp.o.requires
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o.requires
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o.requires
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/qrc_images.cxx.o.requires
@@ -525,7 +469,6 @@ qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uti
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_cdt_types.cxx.o.requires
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_constants.cxx.o.requires
 qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o.requires
-qtnp/CMakeFiles/qtnp.dir/requires: qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_uas_model.cxx.o.requires
 .PHONY : qtnp/CMakeFiles/qtnp.dir/requires
 
 qtnp/CMakeFiles/qtnp.dir/clean:
@@ -541,7 +484,6 @@ qtnp/CMakeFiles/qtnp.dir/depend: qtnp/include/qtnp/moc_utilities.cxx
 qtnp/CMakeFiles/qtnp.dir/depend: qtnp/include/qtnp/moc_cdt_types.cxx
 qtnp/CMakeFiles/qtnp.dir/depend: qtnp/include/qtnp/moc_constants.cxx
 qtnp/CMakeFiles/qtnp.dir/depend: qtnp/include/qtnp/moc_qnode.cxx
-qtnp/CMakeFiles/qtnp.dir/depend: qtnp/include/qtnp/moc_uas_model.cxx
 	cd /home/fotis/Dev/Workspaces/ROS/qTnP/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/fotis/Dev/Workspaces/ROS/qTnP/src /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp /home/fotis/Dev/Workspaces/ROS/qTnP/build /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp /home/fotis/Dev/Workspaces/ROS/qTnP/build/qtnp/CMakeFiles/qtnp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : qtnp/CMakeFiles/qtnp.dir/depend
 

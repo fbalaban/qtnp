@@ -22,7 +22,7 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -36,7 +36,9 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
      135,   45,   17,   17, 0x0a,
      166,   45,   17,   17, 0x0a,
      203,   45,   17,   17, 0x0a,
-     239,   17,   17,   17, 0x0a,
+     239,   45,   17,   17, 0x0a,
+     267,   45,   17,   17, 0x0a,
+     298,   17,   17,   17, 0x0a,
 
        0        // eod
 };
@@ -48,6 +50,8 @@ static const char qt_meta_stringdata_qtnp__MainWindow[] = {
     "on_button_browse_clicked(bool)\0"
     "on_button_validate_kml_clicked(bool)\0"
     "on_button_perform_cdt_clicked(bool)\0"
+    "on_button_add_clicked(bool)\0"
+    "on_button_remove_clicked(bool)\0"
     "updateLoggingView()\0"
 };
 
@@ -63,7 +67,9 @@ void qtnp::MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 3: _t->on_button_browse_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 4: _t->on_button_validate_kml_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 5: _t->on_button_perform_cdt_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 6: _t->updateLoggingView(); break;
+        case 6: _t->on_button_add_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 7: _t->on_button_remove_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 8: _t->updateLoggingView(); break;
         default: ;
         }
     }
@@ -101,9 +107,9 @@ int qtnp::MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 9;
     }
     return _id;
 }

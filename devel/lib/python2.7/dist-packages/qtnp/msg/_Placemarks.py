@@ -8,18 +8,20 @@ import struct
 import qtnp.msg
 
 class Placemarks(genpy.Message):
-  _md5sum = "b4349b45ce3a0b7fe1423d1ecf4c71cb"
+  _md5sum = "d412150a28aefbf6a830287329e8685d"
   _type = "qtnp/Placemarks"
   _has_header = False #flag to mark the presence of a Header object
-  _full_text = """qtnp/Coordinates[] placemark 
+  _full_text = """qtnp/Coordinates[] placemarks 
 
 ================================================================================
 MSG: qtnp/Coordinates
 string placemark_type
+float64 seed_longitude
+float64 seed_latitude
 float64[] longitude
 float64[] latitude
 """
-  __slots__ = ['placemark']
+  __slots__ = ['placemarks']
   _slot_types = ['qtnp/Coordinates[]']
 
   def __init__(self, *args, **kwds):
@@ -30,7 +32,7 @@ float64[] latitude
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       placemark
+       placemarks
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -39,10 +41,10 @@ float64[] latitude
     if args or kwds:
       super(Placemarks, self).__init__(*args, **kwds)
       #message fields cannot be None, assign default values for those that are
-      if self.placemark is None:
-        self.placemark = []
+      if self.placemarks is None:
+        self.placemarks = []
     else:
-      self.placemark = []
+      self.placemarks = []
 
   def _get_types(self):
     """
@@ -56,9 +58,9 @@ float64[] latitude
     :param buff: buffer, ``StringIO``
     """
     try:
-      length = len(self.placemark)
+      length = len(self.placemarks)
       buff.write(_struct_I.pack(length))
-      for val1 in self.placemark:
+      for val1 in self.placemarks:
         _x = val1.placemark_type
         length = len(_x)
         if python3 or type(_x) == unicode:
@@ -68,6 +70,8 @@ float64[] latitude
           buff.write(struct.pack('<I%sB'%length, length, *_x))
         else:
           buff.write(struct.pack('<I%ss'%length, length, _x))
+        _x = val1
+        buff.write(_struct_2d.pack(_x.seed_longitude, _x.seed_latitude))
         length = len(val1.longitude)
         buff.write(_struct_I.pack(length))
         pattern = '<%sd'%length
@@ -85,13 +89,13 @@ float64[] latitude
     :param str: byte array of serialized message, ``str``
     """
     try:
-      if self.placemark is None:
-        self.placemark = None
+      if self.placemarks is None:
+        self.placemarks = None
       end = 0
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      self.placemark = []
+      self.placemarks = []
       for i in range(0, length):
         val1 = qtnp.msg.Coordinates()
         start = end
@@ -103,6 +107,10 @@ float64[] latitude
           val1.placemark_type = str[start:end].decode('utf-8')
         else:
           val1.placemark_type = str[start:end]
+        _x = val1
+        start = end
+        end += 16
+        (_x.seed_longitude, _x.seed_latitude,) = _struct_2d.unpack(str[start:end])
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
@@ -117,7 +125,7 @@ float64[] latitude
         start = end
         end += struct.calcsize(pattern)
         val1.latitude = struct.unpack(pattern, str[start:end])
-        self.placemark.append(val1)
+        self.placemarks.append(val1)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -130,9 +138,9 @@ float64[] latitude
     :param numpy: numpy python module
     """
     try:
-      length = len(self.placemark)
+      length = len(self.placemarks)
       buff.write(_struct_I.pack(length))
-      for val1 in self.placemark:
+      for val1 in self.placemarks:
         _x = val1.placemark_type
         length = len(_x)
         if python3 or type(_x) == unicode:
@@ -142,6 +150,8 @@ float64[] latitude
           buff.write(struct.pack('<I%sB'%length, length, *_x))
         else:
           buff.write(struct.pack('<I%ss'%length, length, _x))
+        _x = val1
+        buff.write(_struct_2d.pack(_x.seed_longitude, _x.seed_latitude))
         length = len(val1.longitude)
         buff.write(_struct_I.pack(length))
         pattern = '<%sd'%length
@@ -160,13 +170,13 @@ float64[] latitude
     :param numpy: numpy python module
     """
     try:
-      if self.placemark is None:
-        self.placemark = None
+      if self.placemarks is None:
+        self.placemarks = None
       end = 0
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      self.placemark = []
+      self.placemarks = []
       for i in range(0, length):
         val1 = qtnp.msg.Coordinates()
         start = end
@@ -178,6 +188,10 @@ float64[] latitude
           val1.placemark_type = str[start:end].decode('utf-8')
         else:
           val1.placemark_type = str[start:end]
+        _x = val1
+        start = end
+        end += 16
+        (_x.seed_longitude, _x.seed_latitude,) = _struct_2d.unpack(str[start:end])
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
@@ -192,9 +206,10 @@ float64[] latitude
         start = end
         end += struct.calcsize(pattern)
         val1.latitude = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=length)
-        self.placemark.append(val1)
+        self.placemarks.append(val1)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
+_struct_2d = struct.Struct("<2d")

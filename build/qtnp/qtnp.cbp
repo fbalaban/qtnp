@@ -340,8 +340,6 @@
       </Unit>
       <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/tnp_update.cpp">
       </Unit>
-      <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/uas_model.cpp">
-      </Unit>
       <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/resources/images.qrc">
       </Unit>
       <Unit filename="/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/ui/main_window.ui">
