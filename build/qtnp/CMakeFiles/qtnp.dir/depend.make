@@ -174,7 +174,6 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/Qt
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QFrame
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QGridLayout
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QGroupBox
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QHBoxLayout
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QHeaderView
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QLabel
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QLineEdit
@@ -747,7 +746,6 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QFont
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QFrame
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QGridLayout
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QGroupBox
-qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QHBoxLayout
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QHeaderView
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QLabel
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QLayout
@@ -1278,7 +1276,6 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QFont
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QFrame
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QGridLayout
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QGroupBox
-qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QHBoxLayout
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QHeaderView
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QLabel
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QLayout

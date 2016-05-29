@@ -105,6 +105,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     model->setHorizontalHeaderItem(1, new QStandardItem(QString("Footprint size")));
     model->setHorizontalHeaderItem(2, new QStandardItem(QString("Autonomy %")));
     model->setHorizontalHeaderItem(3, new QStandardItem(QString("Task")));
+    model->setHorizontalHeaderItem(4, new QStandardItem(QString("Latitude")));
+    model->setHorizontalHeaderItem(5, new QStandardItem(QString("Longitude")));
 
     ui.table_view_uas->setModel(model);
 
@@ -220,20 +222,21 @@ void MainWindow::on_button_validate_kml_clicked(bool check ) {
 
 void MainWindow::on_button_perform_cdt_clicked(bool check ) {
 
-    double angle_constr(constants::angle_criterion_default);
-    double edge_constr(constants::edge_criterion_default);
+    double angle_cons(constants::angle_criterion_default);
+    double edge_cons(constants::edge_criterion_default);
 
     if ( get_kml_filename() == "" ) {
         showNoKmlMessage();
     } else {
         if (validate_connection()) {
             // TODO validate inputs
-            angle_constr = ui.line_edit_angle_constr->text() == "" ?
-                        angle_constr : ui.line_edit_angle_constr->text().remove(QRegExp(" .*")).toDouble();
-            edge_constr = ui.line_edit_edge_constr->text() == "" ?
-                        angle_constr : ui.line_edit_edge_constr->text().remove(QRegExp(" .*")).toDouble();
+            angle_cons = ui.line_edit_angle_constr->text() == "" ?
+                        angle_cons : ui.line_edit_angle_constr->text().remove(QRegExp(" .*")).toDouble();
+            edge_cons = ui.line_edit_edge_constr->text() == "" ?
+                        angle_cons : ui.line_edit_edge_constr->text().remove(QRegExp(" .*")).toDouble();
 
-            qnode.get_tnp_update_pointer()->perform_polygon_definition(kml_parsing(kml_filename).placemarks);
+            qnode.get_tnp_update_pointer()->perform_polygon_definition
+                    (kml_parsing(kml_filename).placemarks, angle_cons, edge_cons);
         }
     }
 
@@ -245,6 +248,65 @@ void MainWindow::on_button_add_clicked(bool check ) {
 
 void MainWindow::on_button_remove_clicked(bool check ) {
     model->takeRow((model->rowCount()) -1);
+}
+
+
+void MainWindow::on_button_partition_clicked(bool check ) {
+
+    QAbstractItemModel* this_model = ui.table_view_uas->model();
+    int uas_count = model->rowCount();
+    std::vector<std::pair<double,double> > uas_coords;
+
+
+    // need to tack item changes in qviewlist
+    for (int i=0; i<uas_count; i++){
+
+        std::pair<double,double> coord_item;
+
+        QModelIndex idx_lat = this_model->index(i, 4);
+        QModelIndex idx_lon = this_model->index(i, 5);
+
+        coord_item.first = this_model->data(idx_lat).toDouble();
+        coord_item.second = this_model->data(idx_lon).toDouble();
+        uas_coords.push_back(coord_item);
+
+        std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) << std::setprecision(8) << "lat: " << coord_item.first  << ", lon: " << coord_item.second << std::endl;
+    }
+    // make partition sending the vector. the size of the vector is the number of the uas.
+
+}
+
+void MainWindow::on_button_save_uas_config_clicked(bool check){
+
+    QFile file("/home/fotis/uas_table.conf");
+     if (file.open(QIODevice::WriteOnly)) {
+         QDataStream stream(&file);
+         qint32 n(model->rowCount()), m(model->columnCount());
+         stream << n << m;
+
+         for (int i=0; i<n; ++i)
+             for (int j=0; j<m; j++)
+                 model->item(i,j)->write(stream);
+         file.close();
+     }
+}
+
+void MainWindow::on_button_load_last_uas_conf_clicked(bool check){
+
+    QFile file("/home/fotis/uas_table.conf");
+     if (file.open(QIODevice::ReadOnly)) {
+         QDataStream stream(&file);
+         qint32 n, m;
+         stream >> n >> m;
+
+         model->setRowCount(n);
+         model->setColumnCount(m);
+         for (int i=0; i<n; ++i)
+             for (int j=0; j<m; j++)
+                 model->item(i,j)->read(stream);
+         file.close();
+     }
+
 }
 
 /*****************************************************************************

@@ -22,7 +22,7 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
+      12,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -38,7 +38,10 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
      203,   45,   17,   17, 0x0a,
      239,   45,   17,   17, 0x0a,
      267,   45,   17,   17, 0x0a,
-     298,   17,   17,   17, 0x0a,
+     298,   45,   17,   17, 0x0a,
+     332,   45,   17,   17, 0x0a,
+     372,   45,   17,   17, 0x0a,
+     415,   17,   17,   17, 0x0a,
 
        0        // eod
 };
@@ -52,6 +55,9 @@ static const char qt_meta_stringdata_qtnp__MainWindow[] = {
     "on_button_perform_cdt_clicked(bool)\0"
     "on_button_add_clicked(bool)\0"
     "on_button_remove_clicked(bool)\0"
+    "on_button_partition_clicked(bool)\0"
+    "on_button_save_uas_config_clicked(bool)\0"
+    "on_button_load_last_uas_conf_clicked(bool)\0"
     "updateLoggingView()\0"
 };
 
@@ -69,7 +75,10 @@ void qtnp::MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 5: _t->on_button_perform_cdt_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 6: _t->on_button_add_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 7: _t->on_button_remove_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 8: _t->updateLoggingView(); break;
+        case 8: _t->on_button_partition_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 9: _t->on_button_save_uas_config_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 10: _t->on_button_load_last_uas_conf_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 11: _t->updateLoggingView(); break;
         default: ;
         }
     }
@@ -107,9 +116,9 @@ int qtnp::MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 12;
     }
     return _id;
 }

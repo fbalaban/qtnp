@@ -19,7 +19,6 @@
 #include <QtGui/QFrame>
 #include <QtGui/QGridLayout>
 #include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
@@ -59,11 +58,11 @@ public:
     QLabel *label_8;
     QTableView *table_view_uas;
     QGroupBox *groupBox_4;
-    QHBoxLayout *horizontalLayout;
-    QPushButton *button_add;
+    QGridLayout *gridLayout_3;
     QPushButton *button_remove;
-    QSpacerItem *horizontalSpacer_2;
-    QSpacerItem *horizontalSpacer;
+    QPushButton *button_add;
+    QPushButton *button_save_uas_config;
+    QPushButton *button_load_last_uas_conf;
     QSpacerItem *verticalSpacer_2;
     QMenuBar *menubar;
     QMenu *menu_File;
@@ -97,6 +96,7 @@ public:
     QPushButton *button_browse;
     QPushButton *button_validate_kml;
     QGroupBox *groupBox_5;
+    QPushButton *button_partition;
     QPushButton *quit_button;
 
     void setupUi(QMainWindow *MainWindowDesign)
@@ -123,7 +123,7 @@ public:
         verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
         tab_manager = new QTabWidget(centralwidget);
         tab_manager->setObjectName(QString::fromUtf8("tab_manager"));
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(tab_manager->sizePolicy().hasHeightForWidth());
@@ -136,8 +136,11 @@ public:
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         groupBox_12 = new QGroupBox(tab_status);
         groupBox_12->setObjectName(QString::fromUtf8("groupBox_12"));
-        sizePolicy.setHeightForWidth(groupBox_12->sizePolicy().hasHeightForWidth());
-        groupBox_12->setSizePolicy(sizePolicy);
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(groupBox_12->sizePolicy().hasHeightForWidth());
+        groupBox_12->setSizePolicy(sizePolicy1);
         verticalLayout_4 = new QVBoxLayout(groupBox_12);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
         view_logging = new QListView(groupBox_12);
@@ -156,11 +159,11 @@ public:
         verticalLayout_8->setObjectName(QString::fromUtf8("verticalLayout_8"));
         groupBox_3 = new QGroupBox(tab_uas_manager);
         groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(groupBox_3->sizePolicy().hasHeightForWidth());
-        groupBox_3->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(groupBox_3->sizePolicy().hasHeightForWidth());
+        groupBox_3->setSizePolicy(sizePolicy2);
         groupBox_3->setAlignment(Qt::AlignCenter);
         verticalLayout_7 = new QVBoxLayout(groupBox_3);
         verticalLayout_7->setObjectName(QString::fromUtf8("verticalLayout_7"));
@@ -171,42 +174,50 @@ public:
 
         table_view_uas = new QTableView(groupBox_3);
         table_view_uas->setObjectName(QString::fromUtf8("table_view_uas"));
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(table_view_uas->sizePolicy().hasHeightForWidth());
-        table_view_uas->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(table_view_uas->sizePolicy().hasHeightForWidth());
+        table_view_uas->setSizePolicy(sizePolicy3);
 
         verticalLayout_7->addWidget(table_view_uas);
 
         groupBox_4 = new QGroupBox(groupBox_3);
         groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
-        horizontalLayout = new QHBoxLayout(groupBox_4);
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        button_add = new QPushButton(groupBox_4);
-        button_add->setObjectName(QString::fromUtf8("button_add"));
-        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(button_add->sizePolicy().hasHeightForWidth());
-        button_add->setSizePolicy(sizePolicy3);
-
-        horizontalLayout->addWidget(button_add);
-
+        gridLayout_3 = new QGridLayout(groupBox_4);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         button_remove = new QPushButton(groupBox_4);
         button_remove->setObjectName(QString::fromUtf8("button_remove"));
-        sizePolicy3.setHeightForWidth(button_remove->sizePolicy().hasHeightForWidth());
-        button_remove->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(button_remove->sizePolicy().hasHeightForWidth());
+        button_remove->setSizePolicy(sizePolicy4);
 
-        horizontalLayout->addWidget(button_remove);
+        gridLayout_3->addWidget(button_remove, 0, 1, 1, 1);
 
-        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        button_add = new QPushButton(groupBox_4);
+        button_add->setObjectName(QString::fromUtf8("button_add"));
+        sizePolicy4.setHeightForWidth(button_add->sizePolicy().hasHeightForWidth());
+        button_add->setSizePolicy(sizePolicy4);
 
-        horizontalLayout->addItem(horizontalSpacer_2);
+        gridLayout_3->addWidget(button_add, 0, 0, 1, 1);
 
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        button_save_uas_config = new QPushButton(groupBox_4);
+        button_save_uas_config->setObjectName(QString::fromUtf8("button_save_uas_config"));
 
-        horizontalLayout->addItem(horizontalSpacer);
+        gridLayout_3->addWidget(button_save_uas_config, 1, 0, 1, 1);
+
+        button_load_last_uas_conf = new QPushButton(groupBox_4);
+        button_load_last_uas_conf->setObjectName(QString::fromUtf8("button_load_last_uas_conf"));
+        QSizePolicy sizePolicy5(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(button_load_last_uas_conf->sizePolicy().hasHeightForWidth());
+        button_load_last_uas_conf->setSizePolicy(sizePolicy5);
+        button_load_last_uas_conf->setIconSize(QSize(17, 17));
+
+        gridLayout_3->addWidget(button_load_last_uas_conf, 1, 1, 1, 1);
 
 
         verticalLayout_7->addWidget(groupBox_4);
@@ -247,11 +258,11 @@ public:
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         frame = new QFrame(dockWidgetContents_2);
         frame->setObjectName(QString::fromUtf8("frame"));
-        QSizePolicy sizePolicy4(QSizePolicy::Minimum, QSizePolicy::Preferred);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
-        frame->setSizePolicy(sizePolicy4);
+        QSizePolicy sizePolicy6(QSizePolicy::Maximum, QSizePolicy::Preferred);
+        sizePolicy6.setHorizontalStretch(0);
+        sizePolicy6.setVerticalStretch(0);
+        sizePolicy6.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
+        frame->setSizePolicy(sizePolicy6);
         frame->setFrameShape(QFrame::StyledPanel);
         frame->setFrameShadow(QFrame::Raised);
         verticalLayout_3 = new QVBoxLayout(frame);
@@ -300,11 +311,11 @@ public:
         button_connect = new QPushButton(groupBox);
         button_connect->setObjectName(QString::fromUtf8("button_connect"));
         button_connect->setEnabled(true);
-        QSizePolicy sizePolicy5(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-        sizePolicy5.setHorizontalStretch(0);
-        sizePolicy5.setVerticalStretch(0);
-        sizePolicy5.setHeightForWidth(button_connect->sizePolicy().hasHeightForWidth());
-        button_connect->setSizePolicy(sizePolicy5);
+        QSizePolicy sizePolicy7(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+        sizePolicy7.setHorizontalStretch(0);
+        sizePolicy7.setVerticalStretch(0);
+        sizePolicy7.setHeightForWidth(button_connect->sizePolicy().hasHeightForWidth());
+        button_connect->setSizePolicy(sizePolicy7);
 
         gridLayout->addWidget(button_connect, 12, 1, 1, 1);
 
@@ -371,8 +382,8 @@ public:
 
         button_browse = new QPushButton(groupBox_2);
         button_browse->setObjectName(QString::fromUtf8("button_browse"));
-        sizePolicy5.setHeightForWidth(button_browse->sizePolicy().hasHeightForWidth());
-        button_browse->setSizePolicy(sizePolicy5);
+        sizePolicy7.setHeightForWidth(button_browse->sizePolicy().hasHeightForWidth());
+        button_browse->setSizePolicy(sizePolicy7);
 
         gridLayout_2->addWidget(button_browse, 4, 1, 1, 1);
 
@@ -395,6 +406,14 @@ public:
 
         groupBox_5 = new QGroupBox(frame);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
+        QSizePolicy sizePolicy8(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy8.setHorizontalStretch(0);
+        sizePolicy8.setVerticalStretch(0);
+        sizePolicy8.setHeightForWidth(groupBox_5->sizePolicy().hasHeightForWidth());
+        groupBox_5->setSizePolicy(sizePolicy8);
+        button_partition = new QPushButton(groupBox_5);
+        button_partition->setObjectName(QString::fromUtf8("button_partition"));
+        button_partition->setGeometry(QRect(330, 30, 80, 24));
 
         verticalLayout_3->addWidget(groupBox_5);
 
@@ -403,8 +422,8 @@ public:
 
         quit_button = new QPushButton(dockWidgetContents_2);
         quit_button->setObjectName(QString::fromUtf8("quit_button"));
-        sizePolicy5.setHeightForWidth(quit_button->sizePolicy().hasHeightForWidth());
-        quit_button->setSizePolicy(sizePolicy5);
+        sizePolicy7.setHeightForWidth(quit_button->sizePolicy().hasHeightForWidth());
+        quit_button->setSizePolicy(sizePolicy7);
 
         verticalLayout->addWidget(quit_button);
 
@@ -442,8 +461,10 @@ public:
         groupBox_3->setTitle(QString());
         label_8->setText(QApplication::translate("MainWindowDesign", "UAS", 0, QApplication::UnicodeUTF8));
         groupBox_4->setTitle(QApplication::translate("MainWindowDesign", "Rows", 0, QApplication::UnicodeUTF8));
-        button_add->setText(QApplication::translate("MainWindowDesign", "add row", 0, QApplication::UnicodeUTF8));
         button_remove->setText(QApplication::translate("MainWindowDesign", "remove row", 0, QApplication::UnicodeUTF8));
+        button_add->setText(QApplication::translate("MainWindowDesign", "add row", 0, QApplication::UnicodeUTF8));
+        button_save_uas_config->setText(QApplication::translate("MainWindowDesign", "save configuration", 0, QApplication::UnicodeUTF8));
+        button_load_last_uas_conf->setText(QApplication::translate("MainWindowDesign", "load last configuration", 0, QApplication::UnicodeUTF8));
         tab_manager->setTabText(tab_manager->indexOf(tab_uas_manager), QApplication::translate("MainWindowDesign", "UAS Manager", 0, QApplication::UnicodeUTF8));
         menu_File->setTitle(QApplication::translate("MainWindowDesign", "&App", 0, QApplication::UnicodeUTF8));
         dock_status->setWindowTitle(QApplication::translate("MainWindowDesign", "Command Panel", 0, QApplication::UnicodeUTF8));
@@ -473,6 +494,7 @@ public:
         button_browse->setText(QApplication::translate("MainWindowDesign", "Browse", 0, QApplication::UnicodeUTF8));
         button_validate_kml->setText(QApplication::translate("MainWindowDesign", "Validate", 0, QApplication::UnicodeUTF8));
         groupBox_5->setTitle(QApplication::translate("MainWindowDesign", "3. Path planning", 0, QApplication::UnicodeUTF8));
+        button_partition->setText(QApplication::translate("MainWindowDesign", "Partitioning", 0, QApplication::UnicodeUTF8));
         quit_button->setText(QApplication::translate("MainWindowDesign", "Quit", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

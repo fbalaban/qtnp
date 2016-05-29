@@ -175,7 +175,6 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /usr/include/qt4/QtGui/QFrame
  /usr/include/qt4/QtGui/QGridLayout
  /usr/include/qt4/QtGui/QGroupBox
- /usr/include/qt4/QtGui/QHBoxLayout
  /usr/include/qt4/QtGui/QHeaderView
  /usr/include/qt4/QtGui/QLabel
  /usr/include/qt4/QtGui/QLineEdit
@@ -748,7 +747,6 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o
  /usr/include/qt4/QtGui/QFrame
  /usr/include/qt4/QtGui/QGridLayout
  /usr/include/qt4/QtGui/QGroupBox
- /usr/include/qt4/QtGui/QHBoxLayout
  /usr/include/qt4/QtGui/QHeaderView
  /usr/include/qt4/QtGui/QLabel
  /usr/include/qt4/QtGui/QLayout
@@ -1279,7 +1277,6 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /usr/include/qt4/QtGui/QFrame
  /usr/include/qt4/QtGui/QGridLayout
  /usr/include/qt4/QtGui/QGroupBox
- /usr/include/qt4/QtGui/QHBoxLayout
  /usr/include/qt4/QtGui/QHeaderView
  /usr/include/qt4/QtGui/QLabel
  /usr/include/qt4/QtGui/QLayout

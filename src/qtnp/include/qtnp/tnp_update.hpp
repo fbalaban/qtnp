@@ -64,9 +64,13 @@ class Tnp_update {
     // the constructor takes always a reference to the visualization objects
     Tnp_update(Rviz_objects& rvizReference) : rviz_objects_ref(rvizReference){}
 
-    void path_planning_callback(const InitialCoordinates::ConstPtr& msg);
     void polygon_def_callback(const Placemarks::ConstPtr& msg);
-    void perform_polygon_definition(std::vector<Coordinates> placemarks_array);
+    void perform_polygon_definition(std::vector<Coordinates> placemarks_array, double angle_cons, double edge_cons);
+
+    void path_planning_callback(const InitialCoordinates::ConstPtr& msg);
+    void path_planning_coverage();
+    void path_planning_to_goal();
+    void partition();
 
     void initialize_mesh(CDT &cdt);
     void hop_cost_attribution(CDT &cdt);

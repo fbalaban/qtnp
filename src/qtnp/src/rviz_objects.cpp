@@ -109,4 +109,16 @@ void Rviz_objects::clear_path(){
 
 }
 
+
+void Rviz_objects::clear_edges(){
+
+    this->edges.points.clear();
+
+}
+
+void Rviz_objects::clear_center_points(){
+
+    this->center_points.points.clear();
+}
+
 }  // namespace qtnp

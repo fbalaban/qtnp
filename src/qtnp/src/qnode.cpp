@@ -125,16 +125,16 @@ void QNode::run() {
 	int count = 0;
 	while ( ros::ok() ) {
 
-		std_msgs::String msg;
-		std::stringstream ss;
-		ss << "hello world " << count;
-        msg.data = ss.str();
-		chatter_publisher.publish(msg);
-		log(Info,std::string("I sent: ")+msg.data);
-        log(Info,std::string("Rviz edges header frame_id is: ") + rviz_objects.get_frame_id());
-
         // check if something has been called:
         if (rviz_objects.is_polygon_ready()){
+
+          std_msgs::String msg;
+          std::stringstream ss;
+          ss << "Center points(waypoints): " << rviz_objects.get_center_points().points.size() <<
+                ", CDT edges: " << rviz_objects.get_edges().points.size() ;
+          msg.data = ss.str();
+          chatter_publisher.publish(msg);
+          log(Info,std::string("CDT: ")+msg.data);
           polygon_pub.publish(rviz_objects.get_polygonStamped());
           edges_pub.publish(rviz_objects.get_edges());
           center_pub.publish(rviz_objects.get_center_points());

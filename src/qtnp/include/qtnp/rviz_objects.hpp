@@ -75,6 +75,9 @@ public:
     void push_path_point(geometry_msgs::PoseStamped point);
 
     void clear_path();
+    void clear_edges();
+    void clear_center_points();
+
     void set_polygon_ready (bool option){ polygon_ready = option; }
     void set_planning_ready (bool option){ planning_ready = option; }
 

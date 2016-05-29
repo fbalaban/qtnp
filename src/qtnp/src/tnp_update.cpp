@@ -37,6 +37,8 @@ void Tnp_update::init(){
 
     cdt.clear();
     cdt_polygon_edges.clear();
+    rviz_objects_ref.clear_edges();
+    rviz_objects_ref.clear_center_points();
     area_extremes.max_lat = -constants::max_lat;
     area_extremes.min_lat = -constants::min_lat;
     area_extremes.max_lon = -constants::max_lon;
@@ -48,10 +50,12 @@ void Tnp_update::polygon_def_callback(const Placemarks::ConstPtr &msg){
 
     std::vector<Coordinates> placemarks_array = msg->placemarks;
 
-    perform_polygon_definition(placemarks_array);
+    // for service calls, performs cdt with default angle, edge constrains
+    perform_polygon_definition(placemarks_array, constants::angle_criterion_default, constants::edge_criterion_default);
 }
 
-void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_array){
+// TODO transform edge size to rviz size
+void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_array, double angle_cons, double edge_cons){
 
     init();
 
@@ -137,11 +141,8 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
 
     // TODO: seperate rest of function
 
-    // 0.125 is the default shape bound. It corresponds to abound 20.6 degree.
-    // 0.5 is the upper bound on the length of the longest edge.(now 40)
-    // TODO: these should go in an editable field in qt form. for now is a constant
-    double crAngle = constants::angle_criterion_default;// 0.125; -- the angle criteria for meshing constrains
-    double crEdge = constants::edge_criterion_default; // 25.0; -- the edge criteria (25m footprint) (using coordinates, has to change accordingly)
+    double crAngle = angle_cons;// 0.125; -- the default angle criteria
+    double crEdge = edge_cons; // 25.0; -- the default edge criteria(50m footprint)
     std::cout << "Number of vertices before meshing and refining: " << cdt.number_of_vertices() << std::endl;
     std::cout << "Meshing the triangulation with default criteria..." << std::endl;
     Mesher mesher(cdt);
@@ -298,6 +299,14 @@ void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg)
       }
     }
     rviz_objects_ref.set_planning_ready(true) ;
+}
+
+void Tnp_update::path_planning_coverage(){}
+void Tnp_update::path_planning_to_goal(){}
+
+void Tnp_update::partition(){
+
+
 }
 
 void Tnp_update::initialize_mesh(CDT &cdt){
