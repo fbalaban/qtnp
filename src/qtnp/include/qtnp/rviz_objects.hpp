@@ -61,6 +61,7 @@ public:
     nav_msgs::Path get_path(){ return path; }
 
     int get_number_of_waypoints(){ return path.poses.size(); }
+    std::vector<std::pair<int, geometry_msgs::Point> > get_center_points_with_cell_id(){ return center_points_with_cell_id;}
 
     const char *get_frame_id(){return this->edges.header.frame_id.c_str();}
 
@@ -73,10 +74,12 @@ public:
     void push_mesh_point(geometry_msgs::Point point);
     void push_mesh_cell_color(std_msgs::ColorRGBA color);
     void push_path_point(geometry_msgs::PoseStamped point);
+    void push_center_point_with_cell_id(int id, geometry_msgs::Point center_point);
 
     void clear_path();
     void clear_edges();
     void clear_center_points();
+    void clear_triangulation_mesh();
 
     void set_polygon_ready (bool option){ polygon_ready = option; }
     void set_planning_ready (bool option){ planning_ready = option; }
@@ -88,6 +91,8 @@ private:
     geometry_msgs::PolygonStamped polygonStamped;
     visualization_msgs::Marker edges, center_points, triangulation_mesh;
     nav_msgs::Path path;
+
+    std::vector<std::pair<int, geometry_msgs::Point> > center_points_with_cell_id;
 
 };
 

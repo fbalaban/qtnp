@@ -121,4 +121,17 @@ void Rviz_objects::clear_center_points(){
     this->center_points.points.clear();
 }
 
+void Rviz_objects::clear_triangulation_mesh(){
+
+    this->triangulation_mesh.points.clear();
+    this->triangulation_mesh.colors.clear();
+}
+
+void Rviz_objects::push_center_point_with_cell_id(int id, geometry_msgs::Point center_point){
+
+    std::pair<int,geometry_msgs::Point> id_with_center_point(id, center_point);
+    this->center_points_with_cell_id.push_back(id_with_center_point);
+
+}
+
 }  // namespace qtnp

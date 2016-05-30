@@ -33,8 +33,6 @@ namespace qtnp {
 
 void Tnp_update::init(){
 
-    ROS_INFO_STREAM("Got a new polygon definition");
-
     cdt.clear();
     cdt_polygon_edges.clear();
     rviz_objects_ref.clear_edges();
@@ -57,6 +55,8 @@ void Tnp_update::polygon_def_callback(const Placemarks::ConstPtr &msg){
 // TODO transform edge size to rviz size
 void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_array, double angle_cons, double edge_cons){
 
+    ROS_INFO_STREAM("Got a new polygon definition");
+
     init();
 
     std::cout << std::setprecision(7);
@@ -64,12 +64,12 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     // define minimum and maximum values of the constrained area so to convert lat,lon to visualization ranges
     for (std::vector<Coordinates>::iterator it = placemarks_array.begin(); it<placemarks_array.end(); it++){
 
-        int size = it->longitude.size();
-        std::vector<double> longitude_array(size);
+        int size = it->latitude.size();
         std::vector<double> latitude_array(size);
+        std::vector<double> longitude_array(size);
 
-        longitude_array = it->longitude;
         latitude_array  = it->latitude;
+        longitude_array = it->longitude;
 
         if (it->placemark_type == "constrain"){
             for (int i=0; i<size; i++){
@@ -171,14 +171,20 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     double smallest_angle = 190.0;
     double biggest_angle = 0.0;
 
+    int initialize_iterator = 0;
+
     for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
         faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
 
       // for every face, we need a face handle to perform the various operations.
       CDT::Face_handle face = faces_iterator;
 
+
       // if this face is in the domain, meaning inside the contrained borders but outside the defined holes
       if (face->is_in_domain()){
+
+        // initialize face, along with it's id. TODO remove it from partition (initialize_mesh function)
+        faces_iterator->info().initialize(initialize_iterator);
 
         // create a point for each of the edges of the face.
         CDT::Point point1 = cdt.triangle(face)[0];
@@ -202,6 +208,10 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         if (angle > biggest_angle) biggest_angle = angle;
         // adding the center of every triangle
         rviz_objects_ref.push_center_point(utilities::face_points_to_center(point1, point2, point3));
+        // adding it also to the center-id vector
+        rviz_objects_ref.push_center_point_with_cell_id(initialize_iterator, utilities::face_points_to_center(point1, point2, point3));
+        initialize_iterator++;
+
       }
     }
 
@@ -226,9 +236,9 @@ void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg)
     // rviz_objects_ref.set_polygon_ready(false);
 
     // TODO: initializing with hard coded cell numbers...
-    initialize_mesh(cdt);
-    hop_cost_attribution(cdt);
-    //coverage_cost_attribution(cdt);
+    // initialize_mesh(cdt);
+    // hop_cost_attribution(cdt);
+    // coverage_cost_attribution(cdt);
 
     // 695 is a good target triangle for use with agent 1
     int target_face_number = 595;
@@ -246,14 +256,9 @@ void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg)
         break;
       }
     }
+}
 
-    // now you have the path, initialize the files, produce the files
-    // the next lat long is the initial testing location for ardupilot
-    // double testingLong = 149.16522222;
-    // double testingLat = -35.3632622;
-    // the file generation function
-    // TODO: decide about path output
-    // path_output(longitude, latitude, uav_id, rviz_objects_ref.get_path() , area_extremes);
+void Tnp_update::mesh_coloring(){
 
     int color_iterator = 0;
 
@@ -304,46 +309,81 @@ void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg)
 void Tnp_update::path_planning_coverage(){}
 void Tnp_update::path_planning_to_goal(){}
 
-void Tnp_update::partition(){
+void Tnp_update::partition(std::vector<std::pair<double,double> > uas_coords){
 
+    rviz_objects_ref.clear_triangulation_mesh();
 
-}
+    int uas_count = uas_coords.size();
+    std::vector<std::pair<int, geometry_msgs::Point> > id_center_list(rviz_objects_ref.get_center_points_with_cell_id());
 
-void Tnp_update::initialize_mesh(CDT &cdt){
-
-    // initial cell ids for starting agents
-    // TODO: take from qt or from a starting point
-    //int nth = 95; // 85
-    int kth = 184;
-    int zth = 135;
+    std::vector<int> initial_positions_cell_ids;
 
     int agent_id = 1;
     int jumps_ad = 1;
-    int initialize_iterator = 0;
 
-  //  geometry_msgs::Point centerOfField;
-  //  centerOfField.x = 180.0;
-  //  centerOfField.y = 180.0;
+    for (int i=0; i<uas_count; i++){
+
+        // gia kathe zeygos lat lon, metatrepse ta se rviz cgal coords
+        // TODO: they are upside down. if file is correct, change lat, lon
+        double cdt_lat = utilities::convert_range(this->area_extremes.min_lat,this->area_extremes.max_lat,
+                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords[i].second);//here
+        double ctd_lon = utilities::convert_range(this->area_extremes.min_lon,this->area_extremes.max_lon,
+                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords[i].first); // and here
+
+        kernel_Point_2 initial_position(cdt_lat, ctd_lon);
+
+        int result_id(0);
+        int comparison_id(0);
+
+        // refactor conversion below, its a spaggeti shit
+        for (int j=0; j<id_center_list.size(); j++){
+
+            CGAL::Comparison_result result =
+                    CGAL::compare_distance_to_point(
+                        initial_position,
+                          utilities::ros_to_cgal_point(id_center_list[j].second),
+                            utilities::ros_to_cgal_point(id_center_list[j+1].second));
+
+            if (result == CGAL::SMALLER){
+                if (CGAL::compare_distance_to_point(
+                            initial_position,
+                              utilities::ros_to_cgal_point(id_center_list[j].second),
+                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
+                    comparison_id = j;
+                    result_id = id_center_list[j].first;
+                } else {
+                    comparison_id = comparison_id;
+                    result_id = id_center_list[comparison_id].first;
+                }
+            } else {
+                if (CGAL::compare_distance_to_point(
+                            initial_position,
+                              utilities::ros_to_cgal_point(id_center_list[j].second),
+                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
+                    comparison_id = j;
+                    result_id = id_center_list[j].first;
+                } else {
+                    comparison_id = comparison_id;
+                    result_id = id_center_list[comparison_id].first;
+                }
+
+            }
+        }
+        initial_positions_cell_ids.push_back(result_id);
+    }
+    std::cout << initial_positions_cell_ids[0] << std::endl;
+    std::cout << initial_positions_cell_ids[1] << std::endl;
+    std::cout << initial_positions_cell_ids.size() << std::endl;
 
     for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
         faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
 
       if (faces_iterator->is_in_domain()){
 
-        faces_iterator->info().initialize(initialize_iterator);
-        initialize_iterator++;
-
-        // TODO:commented is for when agents are in the center and close. need to consider this case
-        // the result is not optimal for numerous reasons. we need to tweak the distance of the central point and get
-        // the best result by comparing the % of coverage for each agent. choose the most equilibral or the one that suits our needs.
-        // if ( (agent_id<4) && (calculate_distance(face_to_center(cdt, faces_iterator), centerOfField) < 22.0) ){
-        //   faces_iterator->info().numbered = true;
-        //   faces_iterator->info().depth = 1;
-        //   faces_iterator->info().agent_id = agent_id++;
-        // }
-
         // this is for the complicated shape
-        if ( /*(nth == initialize_iterator) || */ (kth == initialize_iterator) || (zth == initialize_iterator)){
+        if (std::find(initial_positions_cell_ids.begin(),
+                      initial_positions_cell_ids.end(),
+                      faces_iterator->info().id) != initial_positions_cell_ids.end()){
           faces_iterator->info().numbered = true;
           faces_iterator->info().depth = 1;
           faces_iterator->info().agent_id = agent_id;
@@ -357,8 +397,10 @@ void Tnp_update::initialize_mesh(CDT &cdt){
         faces_iterator->info().agent_id = -1;
       }
     }
-    std::cout << "Total cells in triangulation : " << initialize_iterator << std::endl;
-    //dataFile << initialize_iterator  << " ";
+    // hop cost/partitioning
+    hop_cost_attribution(cdt);
+    coverage_cost_attribution(cdt);
+    mesh_coloring();
 }
 
 void Tnp_update::hop_cost_attribution(CDT &cdt){
@@ -379,7 +421,8 @@ void Tnp_update::hop_cost_attribution(CDT &cdt){
     neverInside = true;
     //CDT::Face_handle face;
 
-    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin(); faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
 
       //face = faces_iterator;
 

@@ -81,9 +81,9 @@ public:
     QLabel *label_3;
     QLineEdit *line_edit_topic;
     QPushButton *button_connect;
-    QSpacerItem *horizontal_spacer;
     QCheckBox *checkbox_remember_settings;
     QCheckBox *checkbox_use_environment;
+    QSpacerItem *horizontal_spacer;
     QGroupBox *groupBox_2;
     QGridLayout *gridLayout_2;
     QLabel *label_5;
@@ -123,7 +123,7 @@ public:
         verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
         tab_manager = new QTabWidget(centralwidget);
         tab_manager->setObjectName(QString::fromUtf8("tab_manager"));
-        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(tab_manager->sizePolicy().hasHeightForWidth());
@@ -159,7 +159,7 @@ public:
         verticalLayout_8->setObjectName(QString::fromUtf8("verticalLayout_8"));
         groupBox_3 = new QGroupBox(tab_uas_manager);
         groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        QSizePolicy sizePolicy2(QSizePolicy::Minimum, QSizePolicy::Preferred);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(groupBox_3->sizePolicy().hasHeightForWidth());
@@ -246,23 +246,25 @@ public:
         dock_status = new QDockWidget(MainWindowDesign);
         dock_status->setObjectName(QString::fromUtf8("dock_status"));
         dock_status->setEnabled(true);
-        sizePolicy1.setHeightForWidth(dock_status->sizePolicy().hasHeightForWidth());
-        dock_status->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy6(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy6.setHorizontalStretch(0);
+        sizePolicy6.setVerticalStretch(0);
+        sizePolicy6.setHeightForWidth(dock_status->sizePolicy().hasHeightForWidth());
+        dock_status->setSizePolicy(sizePolicy6);
         dock_status->setMinimumSize(QSize(455, 585));
         dock_status->setFloating(false);
         dock_status->setFeatures(QDockWidget::NoDockWidgetFeatures);
         dock_status->setAllowedAreas(Qt::RightDockWidgetArea);
         dockWidgetContents_2 = new QWidget();
         dockWidgetContents_2->setObjectName(QString::fromUtf8("dockWidgetContents_2"));
+        sizePolicy2.setHeightForWidth(dockWidgetContents_2->sizePolicy().hasHeightForWidth());
+        dockWidgetContents_2->setSizePolicy(sizePolicy2);
         verticalLayout = new QVBoxLayout(dockWidgetContents_2);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         frame = new QFrame(dockWidgetContents_2);
         frame->setObjectName(QString::fromUtf8("frame"));
-        QSizePolicy sizePolicy6(QSizePolicy::Maximum, QSizePolicy::Preferred);
-        sizePolicy6.setHorizontalStretch(0);
-        sizePolicy6.setVerticalStretch(0);
-        sizePolicy6.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
-        frame->setSizePolicy(sizePolicy6);
+        sizePolicy.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
+        frame->setSizePolicy(sizePolicy);
         frame->setFrameShape(QFrame::StyledPanel);
         frame->setFrameShadow(QFrame::Raised);
         verticalLayout_3 = new QVBoxLayout(frame);
@@ -319,10 +321,6 @@ public:
 
         gridLayout->addWidget(button_connect, 12, 1, 1, 1);
 
-        horizontal_spacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        gridLayout->addItem(horizontal_spacer, 12, 0, 1, 1);
-
         checkbox_remember_settings = new QCheckBox(groupBox);
         checkbox_remember_settings->setObjectName(QString::fromUtf8("checkbox_remember_settings"));
         checkbox_remember_settings->setLayoutDirection(Qt::RightToLeft);
@@ -335,11 +333,17 @@ public:
 
         gridLayout->addWidget(checkbox_use_environment, 6, 1, 1, 1);
 
+        horizontal_spacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout->addItem(horizontal_spacer, 12, 0, 1, 1);
+
 
         verticalLayout_3->addWidget(groupBox);
 
         groupBox_2 = new QGroupBox(frame);
         groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
+        sizePolicy1.setHeightForWidth(groupBox_2->sizePolicy().hasHeightForWidth());
+        groupBox_2->setSizePolicy(sizePolicy1);
         gridLayout_2 = new QGridLayout(groupBox_2);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         label_5 = new QLabel(groupBox_2);
@@ -406,14 +410,13 @@ public:
 
         groupBox_5 = new QGroupBox(frame);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
-        QSizePolicy sizePolicy8(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        sizePolicy8.setHorizontalStretch(0);
-        sizePolicy8.setVerticalStretch(0);
-        sizePolicy8.setHeightForWidth(groupBox_5->sizePolicy().hasHeightForWidth());
-        groupBox_5->setSizePolicy(sizePolicy8);
+        sizePolicy3.setHeightForWidth(groupBox_5->sizePolicy().hasHeightForWidth());
+        groupBox_5->setSizePolicy(sizePolicy3);
         button_partition = new QPushButton(groupBox_5);
         button_partition->setObjectName(QString::fromUtf8("button_partition"));
-        button_partition->setGeometry(QRect(330, 30, 80, 24));
+        button_partition->setGeometry(QRect(10, 30, 80, 24));
+        sizePolicy1.setHeightForWidth(button_partition->sizePolicy().hasHeightForWidth());
+        button_partition->setSizePolicy(sizePolicy1);
 
         verticalLayout_3->addWidget(groupBox_5);
 

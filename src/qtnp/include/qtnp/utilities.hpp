@@ -138,6 +138,15 @@ inline geometry_msgs::Point cgal_triangulation_point_to_ros_geometry_point(CDT::
   return ros_point;
 }
 
+inline kernel_Point_2 ros_to_cgal_point(geometry_msgs::Point point){
+
+  kernel_Point_2 cgal_point(point.x, point.y);/*
+  cgal_point.x(point.x);
+  cgal_point.y(point.y);*/
+
+  return cgal_point;
+}
+
 // TODO: frame_id is hardcoded
 inline geometry_msgs::PoseStamped build_pose_stamped(geometry_msgs::Point point_position){
 

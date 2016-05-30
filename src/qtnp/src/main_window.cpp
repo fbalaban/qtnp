@@ -76,6 +76,7 @@ qtnp::Placemarks kml_parsing(const QString &filename) {
         for (int i=0; i<tokens.size(); i++){
             std::istringstream split2(tokens[i]);
             std::vector<std::string> tokens2;
+            // TODO: it takes lat and lon incorrectly. in kml file, lon is first
             for (std::string each; std::getline(split2, each, split_char); tokens2.push_back(each));
             placemark_coordinates.latitude.push_back(::atof(tokens2[0].c_str()));
             placemark_coordinates.longitude.push_back(::atof(tokens2[1].c_str()));
@@ -253,26 +254,23 @@ void MainWindow::on_button_remove_clicked(bool check ) {
 
 void MainWindow::on_button_partition_clicked(bool check ) {
 
-    QAbstractItemModel* this_model = ui.table_view_uas->model();
-    int uas_count = model->rowCount();
+    int uas_count = ui.table_view_uas->model()->rowCount();
     std::vector<std::pair<double,double> > uas_coords;
 
-
-    // need to tack item changes in qviewlist
     for (int i=0; i<uas_count; i++){
 
         std::pair<double,double> coord_item;
 
-        QModelIndex idx_lat = this_model->index(i, 4);
-        QModelIndex idx_lon = this_model->index(i, 5);
+        coord_item.first = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 4))).toDouble();
+        coord_item.second = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 5))).toDouble();
 
-        coord_item.first = this_model->data(idx_lat).toDouble();
-        coord_item.second = this_model->data(idx_lon).toDouble();
         uas_coords.push_back(coord_item);
 
-        std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) << std::setprecision(8) << "lat: " << coord_item.first  << ", lon: " << coord_item.second << std::endl;
+        std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) << std::setprecision(6) << "lat: " << coord_item.first  << ", lon: " << coord_item.second << std::endl;
     }
+    // TODO: send it to tnp_update to make the partition
     // make partition sending the vector. the size of the vector is the number of the uas.
+    qnode.get_tnp_update_pointer()->partition(uas_coords);
 
 }
 
@@ -302,8 +300,12 @@ void MainWindow::on_button_load_last_uas_conf_clicked(bool check){
          model->setRowCount(n);
          model->setColumnCount(m);
          for (int i=0; i<n; ++i)
-             for (int j=0; j<m; j++)
-                 model->item(i,j)->read(stream);
+             for (int j=0; j<m; j++){
+
+                 QStandardItem *item = new QStandardItem;
+                 item->read(stream);
+                 model->setItem(i,j,item);
+             }
          file.close();
      }
 

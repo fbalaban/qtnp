@@ -70,17 +70,14 @@ class Tnp_update {
     void path_planning_callback(const InitialCoordinates::ConstPtr& msg);
     void path_planning_coverage();
     void path_planning_to_goal();
-    void partition();
+    void partition(std::vector<std::pair<double, double> > uas_coords);
 
-    void initialize_mesh(CDT &cdt);
     void hop_cost_attribution(CDT &cdt);
     void coverage_cost_attribution(CDT &cdt);
     void shortest_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int agent, int target_face_id);
     void complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int uav_id);
 
-    //void wrapper_path_planning_callback(void* pt2Object, const InitialCoordinates::ConstPtr& msg);
-    //void wrapper_polygon_def_callback(void* pt2Object, const Placemarks::ConstPtr& msg);
-
+    void mesh_coloring();
     void init();
 
   private:
