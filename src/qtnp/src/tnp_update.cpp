@@ -58,6 +58,7 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     ROS_INFO_STREAM("Got a new polygon definition");
 
     init();
+    rviz_objects_ref.clear_center_points_with_cell_id();
 
     std::cout << std::setprecision(7);
 
@@ -287,9 +288,9 @@ void Tnp_update::mesh_coloring(){
         rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point3, z));
 
         std_msgs::ColorRGBA triangle_color;
-        triangle_color.r = 0.0f + (face_depth/52.0) +0.05f;// + (the_agent/5.0);
-        triangle_color.b = 0.0f + (face_depth/52.0)+0.05f + (face->info().agent_id/5.0);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
-        triangle_color.g = 0.0f + (face_depth/52.0)+0.05f;// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+        triangle_color.r = 0.0f + (face_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
+        triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
+        triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
         triangle_color.a = 1.0f;// + (face_depth/900.0);
 
         // also: if (face->info().jumps_agent_id == target_jumps_agent_id)
@@ -399,7 +400,7 @@ void Tnp_update::partition(std::vector<std::pair<double,double> > uas_coords){
     }
     // hop cost/partitioning
     hop_cost_attribution(cdt);
-    coverage_cost_attribution(cdt);
+    //coverage_cost_attribution(cdt);
     mesh_coloring();
 }
 

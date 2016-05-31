@@ -80,6 +80,7 @@ public:
     void clear_edges();
     void clear_center_points();
     void clear_triangulation_mesh();
+    void clear_center_points_with_cell_id();
 
     void set_polygon_ready (bool option){ polygon_ready = option; }
     void set_planning_ready (bool option){ planning_ready = option; }

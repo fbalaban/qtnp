@@ -134,4 +134,10 @@ void Rviz_objects::push_center_point_with_cell_id(int id, geometry_msgs::Point c
 
 }
 
+void Rviz_objects::clear_center_points_with_cell_id(){
+
+    this->center_points_with_cell_id.clear();
+
+}
+
 }  // namespace qtnp
