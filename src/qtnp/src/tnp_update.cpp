@@ -22,6 +22,18 @@
 #include "qtnp/Placemarks.h"
 
 
+struct comp
+{
+    comp(int const& i) : _i(i) { }
+
+    bool operator () (std::pair<int, int> const& p)
+    {
+        return (p.first == _i);
+    }
+
+    int _i;
+};
+
 namespace qtnp {
 
 /*****************************************************************************
@@ -37,6 +49,8 @@ void Tnp_update::init(){
     cdt_polygon_edges.clear();
     rviz_objects_ref.clear_edges();
     rviz_objects_ref.clear_center_points();
+    rviz_objects_ref.clear_center_points_with_cell_id();
+
     area_extremes.max_lat = -constants::max_lat;
     area_extremes.min_lat = -constants::min_lat;
     area_extremes.max_lon = -constants::max_lon;
@@ -58,7 +72,6 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     ROS_INFO_STREAM("Got a new polygon definition");
 
     init();
-    rviz_objects_ref.clear_center_points_with_cell_id();
 
     std::cout << std::setprecision(7);
 
@@ -259,6 +272,115 @@ void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg)
     }
 }
 
+// void Tnp_update::partition(std::vector<std::pair<double,double> > uas_coords){
+void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int > >  uas_coords_with_percentage){
+
+    rviz_objects_ref.clear_triangulation_mesh();
+    int uas_count = uas_coords_with_percentage.size();
+    int total_cdt_cells = rviz_objects_ref.count_cells();
+
+    std::vector< std::pair<int,int> > id_cell_count_vector;
+    std::vector<std::pair<int, geometry_msgs::Point> > id_center_list(rviz_objects_ref.get_center_points_with_cell_id());
+
+    std::vector<int> initial_positions_cell_ids;
+
+    int agent_id = 1;
+    int jumps_ad = 1;
+
+    for (int i=0; i<uas_count; i++){
+
+        // TODO: they are upside down. if file is correct, change lat, lon
+        double cdt_lat = utilities::convert_range(this->area_extremes.min_lat,this->area_extremes.max_lat,
+                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords_with_percentage[i].first.second);//here
+        double ctd_lon = utilities::convert_range(this->area_extremes.min_lon,this->area_extremes.max_lon,
+                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords_with_percentage[i].first.first); // and here
+
+        kernel_Point_2 initial_position(cdt_lat, ctd_lon);
+
+        int result_id(0);
+        int comparison_id(0);
+
+        // refactor conversion below, its a spaggeti shit
+        for (int j=0; j<id_center_list.size(); j++){
+
+            CGAL::Comparison_result result =
+                    CGAL::compare_distance_to_point(
+                        initial_position,
+                          utilities::ros_to_cgal_point(id_center_list[j].second),
+                            utilities::ros_to_cgal_point(id_center_list[j+1].second));
+
+            if (result == CGAL::SMALLER){
+                if (CGAL::compare_distance_to_point(
+                            initial_position,
+                              utilities::ros_to_cgal_point(id_center_list[j].second),
+                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
+                    comparison_id = j;
+                    result_id = id_center_list[j].first;
+                } else {
+                    comparison_id = comparison_id;
+                    result_id = id_center_list[comparison_id].first;
+                }
+            } else {
+                if (CGAL::compare_distance_to_point(
+                            initial_position,
+                              utilities::ros_to_cgal_point(id_center_list[j].second),
+                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
+                    comparison_id = j;
+                    result_id = id_center_list[j].first;
+                } else {
+                    comparison_id = comparison_id;
+                    result_id = id_center_list[comparison_id].first;
+                }
+
+            }
+        }
+        initial_positions_cell_ids.push_back(result_id);
+
+        int cells_for_agent = ( (uas_coords_with_percentage[i].second * total_cdt_cells) / 100) + 0.5;
+        id_cell_count_vector.push_back(std::pair<int,int>(i+1,cells_for_agent));
+
+    }
+
+    std::cout << initial_positions_cell_ids[0] << std::endl;
+    std::cout << initial_positions_cell_ids[1] << std::endl;
+    std::cout << initial_positions_cell_ids.size() << std::endl;
+
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+
+      if (faces_iterator->is_in_domain()){
+
+        // this is for the complicated shape
+        if (std::find(initial_positions_cell_ids.begin(),
+                      initial_positions_cell_ids.end(),
+                      faces_iterator->info().id) != initial_positions_cell_ids.end()){
+          faces_iterator->info().numbered = true;
+          faces_iterator->info().depth = 1;
+          faces_iterator->info().agent_id = agent_id;
+          agent_id++;
+          for (int j=0; j<3; j++){
+              faces_iterator->neighbor(j)->info().jumps_agent_id = jumps_ad;
+              jumps_ad++;
+          }
+        }
+      }else {
+        faces_iterator->info().agent_id = -1;
+      }
+    }
+
+    // id_cell_count_vector
+
+    // hop cost/partitioning
+    hop_cost_attribution(cdt, id_cell_count_vector);
+    //coverage_cost_attribution(cdt);
+
+    // even better make pair agent_id - no of cells should have depending on percentage.
+    // pass it to hop_cost
+
+    mesh_coloring();
+}
+
+
 void Tnp_update::mesh_coloring(){
 
     int color_iterator = 0;
@@ -310,107 +432,12 @@ void Tnp_update::mesh_coloring(){
 void Tnp_update::path_planning_coverage(){}
 void Tnp_update::path_planning_to_goal(){}
 
-void Tnp_update::partition(std::vector<std::pair<double,double> > uas_coords){
 
-    rviz_objects_ref.clear_triangulation_mesh();
-
-    int uas_count = uas_coords.size();
-    std::vector<std::pair<int, geometry_msgs::Point> > id_center_list(rviz_objects_ref.get_center_points_with_cell_id());
-
-    std::vector<int> initial_positions_cell_ids;
-
-    int agent_id = 1;
-    int jumps_ad = 1;
-
-    for (int i=0; i<uas_count; i++){
-
-        // gia kathe zeygos lat lon, metatrepse ta se rviz cgal coords
-        // TODO: they are upside down. if file is correct, change lat, lon
-        double cdt_lat = utilities::convert_range(this->area_extremes.min_lat,this->area_extremes.max_lat,
-                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords[i].second);//here
-        double ctd_lon = utilities::convert_range(this->area_extremes.min_lon,this->area_extremes.max_lon,
-                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords[i].first); // and here
-
-        kernel_Point_2 initial_position(cdt_lat, ctd_lon);
-
-        int result_id(0);
-        int comparison_id(0);
-
-        // refactor conversion below, its a spaggeti shit
-        for (int j=0; j<id_center_list.size(); j++){
-
-            CGAL::Comparison_result result =
-                    CGAL::compare_distance_to_point(
-                        initial_position,
-                          utilities::ros_to_cgal_point(id_center_list[j].second),
-                            utilities::ros_to_cgal_point(id_center_list[j+1].second));
-
-            if (result == CGAL::SMALLER){
-                if (CGAL::compare_distance_to_point(
-                            initial_position,
-                              utilities::ros_to_cgal_point(id_center_list[j].second),
-                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
-                    comparison_id = j;
-                    result_id = id_center_list[j].first;
-                } else {
-                    comparison_id = comparison_id;
-                    result_id = id_center_list[comparison_id].first;
-                }
-            } else {
-                if (CGAL::compare_distance_to_point(
-                            initial_position,
-                              utilities::ros_to_cgal_point(id_center_list[j].second),
-                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
-                    comparison_id = j;
-                    result_id = id_center_list[j].first;
-                } else {
-                    comparison_id = comparison_id;
-                    result_id = id_center_list[comparison_id].first;
-                }
-
-            }
-        }
-        initial_positions_cell_ids.push_back(result_id);
-    }
-    std::cout << initial_positions_cell_ids[0] << std::endl;
-    std::cout << initial_positions_cell_ids[1] << std::endl;
-    std::cout << initial_positions_cell_ids.size() << std::endl;
-
-    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
-        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-
-      if (faces_iterator->is_in_domain()){
-
-        // this is for the complicated shape
-        if (std::find(initial_positions_cell_ids.begin(),
-                      initial_positions_cell_ids.end(),
-                      faces_iterator->info().id) != initial_positions_cell_ids.end()){
-          faces_iterator->info().numbered = true;
-          faces_iterator->info().depth = 1;
-          faces_iterator->info().agent_id = agent_id;
-          agent_id++;
-          for (int j=0; j<3; j++){
-              faces_iterator->neighbor(j)->info().jumps_agent_id = jumps_ad;
-              jumps_ad++;
-          }
-        }
-      }else {
-        faces_iterator->info().agent_id = -1;
-      }
-    }
-    // hop cost/partitioning
-    hop_cost_attribution(cdt);
-    //coverage_cost_attribution(cdt);
-    mesh_coloring();
-}
-
-void Tnp_update::hop_cost_attribution(CDT &cdt){
+void Tnp_update::hop_cost_attribution(CDT &cdt, std::vector< std::pair<int,int> > id_cell_count){
 
     // -------------    HOP COST ALGORITHM ------------------------------------------
-    //TODO: introduce int vector of starting agents cell id
     // TODO: seperate hop cost and borders depth from agent attribution. agent attribution is valid
     // for all tasks and its operations don't have to be repeated or missing..
-    // TODO: introduce int vector of starting agents cell id
   bool neverInside = false;
   int repeatIterator = 0;
   int jumpsIterator = 1;
@@ -420,12 +447,9 @@ void Tnp_update::hop_cost_attribution(CDT &cdt){
     jumpsIterator++; // including non domain triangles
 
     neverInside = true;
-    //CDT::Face_handle face;
 
     for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
         faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-
-      //face = faces_iterator;
 
       // too many comparisons. we need to refactor the algorithm
       if ((faces_iterator->is_in_domain()) && (faces_iterator->info().has_number())
@@ -438,16 +462,28 @@ void Tnp_update::hop_cost_attribution(CDT &cdt){
 
           if ((faces_iterator->neighbor(i)->is_in_domain()) && !(faces_iterator->neighbor(i)->info().has_number())) {
 
-              // assign jumpers id in order to see which growing function has managed
-              // to reach the end or target.
-            if (faces_iterator->info().depth != 1){
-               faces_iterator->neighbor(i)->info().jumps_agent_id = faces_iterator->info().jumps_agent_id;
-            }
+            int that_agent = faces_iterator->info().agent_id;
+            int cells_remaining(0);
 
-            faces_iterator->neighbor(i)->info().depth = jumpsIterator;
-            faces_iterator->neighbor(i)->info().numbered = true;
-            // agent id propagation
-            faces_iterator->neighbor(i)->info().agent_id = faces_iterator->info().agent_id;
+            std::vector<std::pair <int,int> >::iterator it = std::find_if(id_cell_count.begin(), id_cell_count.end(), comp(that_agent));
+            if (it != id_cell_count.end()) cells_remaining = it->second;
+
+            if (cells_remaining != 0){
+
+                  // assign jumpers id in order to see which growing function has managed
+                  // to reach the end or target.
+                if (faces_iterator->info().depth != 1){
+                   faces_iterator->neighbor(i)->info().jumps_agent_id = faces_iterator->info().jumps_agent_id;
+                }
+                // total cells for agent which is a neighbor
+                // and compare it with the vector. or: take the vector, find the agent_id-cells pair,
+                // if cells ==0 do nothing else do following and substract 1 from cell count
+                faces_iterator->neighbor(i)->info().depth = jumpsIterator;
+                faces_iterator->neighbor(i)->info().numbered = true;
+                // agent id propagation
+                faces_iterator->neighbor(i)->info().agent_id = faces_iterator->info().agent_id;
+                it->second = it->second -1;
+            }
           }
         }
       }
@@ -667,5 +703,6 @@ void Tnp_update::complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face
     } while (current_depth >= smallest_depth);
     // TODO: prepei na to kanoyme na min pidaei...
 }
+
 
 }

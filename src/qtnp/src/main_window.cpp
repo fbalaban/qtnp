@@ -103,7 +103,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     model = new QStandardItemModel(2,4,this); //2 Rows and 4 Columns
 
     model->setHorizontalHeaderItem(0, new QStandardItem(QString("Sensor type")));
-    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Footprint size")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Footprint size (m)")));
     model->setHorizontalHeaderItem(2, new QStandardItem(QString("Autonomy %")));
     model->setHorizontalHeaderItem(3, new QStandardItem(QString("Task")));
     model->setHorizontalHeaderItem(4, new QStandardItem(QString("Latitude")));
@@ -256,21 +256,29 @@ void MainWindow::on_button_partition_clicked(bool check ) {
 
     int uas_count = ui.table_view_uas->model()->rowCount();
     std::vector<std::pair<double,double> > uas_coords;
+    std::vector<std::pair< std::pair<double,double> , int > > uas_coords_with_percentage;
 
     for (int i=0; i<uas_count; i++){
 
         std::pair<double,double> coord_item;
+
+        std::pair< std::pair<double,double> , int > coord_item_percentage;
 
         coord_item.first = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 4))).toDouble();
         coord_item.second = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 5))).toDouble();
 
         uas_coords.push_back(coord_item);
 
+        int percentage = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i,2))).toInt();
+        coord_item_percentage.first = coord_item;
+        coord_item_percentage.second = percentage;
+        uas_coords_with_percentage.push_back((coord_item_percentage));
+
+
         std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) << std::setprecision(6) << "lat: " << coord_item.first  << ", lon: " << coord_item.second << std::endl;
     }
-    // TODO: send it to tnp_update to make the partition
-    // make partition sending the vector. the size of the vector is the number of the uas.
-    qnode.get_tnp_update_pointer()->partition(uas_coords);
+//    qnode.get_tnp_update_pointer()->partition(uas_coords);
+      qnode.get_tnp_update_pointer()->partition(uas_coords_with_percentage);
 
 }
 

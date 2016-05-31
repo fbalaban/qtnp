@@ -82,6 +82,7 @@ public:
     void clear_triangulation_mesh();
     void clear_center_points_with_cell_id();
 
+    int count_cells(){ return center_points.points.size(); }
     void set_polygon_ready (bool option){ polygon_ready = option; }
     void set_planning_ready (bool option){ planning_ready = option; }
 
