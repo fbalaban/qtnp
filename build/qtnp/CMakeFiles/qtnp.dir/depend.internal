@@ -185,6 +185,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /usr/include/qt4/QtGui/QPlatformWindow
  /usr/include/qt4/QtGui/QPushButton
  /usr/include/qt4/QtGui/QSpacerItem
+ /usr/include/qt4/QtGui/QSpinBox
  /usr/include/qt4/QtGui/QStandardItemModel
  /usr/include/qt4/QtGui/QStatusBar
  /usr/include/qt4/QtGui/QStringListModel
@@ -247,6 +248,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /usr/include/qt4/QtGui/qrubberband.h
  /usr/include/qt4/QtGui/qsizepolicy.h
  /usr/include/qt4/QtGui/qslider.h
+ /usr/include/qt4/QtGui/qspinbox.h
  /usr/include/qt4/QtGui/qstandarditemmodel.h
  /usr/include/qt4/QtGui/qstatusbar.h
  /usr/include/qt4/QtGui/qstringlistmodel.h
@@ -761,6 +763,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o
  /usr/include/qt4/QtGui/QPrinter
  /usr/include/qt4/QtGui/QPushButton
  /usr/include/qt4/QtGui/QSpacerItem
+ /usr/include/qt4/QtGui/QSpinBox
  /usr/include/qt4/QtGui/QStandardItemModel
  /usr/include/qt4/QtGui/QStatusBar
  /usr/include/qt4/QtGui/QStringListModel
@@ -1292,6 +1295,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /usr/include/qt4/QtGui/QPrinter
  /usr/include/qt4/QtGui/QPushButton
  /usr/include/qt4/QtGui/QSpacerItem
+ /usr/include/qt4/QtGui/QSpinBox
  /usr/include/qt4/QtGui/QStandardItemModel
  /usr/include/qt4/QtGui/QStatusBar
  /usr/include/qt4/QtGui/QStringListModel

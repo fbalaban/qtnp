@@ -406,6 +406,13 @@
            <string>2. CGAL CDT</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Angle constrain</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="1">
             <widget class="QLabel" name="label_5">
              <property name="text">
@@ -437,17 +444,16 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Angle constrain</string>
+           <item row="4" column="1">
+            <widget class="QPushButton" name="button_browse">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QPushButton" name="button_perform_cdt">
              <property name="text">
-              <string>Perform CDT</string>
+              <string>Browse</string>
              </property>
             </widget>
            </item>
@@ -461,16 +467,10 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QPushButton" name="button_browse">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+           <item row="6" column="1">
+            <widget class="QPushButton" name="button_perform_cdt">
              <property name="text">
-              <string>Browse</string>
+              <string>Perform CDT</string>
              </property>
             </widget>
            </item>
@@ -507,8 +507,8 @@
           <widget class="QPushButton" name="button_partition">
            <property name="geometry">
             <rect>
-             <x>10</x>
-             <y>30</y>
+             <x>310</x>
+             <y>24</y>
              <width>80</width>
              <height>24</height>
             </rect>
@@ -521,6 +521,123 @@
            </property>
            <property name="text">
             <string>Partitioning</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton">
+           <property name="geometry">
+            <rect>
+             <x>310</x>
+             <y>51</y>
+             <width>80</width>
+             <height>24</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Coverage</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="geometry">
+            <rect>
+             <x>310</x>
+             <y>91</y>
+             <width>80</width>
+             <height>24</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Go to goal</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_7">
+           <property name="geometry">
+            <rect>
+             <x>13</x>
+             <y>28</y>
+             <width>291</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Perform partitioning for agents in UAS table</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_9">
+           <property name="geometry">
+            <rect>
+             <x>13</x>
+             <y>55</y>
+             <width>221</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Perform coverage task for UAS no </string>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="spinBox">
+           <property name="geometry">
+            <rect>
+             <x>225</x>
+             <y>51</y>
+             <width>46</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_10">
+           <property name="geometry">
+            <rect>
+             <x>15</x>
+             <y>84</y>
+             <width>111</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Go to cell with lat:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_11">
+           <property name="geometry">
+            <rect>
+             <x>79</x>
+             <y>111</y>
+             <width>58</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>and lon:</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>81</y>
+             <width>113</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="lineEdit_2">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>108</y>
+             <width>113</width>
+             <height>24</height>
+            </rect>
            </property>
           </widget>
          </widget>

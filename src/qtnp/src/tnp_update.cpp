@@ -370,13 +370,10 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
 
     // id_cell_count_vector
 
-    // hop cost/partitioning
+    // hop cost/partitioning, passing autonomy percentage table
     hop_cost_attribution(cdt, id_cell_count_vector);
-    //coverage_cost_attribution(cdt);
-
-    // even better make pair agent_id - no of cells should have depending on percentage.
-    // pass it to hop_cost
-
+    coverage_cost_attribution(cdt);
+    // rviz coloring
     mesh_coloring();
 }
 
@@ -433,6 +430,10 @@ void Tnp_update::path_planning_coverage(){}
 void Tnp_update::path_planning_to_goal(){}
 
 
+// TODO: there might be a case where the boundaries of 2 regions doesn't permit one agent to fully
+// get his autonomy region. in that case, take agents that are missing and give them cells from
+// neighboring agents. if the neighboring have less, it will be performed for them also.
+// TODO: also put to log number of total and each agent cells
 void Tnp_update::hop_cost_attribution(CDT &cdt, std::vector< std::pair<int,int> > id_cell_count){
 
     // -------------    HOP COST ALGORITHM ------------------------------------------
