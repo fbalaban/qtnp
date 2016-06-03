@@ -44,6 +44,7 @@ struct FaceInfo2
     depth = 0;
     coverage_depth = constants::coverage_depth_max;
     id = face_id;
+    agent_id = 0;
   }
 
   void reset_path_visited(){

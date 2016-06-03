@@ -485,7 +485,7 @@ public:
         QObject::connect(action_Quit, SIGNAL(triggered()), MainWindowDesign, SLOT(close()));
         QObject::connect(quit_button, SIGNAL(clicked()), MainWindowDesign, SLOT(close()));
 
-        tab_manager->setCurrentIndex(1);
+        tab_manager->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindowDesign);

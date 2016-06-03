@@ -175,8 +175,6 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         CGAL::refine_Delaunay_mesh_2(cdt, list_of_seeds.begin(), list_of_seeds.end(), Criteria());
         std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << cdt.number_of_vertices() << std::endl;
     }
-    // dataFile << cdt.number_of_vertices() << " ";
-    ROS_INFO_STREAM("# of vertices after meshing and refining with CDT: " + cdt.number_of_vertices());
 
     // ------------- rviz coloring schema ----------------//
     // also counting the biggest and smalest side //
@@ -289,7 +287,7 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
 
     for (int i=0; i<uas_count; i++){
 
-        // TODO: they are upside down. if file is correct, change lat, lon
+        // TODO: they are upside down. if test file is correct, change lat, lon
         double cdt_lat = utilities::convert_range(this->area_extremes.min_lat,this->area_extremes.max_lat,
                                     constants::rviz_range_min,constants::rviz_range_max,uas_coords_with_percentage[i].first.second);//here
         double ctd_lon = utilities::convert_range(this->area_extremes.min_lon,this->area_extremes.max_lon,
@@ -350,7 +348,6 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
 
       if (faces_iterator->is_in_domain()){
 
-        // this is for the complicated shape
         if (std::find(initial_positions_cell_ids.begin(),
                       initial_positions_cell_ids.end(),
                       faces_iterator->info().id) != initial_positions_cell_ids.end()){
@@ -372,63 +369,10 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
 
     // hop cost/partitioning, passing autonomy percentage table
     hop_cost_attribution(cdt, id_cell_count_vector);
-    coverage_cost_attribution(cdt);
+    //coverage_cost_attribution(cdt);
     // rviz coloring
     mesh_coloring();
 }
-
-
-void Tnp_update::mesh_coloring(){
-
-    int color_iterator = 0;
-
-    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
-        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-
-      color_iterator += 1.0;
-      // for every face, we need a face handle to perform the various operations.
-      CDT::Face_handle face = faces_iterator;
-
-      // if this face is in the domain, meaning inside the contrained borders but outside the defined holes
-      if (face->is_in_domain()){
-
-        // create a point for each of the edges of the face.
-        CDT::Point point1 = cdt.triangle(face)[0];
-        CDT::Point point2 = cdt.triangle(face)[1];
-        CDT::Point point3 = cdt.triangle(face)[2];
-
-        int face_depth = face->info().depth;
-        //int face_depth = face->info().coverage_depth;
-        float z = -face_depth;
-
-        // each triangle in rviz mesh need three points..
-        rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point1, z));
-        rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point2, z));
-        rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point3, z));
-
-        std_msgs::ColorRGBA triangle_color;
-        triangle_color.r = 0.0f + (face_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
-        triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
-        triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
-        triangle_color.a = 1.0f;// + (face_depth/900.0);
-
-        // also: if (face->info().jumps_agent_id == target_jumps_agent_id)
-        if (face->info().depth == 1){ // also include target coloring
-            std::cout << "cell id:" << face->info().id << std::endl;
-          triangle_color.r = 1.0f;// + (face->info().depth/30.0);
-          triangle_color.g = 1.0f;// + (face->info().depth/50.0);//color_iterator*2.50/100;
-          triangle_color.b = 1.0f;// + (face->info().depth/60.0);//color_iterator*8.0/100;
-          triangle_color.a = 1.0f;
-        }
-        rviz_objects_ref.push_mesh_cell_color(triangle_color);
-      }
-    }
-    rviz_objects_ref.set_planning_ready(true) ;
-}
-
-void Tnp_update::path_planning_coverage(){}
-void Tnp_update::path_planning_to_goal(){}
-
 
 // TODO: there might be a case where the boundaries of 2 regions doesn't permit one agent to fully
 // get his autonomy region. in that case, take agents that are missing and give them cells from
@@ -466,7 +410,9 @@ void Tnp_update::hop_cost_attribution(CDT &cdt, std::vector< std::pair<int,int> 
             int that_agent = faces_iterator->info().agent_id;
             int cells_remaining(0);
 
-            std::vector<std::pair <int,int> >::iterator it = std::find_if(id_cell_count.begin(), id_cell_count.end(), comp(that_agent));
+            // check if that agent has fulfilled his need for cells according to its autonomy percentage
+            std::vector<std::pair <int,int> >::iterator it =
+                    std::find_if(id_cell_count.begin(), id_cell_count.end(), comp(that_agent));
             if (it != id_cell_count.end()) cells_remaining = it->second;
 
             if (cells_remaining != 0){
@@ -476,9 +422,6 @@ void Tnp_update::hop_cost_attribution(CDT &cdt, std::vector< std::pair<int,int> 
                 if (faces_iterator->info().depth != 1){
                    faces_iterator->neighbor(i)->info().jumps_agent_id = faces_iterator->info().jumps_agent_id;
                 }
-                // total cells for agent which is a neighbor
-                // and compare it with the vector. or: take the vector, find the agent_id-cells pair,
-                // if cells ==0 do nothing else do following and substract 1 from cell count
                 faces_iterator->neighbor(i)->info().depth = jumpsIterator;
                 faces_iterator->neighbor(i)->info().numbered = true;
                 // agent id propagation
@@ -495,24 +438,225 @@ void Tnp_update::hop_cost_attribution(CDT &cdt, std::vector< std::pair<int,int> 
    } while (neverInside == false);
 
   // go through all triangles to give border (or coverage) depth to the borders between agents
-  // or domain border cells // actually during cell initialization all cells have 999 coverage depth
-  // so make up your mind
+  // or domain border cells
+  // also print number of cells (testing)
+  std::vector<int> number_of_assigned_cells(id_cell_count.size() + 1);
+  int total_cells(0);
+
   for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
   faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-      // initialize again the path visited attribute
-      for (int i=0;i<3;i++){
-          if ( !(faces_iterator->neighbor(i)->is_in_domain()) ||
-              (faces_iterator->neighbor(i)->info().agent_id != faces_iterator->info().agent_id) ){
-            faces_iterator->info().depth = constants::coverage_depth_max;
-            faces_iterator->info().cover_depth = true;
+          if (faces_iterator->is_in_domain()) {
+              total_cells++;
+          // initialize again the path visited attribute
+          for (int i=0;i<3;i++){
+              if ( !(faces_iterator->neighbor(i)->is_in_domain()) ||
+                  (faces_iterator->neighbor(i)->info().agent_id != faces_iterator->info().agent_id) ){
+                faces_iterator->info().depth = constants::coverage_depth_max;
+                faces_iterator->info().cover_depth = true;
+              }
           }
+          // counting cells
+          number_of_assigned_cells[faces_iterator->info().agent_id] += 1;
       }
   }
+
+  std::cout << "Total cells: " << total_cells << std::endl;
+  std::cout << "Assigned cells: " << std::endl;
+  for (int i=0; i< id_cell_count.size() + 1; i++){
+    std::cout << "agent " << i << ": " << number_of_assigned_cells[i] << std::endl;
+  }
+  std::cout << "Remaining cells: " << std::endl;
+  for (int i=0; i< id_cell_count.size(); i++){
+    std::cout << "agent " << id_cell_count[i].first << ": " << id_cell_count[i].second << std::endl;
+  }
+
+  // TODO AGAIN Percentage correcting algorithm
+  for (int i=0; i < id_cell_count.size(); i++){
+      if ( id_cell_count[i].second > 0 ){
+          int agent_missing_id = id_cell_count[i].first;
+          int missing_count = id_cell_count[i].second;
+          int current_cell_id;
+          int current_neighbor_agent_id;
+
+          std::vector<int> solution_path;
+          std::vector<int> dead_end_path;
+
+          for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+              faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            bool found(false);
+            if (faces_iterator->info().agent_id == 0){
+                for (int j=0; j<3; j++){
+                    if ((faces_iterator->neighbor(j)->info().agent_id > 0) &&
+                         !(std::find(solution_path.begin(), solution_path.end(), faces_iterator->neighbor(j)->info().agent_id) != solution_path.end()) &&
+                         !(std::find(dead_end_path.begin(), dead_end_path.end(), faces_iterator->neighbor(j)->info().agent_id) != dead_end_path.end()) ) {
+                            found = true;
+                            current_cell_id = faces_iterator->info().id;
+                            current_neighbor_agent_id = faces_iterator->neighbor(j)->info().agent_id;
+                    }
+                }
+            }
+            if (found) break;
+          }
+
+
+          solution_path.push_back(0);
+          // number_of_assigned_cells[i] //
+          for(int j=0; j < missing_count; j++){
+
+              solution_path.push_back(current_neighbor_agent_id);
+              if (current_neighbor_agent_id == agent_missing_id){
+                  bool found_once(false);
+                  for (int w=0; w < solution_path.size() - 1; w++){
+                      for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+                          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+                          if (faces_iterator->info().agent_id == solution_path[w]) {
+                              for (int z=0; z<3; z++){
+                               if (faces_iterator->neighbor(z)->info().agent_id = solution_path[w+1]) {
+                                    faces_iterator->info().agent_id = solution_path[w+1];
+                                    found_once = true;
+                                    break;
+                               }
+                            }
+                          }
+                          if (found_once) break;
+                      }
+                  }
+                  solution_path.clear();
+                  solution_path.push_back(0);
+                  dead_end_path.clear();
+              } else {
+                  bool found_twice(false);
+                  for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+                      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+                    if (faces_iterator->info().agent_id == current_neighbor_agent_id){
+                        for (int z=0; z<3; z++){
+                            if ((faces_iterator->neighbor(z)->info().agent_id > 0) &&
+                                 !(std::find(solution_path.begin(), solution_path.end(), faces_iterator->neighbor(z)->info().agent_id) != solution_path.end()) &&
+                                 !(std::find(dead_end_path.begin(), dead_end_path.end(), faces_iterator->neighbor(z)->info().agent_id) != dead_end_path.end()) ) {
+                                    found_twice = true;
+                                    current_cell_id = faces_iterator->info().id;
+                                    current_neighbor_agent_id = faces_iterator->neighbor(z)->info().agent_id;
+                                    break;
+                            }
+                        }
+                    }
+                    if (found_twice) break;
+                  } if (!found_twice) {
+                      dead_end_path.push_back(current_neighbor_agent_id);
+                      solution_path.erase(std::remove(solution_path.begin(), solution_path.end(), current_neighbor_agent_id), solution_path.end());
+                      for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+                          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+                        bool found_again(false);
+                        if (faces_iterator->info().agent_id == current_neighbor_agent_id){
+                            for (int z=0; z<3; z++){
+                                if ((faces_iterator->neighbor(i)->info().agent_id > 0) &&
+                                     !(std::find(solution_path.begin(), solution_path.end(), faces_iterator->neighbor(z)->info().agent_id) != solution_path.end()) &&
+                                     !(std::find(dead_end_path.begin(), dead_end_path.end(), faces_iterator->neighbor(z)->info().agent_id) != dead_end_path.end()) ) {
+                                        found_again = true;
+                                        current_cell_id = faces_iterator->info().id;
+                                        current_neighbor_agent_id = faces_iterator->neighbor(z)->info().agent_id;
+                                }
+                            }
+                        }
+                        if (found_again) break;
+                      }
+                  }
+                  j--;
+              }
+          }
+     }
+  }
+
+
   std::cout << "Ended. Maximum Jumps: " << jumpsIterator << " . While loop repetitions: " << repeatIterator << "." << std::endl;
-  //dataFile << jumpsIterator << " ";
+  int zeros(0), ones(0), twos(0), threes(0);
+  for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+        if (faces_iterator->info().agent_id == 0){
+            zeros++;
+        }
+        if (faces_iterator->info().agent_id == 1){
+            ones++;
+        }
+        if (faces_iterator->info().agent_id == 2){
+            twos++;
+        }
+        if (faces_iterator->info().agent_id == 3){
+            threes++;
+        }
+  }
+
+  std::cout << "zeros: " << zeros << std::endl;
+  std::cout << "ones: " << ones << std::endl;
+  std::cout << "twos: " << twos << std::endl;
+  std::cout << "threes: " << threes<< std::endl;
+
+
+
 
   // -------- END OF JUMP COST ALGORITHM -------------------//
 }
+
+
+void Tnp_update::mesh_coloring(){
+
+    int color_iterator = 0;
+
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+
+      color_iterator += 1.0;
+      // for every face, we need a face handle to perform the various operations.
+      CDT::Face_handle face = faces_iterator;
+
+      // if this face is in the domain, meaning inside the contrained borders but outside the defined holes
+      if (face->is_in_domain()){
+
+        // create a point for each of the edges of the face.
+        CDT::Point point1 = cdt.triangle(face)[0];
+        CDT::Point point2 = cdt.triangle(face)[1];
+        CDT::Point point3 = cdt.triangle(face)[2];
+
+        int face_depth = face->info().depth;
+        //int face_depth = face->info().coverage_depth;
+        float z = -face_depth;
+
+        // each triangle in rviz mesh need three points..
+        rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point1, z));
+        rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point2, z));
+        rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point3, z));
+
+        std_msgs::ColorRGBA triangle_color;
+        triangle_color.r = 0.0f + (face_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
+        triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
+        triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+        triangle_color.a = 1.0f;// + (face_depth/900.0);
+
+        // TODO remove this
+        if (face->info().agent_id == 0){
+            triangle_color.r = 0.0f + 100.0;
+            triangle_color.b = 0.0f;
+            triangle_color.g = 0.0f;
+        }
+
+        // also: if (face->info().jumps_agent_id == target_jumps_agent_id)
+        if (face->info().depth == 1){ // also include target coloring
+            std::cout << "cell id:" << face->info().id << std::endl;
+          triangle_color.r = 1.0f;// + (face->info().depth/30.0);
+          triangle_color.g = 1.0f;// + (face->info().depth/50.0);//color_iterator*2.50/100;
+          triangle_color.b = 1.0f;// + (face->info().depth/60.0);//color_iterator*8.0/100;
+          triangle_color.a = 1.0f;
+        }
+        rviz_objects_ref.push_mesh_cell_color(triangle_color);
+      }
+    }
+    rviz_objects_ref.set_planning_ready(true) ;
+}
+
+void Tnp_update::path_planning_coverage(){}
+void Tnp_update::path_planning_to_goal(){}
+
+
 
 // -------- COMPLETE COVERAGE (BORDER-TO-INNER) COST ALGORITHM -------------------//
 void Tnp_update::coverage_cost_attribution(CDT &cdt){
