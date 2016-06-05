@@ -72,10 +72,14 @@ class Tnp_update {
     void path_planning_to_goal();
     void partition(std::vector<std::pair<std::pair<double, double>, int> > uas_coords_with_percentage);
 
-    void hop_cost_attribution(CDT &cdt, std::vector<std::pair<int, int> > id_cell_count);
+    void hop_cost_attribution(std::vector<std::pair<int, int> > id_cell_count);
     void coverage_cost_attribution(CDT &cdt);
     void shortest_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int agent, int target_face_id);
     void complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int uav_id);
+
+    int find_neighbor(std::vector<int> move_path, std::vector<int> dead_end);
+    void move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB, std::vector<int> path);
+    void move(int cells, std::vector<int> path);
 
     void mesh_coloring();
     void init();

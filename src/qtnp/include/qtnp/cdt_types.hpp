@@ -36,11 +36,11 @@ struct FaceInfo2
 {
   FaceInfo2(){}
 
-  bool visited, numbered, path_visited, cover_depth;
+  bool visited, numbered, path_visited, cover_depth, aux;
   int id, depth, agent_id, jumps_agent_id, coverage_depth;
 
   void initialize(int face_id){
-    visited = numbered = path_visited = cover_depth = false;
+    visited = numbered = path_visited = cover_depth = aux = false;
     depth = 0;
     coverage_depth = constants::coverage_depth_max;
     id = face_id;

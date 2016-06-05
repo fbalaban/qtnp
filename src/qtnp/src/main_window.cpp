@@ -264,7 +264,9 @@ void MainWindow::on_button_partition_clicked(bool check ) {
 
         std::pair< std::pair<double,double> , int > coord_item_percentage;
 
+        //lat
         coord_item.first = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 4))).toDouble();
+        //lon
         coord_item.second = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 5))).toDouble();
 
         uas_coords.push_back(coord_item);
@@ -275,7 +277,9 @@ void MainWindow::on_button_partition_clicked(bool check ) {
         uas_coords_with_percentage.push_back((coord_item_percentage));
 
 
-        std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) << std::setprecision(6) << "lat: " << coord_item.first  << ", lon: " << coord_item.second << std::endl;
+        std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) <<
+                     std::setprecision(6) << "lat: " << coord_item.first  << ", lon: " << coord_item.second <<
+                     ", percentage: " << percentage << std::endl;
     }
 //    qnode.get_tnp_update_pointer()->partition(uas_coords);
       qnode.get_tnp_update_pointer()->partition(uas_coords_with_percentage);
