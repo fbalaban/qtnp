@@ -77,9 +77,11 @@ class Tnp_update {
     void shortest_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int agent, int target_face_id);
     void complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int uav_id);
 
-    int find_neighbor(std::vector<int> move_path, std::vector<int> dead_end);
+    bool are_neighbors (int a, int b);
+    std::vector<int> find_path(int a, int b);
+    int find_neighbor(std::vector<int> &move_path, std::vector<int> &dead_end);
     void move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB, std::vector<int> path);
-    void move(int cells, std::vector<int> path);
+    int move(int cells, std::vector<int> path);
 
     void mesh_coloring();
     void init();

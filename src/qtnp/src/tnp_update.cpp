@@ -62,7 +62,51 @@ namespace qtnp {
 ** Implementation
 *****************************************************************************/
 
-int Tnp_update::find_neighbor(std::vector<int> move_path, std::vector<int> dead_end){
+std::vector<int> Tnp_update::find_path(int a, int b){
+
+    std::vector<int> path;
+    std::vector<int> blocked_path;
+    bool found(false);
+    path.push_back(a);
+
+    do {
+        found = false;
+        for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
+          faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+            if (faces_iterator->info().agent_id == path[path.size()-1]){
+                for (int i=0; i<3; i++){
+                    if (faces_iterator->neighbor(i)->info().agent_id == b) {
+                        path.push_back(b);
+                        return path;
+                    } else if ( (faces_iterator->neighbor(i)->is_in_domain()) &&
+                            !(std::find(path.begin(), path.end(), faces_iterator->neighbor(i)->info().agent_id) != path.end()) &&
+                            !(std::find(blocked_path.begin(), blocked_path.end(), faces_iterator->neighbor(i)->info().agent_id) != blocked_path.end() ) ){
+                        path.push_back(faces_iterator->neighbor(i)->info().agent_id);
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (found) break;
+        }
+        if (!found){
+            blocked_path.push_back(path[path.size()-1]);
+            path.erase(std::remove(path.begin(), path.end(), path[path.size()-1]), path.end());
+        }
+    } while (true);
+}
+
+bool Tnp_update::are_neighbors (int a, int b){
+    for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
+      faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+        for (int i=0; i<3; i++){
+            if ( (faces_iterator->info().agent_id == a) && (faces_iterator->neighbor(i)->info().agent_id == b) ) return true;
+        }
+    }
+    return false;
+}
+
+int Tnp_update::find_neighbor(std::vector<int> &move_path, std::vector<int> &dead_end){
 
     for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
       faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
@@ -97,32 +141,46 @@ void Tnp_update::move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB,
     }
 }
 
-void Tnp_update::move(int cells, std::vector<int> path){
+int Tnp_update::move(int cells, std::vector<int> path){
+
+    int cells_remaining = cells;
 
     for (int i=0; i<path.size() -1; i++){
-        int cells_remaining = cells;
+
+        cells_remaining = cells;
         bool found = false;
+        int depth(1000); // FIXME magic number, chooses the closest to the agent. should find a better way. if the furthest is
+        // chosen also creates some problems, but probably less
+        int that_depth_id(0);
 
         for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
           faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
           if (faces_iterator->info().agent_id == path[i]) {
             for (int z=0; z<3; z++){
               if (faces_iterator->neighbor(z)->info().agent_id == path[i+1]){
-               faces_iterator->neighbor(z)->info().agent_id = path[i];
-               faces_iterator->neighbor(z)->info().aux = true;
-               cells_remaining--;
+               that_depth_id = faces_iterator->neighbor(z)->info().depth < depth ? faces_iterator->neighbor(z)->info().id : that_depth_id;
                found = true;
-               break;
               }
             }
-          } if (found) break;
+          }
         }
 
-        if (!found){
+        if (found){
+            for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
+              faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+                if (faces_iterator->info().id == that_depth_id){
+                    faces_iterator->info().agent_id = path[i];
+                    faces_iterator->info().aux = true;
+                    cells_remaining--;
+                    break;
+                }
+            }
+        } else {
             path.erase(std::remove(path.begin(), path.end(), path[i+1]), path.end());
             i--;
             continue;
         }
+
         for (int j=1; j<cells; j++){
             for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
               faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
@@ -138,19 +196,30 @@ void Tnp_update::move(int cells, std::vector<int> path){
                 }
             }
         };
-        std::cout << "tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
-        std::cout << cells_remaining << " cells remained somewhere.." << std::endl;
-        if (cells_remaining > 0) {
-            std::vector<int> remaining_vector; remaining_vector.push_back(path[i]); remaining_vector.push_back(path[i+1]);
-            move(cells_remaining, remaining_vector);
-        }
         for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
           faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
             if (faces_iterator->info().aux) faces_iterator->info().aux = false;
         }
-    }
+        std::cout << "tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
+        std::cout << cells_remaining << " cells remained somewhere.." << std::endl;
+        if (cells_remaining > 0) {
+            bool another_found(false);
+            std::vector<int> remaining_vector;
+            std::vector<int> another_dead_end;
+            remaining_vector.push_back(path[i]);
+            if (are_neighbors(path[i],path[i+1])){
+                remaining_vector.push_back(path[i+1]);
+                cells_remaining = move(cells_remaining, remaining_vector);
+            }
 
-    // TODO clear all aux
+            if (cells_remaining > 0){
+                std::cout << "these cells remain:" << cells_remaining << std::endl;
+                  std::vector<int> new_path = find_path(path[i], path[i+1]);
+                  cells_remaining = move(cells_remaining, new_path);
+            }
+        }
+    }
+    return cells_remaining;
 }
 
 
@@ -578,14 +647,13 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
   }
 
 
-  // FIXME replenishing algorithm
+  // FIXME replenishing algorithm // could be refactored
   std::vector<std::pair<int,int> > map_agent_missing_cells;
   std::vector<std::pair<int,int> > map_agent_surplus_cells;
   for (int i=0; i< id_cell_count.size(); i++){
       if (id_cell_count[i].second > 0) map_agent_missing_cells.push_back(std::pair<int,int>(id_cell_count[i].first, id_cell_count[i].second-1));
   }
   if (number_of_assigned_cells[0].second > 0) map_agent_surplus_cells.push_back(std::pair<int,int>(0,number_of_assigned_cells[0].second));
-
 
   std::vector<int> move_path;
   std::vector<int> dead_end;
@@ -599,20 +667,13 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
 
       // check if the current neighbor is in the list of agents that have a cell surplus
       if (list_contains(current_neighbor_id, map_agent_surplus_cells)){
-
           std::pair<int,int> &from_agent = get_agent_pair_by_id(current_neighbor_id, map_agent_surplus_cells);
           move_path.push_back(current_neighbor_id);
           move_cells(map_agent_missing_cells[0], from_agent, move_path); // (found = true) ?
-
           clear_list(map_agent_missing_cells);
           clear_list(map_agent_surplus_cells);
           move_path.clear();
           dead_end.clear();
-//          for (int i=1; i<agents_should_have_cells.size(); i++){
-//TODO          if (agents_should_have_cells[i].second - agent actually should have // o algorithmos doulevei
-          // ayto pou prepei na allaksei einai otan gemizei mia perioxi,
-//          }
-
       } else if ( !(std::find(move_path.begin(), move_path.end(), current_neighbor_id) != move_path.end()) &&
                   !(std::find(dead_end.begin(), dead_end.end(), current_neighbor_id) != dead_end.end()) ){
           move_path.push_back(current_neighbor_id); // found = true ?
@@ -621,10 +682,9 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
           move_path.erase(std::remove(move_path.begin(), move_path.end(), current_neighbor_id), move_path.end());
           current_neighbor_id = move_path[move_path.size() -1];
       }
-  } while (!map_agent_missing_cells.empty() && map_agent_surplus_cells.empty());
+  } while (!map_agent_missing_cells.empty() && !map_agent_surplus_cells.empty());
 
   // ENDOF replenishing algorithm
-
 
 
   std::cout << "Ended. Maximum Jumps: " << jumpsIterator << " . While loop repetitions: " << repeatIterator << "." << std::endl;
