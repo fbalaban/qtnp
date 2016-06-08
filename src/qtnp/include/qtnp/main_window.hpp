@@ -45,6 +45,7 @@ public:
 
     void showNoMasterMessage();
     void showNoKmlMessage();
+    void showGenericMessage(QString message);
 
     void set_kml_filename(QString filename){ kml_filename = filename; }
     QString get_kml_filename(){ return kml_filename; }
@@ -64,6 +65,7 @@ public Q_SLOTS:
     void on_button_add_clicked(bool check);
     void on_button_remove_clicked(bool check);
     void on_button_partition_clicked(bool check);
+    void on_button_coverage_clicked(bool check);
     void on_button_save_uas_config_clicked(bool check);
     void on_button_load_last_uas_conf_clicked(bool check);
 

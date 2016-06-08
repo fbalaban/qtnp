@@ -71,8 +71,8 @@ std::vector<int> Tnp_update::find_path(int a, int b){
 
     do {
         found = false;
-        for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
-          faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
             if (faces_iterator->info().agent_id == path[path.size()-1]){
                 for (int i=0; i<3; i++){
                     if (faces_iterator->neighbor(i)->info().agent_id == b) {
@@ -97,8 +97,8 @@ std::vector<int> Tnp_update::find_path(int a, int b){
 }
 
 bool Tnp_update::are_neighbors (int a, int b){
-    for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
-      faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
         for (int i=0; i<3; i++){
             if ( (faces_iterator->info().agent_id == a) && (faces_iterator->neighbor(i)->info().agent_id == b) ) return true;
         }
@@ -108,8 +108,8 @@ bool Tnp_update::are_neighbors (int a, int b){
 
 int Tnp_update::find_neighbor(std::vector<int> &move_path, std::vector<int> &dead_end){
 
-    for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
-      faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
         if (faces_iterator->info().agent_id == move_path[move_path.size()-1]){
             for (int j=0; j<3; j++){
                 if (dead_end.empty()){
@@ -153,8 +153,8 @@ int Tnp_update::move(int cells, std::vector<int> path){
         // chosen also creates some problems, but probably less
         int that_depth_id(0);
 
-        for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
-          faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
           if (faces_iterator->info().agent_id == path[i]) {
             for (int z=0; z<3; z++){
               if (faces_iterator->neighbor(z)->info().agent_id == path[i+1]){
@@ -166,8 +166,8 @@ int Tnp_update::move(int cells, std::vector<int> path){
         }
 
         if (found){
-            for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
-              faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+            for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+              faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
                 if (faces_iterator->info().id == that_depth_id){
                     faces_iterator->info().agent_id = path[i];
                     faces_iterator->info().aux = true;
@@ -182,8 +182,8 @@ int Tnp_update::move(int cells, std::vector<int> path){
         }
 
         for (int j=1; j<cells; j++){
-            for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
-              faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+            for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+              faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
                 if ( (faces_iterator->info().agent_id == path[i]) && (faces_iterator->info().aux == true) ){
                     for (int z=0; z<3; z++){
                         if (faces_iterator->neighbor(z)->info().agent_id == path[i+1] && cells_remaining > 0){
@@ -196,8 +196,8 @@ int Tnp_update::move(int cells, std::vector<int> path){
                 }
             }
         };
-        for(CDT::Finite_faces_iterator faces_iterator = this->cdt.finite_faces_begin();
-          faces_iterator != this->cdt.finite_faces_end(); ++faces_iterator){
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
             if (faces_iterator->info().aux) faces_iterator->info().aux = false;
         }
         std::cout << "tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
@@ -221,8 +221,6 @@ int Tnp_update::move(int cells, std::vector<int> path){
     }
     return cells_remaining;
 }
-
-
 
 // reference constructor
 //Tnp_update::Tnp_update(Rviz_objects& rvizReference) : rviz_objects_ref(rvizReference){}
@@ -321,9 +319,6 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
                 // also adding it to the referenced rviz edge visualization
                 rviz_objects_ref.push_edge_point
                         (utilities::cgal_point_to_ros_geometry_point(kernel_Point_2(previous_latitude,previous_longitude)));
-
-//                rviz_objects_ref.edges.points.push_back
-//                        (cgal_point_to_ros_geometry_point(kernel_Point_2(previous_latitude,previous_longitude)));
                 // adding the current point
                 cdt_polygon_edges.push_back
                         (kernel_Point_2(current_latitude,current_longitude));
@@ -337,7 +332,7 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     }
 
     // TODO: seperate rest of function
-
+    // FIXME: edge constrain is in cgal points that doesn't correspond to meters. depending on max values, transform given value
     double crAngle = angle_cons;// 0.125; -- the default angle criteria
     double crEdge = edge_cons; // 25.0; -- the default edge criteria(50m footprint)
     std::cout << "Number of vertices before meshing and refining: " << cdt.number_of_vertices() << std::endl;
@@ -446,7 +441,7 @@ void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg)
 
       if ((face->is_in_domain()) && (face->info().agent_id == uav_id) && (face->info().depth == 1)){
         //TODO: introduce also not over holes in complete coverage-shortest distance
-        complete_path_coverage(cdt, face, uav_id);
+        //complete_path_coverage(cdt, face, uav_id);
         //shortest_path_coverage(cdt, face, uav_id, target_face_number);
         break;
       }
@@ -545,11 +540,10 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
 
     // hop cost/partitioning, passing autonomy percentage table
     hop_cost_attribution(id_cell_count_vector);
-    //coverage_cost_attribution(cdt);
+    // coverage_cost_attribution();
     // rviz coloring
     mesh_coloring();
 }
-
 
 void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_count){
 
@@ -698,7 +692,9 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
                 finished = false;
                 faces_iterator->info().visited = true;
                 for (int i=0; i<3; i++){
-                    if ((faces_iterator->neighbor(i)->is_in_domain()) && !(faces_iterator->neighbor(i)->info().has_number())) {
+                    if ((faces_iterator->neighbor(i)->is_in_domain()) &&
+                            (faces_iterator->neighbor(i)->info().agent_id == faces_iterator->info().agent_id) &&
+                            !(faces_iterator->neighbor(i)->info().has_number())) {
                         // assign jumpers id in order to see which growing function has managed
                         // to reach the end or target.
                         if (faces_iterator->info().depth != 1){
@@ -706,8 +702,6 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
                         }
                         faces_iterator->neighbor(i)->info().depth = hopIterator;
                         faces_iterator->neighbor(i)->info().numbered = true;
-                        // agent id propagation
-                        faces_iterator->neighbor(i)->info().agent_id = faces_iterator->info().agent_id;
                     }
                 }
             }
@@ -717,7 +711,7 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
     // -------- END OF JUMP COST ALGORITHM -------------------//
 }
 
-
+// TODO: color depending on UI decision: hop depth, coverage depth etc
 void Tnp_update::mesh_coloring(){
 
     int color_iterator = 0;
@@ -747,12 +741,24 @@ void Tnp_update::mesh_coloring(){
         rviz_objects_ref.push_mesh_point(utilities::cgal_triangulation_point_to_ros_geometry_point(point3, z));
 
         std_msgs::ColorRGBA triangle_color;
+        triangle_color.a = 1.0f;// + (face_depth/900.0);
+
+        // NOTE: hop cost depth coloring
         triangle_color.r = 0.0f + (face_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
         triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
         triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
-        triangle_color.a = 1.0f;// + (face_depth/900.0);
 
-        // NOTE: agent coloring for partition viz
+        // NOTE: borders coloring
+//        if (face->info().coverage_depth == constants::coverage_depth_max){
+//            triangle_color.b = 1.0f;
+//        }
+
+// NOTE: coverage depth coloring
+//        triangle_color.r = 0.0f + (face->info().coverage_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
+//        triangle_color.b = 0.0f + (face->info().coverage_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
+//        triangle_color.g = 0.0f + (face->info().coverage_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+
+ //NOTE: agent coloring for partition viz
 //        if (face->info().agent_id == 1){
 //            triangle_color.r = 0.0f + 100.0;
 //            triangle_color.b = 0.0f;
@@ -774,7 +780,6 @@ void Tnp_update::mesh_coloring(){
           triangle_color.r = 1.0f;// + (face->info().depth/30.0);
           triangle_color.g = 1.0f;// + (face->info().depth/50.0);//color_iterator*2.50/100;
           triangle_color.b = 1.0f;// + (face->info().depth/60.0);//color_iterator*8.0/100;
-          triangle_color.a = 1.0f;
         }
         rviz_objects_ref.push_mesh_cell_color(triangle_color);
       }
@@ -782,13 +787,20 @@ void Tnp_update::mesh_coloring(){
     rviz_objects_ref.set_planning_ready(true) ;
 }
 
-void Tnp_update::path_planning_coverage(){}
+void Tnp_update::path_planning_coverage(int uas){
+
+    coverage_cost_attribution();
+    // perform complete_path_coverage
+    complete_path_coverage(uas);
+    mesh_coloring();
+
+}
 void Tnp_update::path_planning_to_goal(){}
 
 // -------- COMPLETE COVERAGE (BORDER-TO-INNER) COST ALGORITHM -------------------//
-void Tnp_update::coverage_cost_attribution(CDT &cdt){
+void Tnp_update::coverage_cost_attribution(){
 
-  std::cout << "----Beginning complete coverage algorithm----" << std::endl;
+  std::cout << "----Beginning complete coverage cost attribution----" << std::endl;
 
   // go through all triangles to give border depth to the borders between agents
   for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
@@ -824,7 +836,6 @@ void Tnp_update::coverage_cost_attribution(CDT &cdt){
 
       }
   } while (!never_ever_again);
-  std::cout << "Total internal cells: " << so_many << std::endl;
 }
 
 // TODO: make it go backwards
@@ -897,18 +908,27 @@ void Tnp_update::shortest_path_coverage(CDT &cdt, CDT::Face_handle &starter_face
 }
 
 // TODO: make starter face a static and remove double reference in body
-void Tnp_update::complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int uav_id){
+void Tnp_update::complete_path_coverage(int uas_id){
+    std::cout << "----Beginning complete coverage for agent : " << uas_id << "----" << std::endl;
 
     // clearing the path object in case it had a previous path
-    rviz_objects_ref.clear_path();
+    this->rviz_objects_ref.clear_path();
 
     for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
         faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
         faces_iterator->info().reset_path_visited();
     };
 
-    CDT::Face_handle &starter_cell = starter_face;
-    int agent = uav_id;
+    CDT::Face_handle initial_cell;
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+        if ( (faces_iterator->info().agent_id == uas_id) && (faces_iterator->info().depth == 1) ) {
+            initial_cell = faces_iterator;
+            break;
+        }
+    };
+
+    CDT::Face_handle &starter_cell = initial_cell;
     Face_Handle_Vector borders_vector;
     Distance_Vector borders_distance_vector;
     int current_depth = constants::coverage_depth_max;
@@ -928,7 +948,7 @@ void Tnp_update::complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face
             faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
 
             if ( (faces_iterator->info().coverage_depth >= current_depth)
-                 && (faces_iterator->info().agent_id == agent)
+                 && (faces_iterator->info().agent_id == uas_id)
                  && (!faces_iterator->info().is_path_visited())) {
 
                 borders_vector.push_back(faces_iterator);
@@ -974,6 +994,8 @@ void Tnp_update::complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face
         borders_distance_vector.clear();
     } while (current_depth >= smallest_depth);
     // TODO: prepei na to kanoyme na min pidaei...
+    std::cout << "----Finished complete coverage ----" << std::endl;
+
 }
 
 

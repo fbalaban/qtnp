@@ -183,7 +183,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/Qt
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QMenuBar
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QPlatformWindow
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QPushButton
-qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QSpacerItem
+qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QRadioButton
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QSpinBox
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QStandardItemModel
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/QStatusBar
@@ -242,6 +242,7 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/Qt
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/qplatformwindowformat_qpa.h
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/qpolygon.h
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/qpushbutton.h
+qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/qradiobutton.h
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/qregion.h
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/qrgb.h
 qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o: /usr/include/qt4/QtGui/qrubberband.h
@@ -761,7 +762,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QPalette
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QPlatformWindow
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QPrinter
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QPushButton
-qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QSpacerItem
+qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QRadioButton
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QSpinBox
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QStandardItemModel
 qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o: /usr/include/qt4/QtGui/QStatusBar
@@ -1293,7 +1294,7 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QPalette
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QPlatformWindow
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QPrinter
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QPushButton
-qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QSpacerItem
+qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QRadioButton
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QSpinBox
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QStandardItemModel
 qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o: /usr/include/qt4/QtGui/QStatusBar

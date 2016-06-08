@@ -68,14 +68,14 @@ class Tnp_update {
     void perform_polygon_definition(std::vector<Coordinates> placemarks_array, double angle_cons, double edge_cons);
 
     void path_planning_callback(const InitialCoordinates::ConstPtr& msg);
-    void path_planning_coverage();
+    void path_planning_coverage(int uas);
     void path_planning_to_goal();
     void partition(std::vector<std::pair<std::pair<double, double>, int> > uas_coords_with_percentage);
 
     void hop_cost_attribution(std::vector<std::pair<int, int> > id_cell_count);
-    void coverage_cost_attribution(CDT &cdt);
+    void coverage_cost_attribution();
     void shortest_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int agent, int target_face_id);
-    void complete_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int uav_id);
+    void complete_path_coverage(int uav_id);
 
     bool are_neighbors (int a, int b);
     std::vector<int> find_path(int a, int b);

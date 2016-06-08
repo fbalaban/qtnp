@@ -181,6 +181,13 @@ void MainWindow::showNoKmlMessage() {
     msgBox.exec();
 }
 
+void MainWindow::showGenericMessage(QString message) {
+
+    QMessageBox msgBox;
+    msgBox.setText(message);
+    msgBox.exec();
+}
+
 /*
  * These triggers whenever the button is clicked, regardless of whether it
  * is already checked or not.
@@ -281,8 +288,15 @@ void MainWindow::on_button_partition_clicked(bool check ) {
                      std::setprecision(6) << "lat: " << coord_item.first  << ", lon: " << coord_item.second <<
                      ", percentage: " << percentage << std::endl;
     }
-//    qnode.get_tnp_update_pointer()->partition(uas_coords);
       qnode.get_tnp_update_pointer()->partition(uas_coords_with_percentage);
+}
+
+
+void MainWindow::on_button_coverage_clicked(bool checked){
+
+    int uas= ui.spinBox_coverage->value();
+    if ((uas < 1) || (uas > ui.table_view_uas->model()->rowCount()) ) showGenericMessage("Please select a valid UAS");
+    else qnode.get_tnp_update_pointer()->path_planning_coverage(uas);
 
 }
 
