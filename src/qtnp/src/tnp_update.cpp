@@ -453,7 +453,6 @@ void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg)
     }
 }
 
-// void Tnp_update::partition(std::vector<std::pair<double,double> > uas_coords){
 void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int > >  uas_coords_with_percentage){
 
     rviz_objects_ref.clear_triangulation_mesh();
@@ -544,8 +543,6 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
       }
     }
 
-    // id_cell_count_vector
-
     // hop cost/partitioning, passing autonomy percentage table
     hop_cost_attribution(id_cell_count_vector);
     //coverage_cost_attribution(cdt);
@@ -556,112 +553,97 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
 
 void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_count){
 
-    // -------------    HOP COST ALGORITHM ------------------------------------------
-    // TODO: seperate hop cost and borders depth from agent attribution. agent attribution is valid
+    // TODO: seperate hop cost from agent attribution. agent attribution is valid
     // for all tasks and its operations don't have to be repeated or missing..
-  bool neverInside = false;
-  int repeatIterator = 0;
-  int jumpsIterator = 1;
-  std::vector< std::pair<int,int> > agents_should_have_cells = id_cell_count;
+    std::cout << "-----Beginning jump cost------" << std::endl;
 
-  std::cout << "-----Beginning jump cost------" << std::endl;
-  do {
-    jumpsIterator++; // including non domain triangles
+    bool neverInside = false;
+    int jumpsIterator = 1;
 
-    neverInside = true;
+    // TODO: refactor: hop cost in seprate function, referencing id_cell_count vector. replenishing algo should work only
+    // with one list, with positive and negative values not with two lists including agent_id = 0s.
+    do {
+      jumpsIterator++; // including non domain triangles
 
-    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
-        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+      neverInside = true;
 
-      // too many comparisons. we need to refactor the algorithm
-      if ((faces_iterator->is_in_domain()) && (faces_iterator->info().has_number())
-          && !(faces_iterator->info().is_visited()) && !(faces_iterator->info().depth == jumpsIterator)) {
+      for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
 
-        int that_agent = faces_iterator->info().agent_id;
-        // check if that agent has fulfilled his need for cells according to its autonomy percentage
-        std::vector<std::pair <int,int> >::iterator it =
-                std::find_if(id_cell_count.begin(), id_cell_count.end(), comp(that_agent));
+        // too many comparisons. we need to refactor the algorithm
+        if ((faces_iterator->is_in_domain()) && (faces_iterator->info().has_number())
+            && !(faces_iterator->info().is_visited()) && !(faces_iterator->info().depth == jumpsIterator)) {
 
-        neverInside = false;
-        faces_iterator->info().visited = true;
+          int that_agent = faces_iterator->info().agent_id;
+          // check if that agent has fulfilled his need for cells according to its autonomy percentage
+          std::vector<std::pair <int,int> >::iterator it =
+                  std::find_if(id_cell_count.begin(), id_cell_count.end(), comp(that_agent));
 
-        for (int i=0; i<3; i++){
+          neverInside = false;
+          faces_iterator->info().visited = true;
 
-          if ((faces_iterator->neighbor(i)->is_in_domain()) && !(faces_iterator->neighbor(i)->info().has_number())) {
+          for (int i=0; i<3; i++){
 
-            if (it->second != 0){
+            if ((faces_iterator->neighbor(i)->is_in_domain()) && !(faces_iterator->neighbor(i)->info().has_number())) {
 
-                // assign jumpers id in order to see which growing function has managed
-                // to reach the end or target.
-                if (faces_iterator->info().depth != 1){
-                   faces_iterator->neighbor(i)->info().jumps_agent_id = faces_iterator->info().jumps_agent_id;
-                }
-                faces_iterator->neighbor(i)->info().depth = jumpsIterator;
-                faces_iterator->neighbor(i)->info().numbered = true;
-                // agent id propagation
-                faces_iterator->neighbor(i)->info().agent_id = faces_iterator->info().agent_id;
-                // reducing the cells appointed
-                it->second = it->second -1;
+              if (it->second != 0){
+
+                  // assign jumpers id in order to see which growing function has managed
+                  // to reach the end or target.
+                  if (faces_iterator->info().depth != 1){
+                     faces_iterator->neighbor(i)->info().jumps_agent_id = faces_iterator->info().jumps_agent_id;
+                  }
+                  faces_iterator->neighbor(i)->info().depth = jumpsIterator;
+                  faces_iterator->neighbor(i)->info().numbered = true;
+                  // agent id propagation
+                  faces_iterator->neighbor(i)->info().agent_id = faces_iterator->info().agent_id;
+                  // reducing the cells appointed
+                  it->second = it->second -1;
+              }
             }
           }
         }
       }
+     } while (neverInside == false);
 
-      repeatIterator++;
 
-    }
-   } while (neverInside == false);
-
-  // go through all triangles to give border (or coverage) depth to the borders between agents
-  // or domain border cells
-  // also print number of cells (testing)
-  std::vector<std::pair<int,int> > number_of_assigned_cells(id_cell_count.size() + 1);
-  int total_cells(0);
-
-  for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
-  faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+    // count cells and agent assigned cells
+    std::vector<std::pair<int,int> > number_of_assigned_cells(id_cell_count.size() + 1);
+    int total_cells(0);
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+    faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
           if (faces_iterator->is_in_domain()) {
-              total_cells++;
-          // initialize again the path visited attribute
-          for (int i=0;i<3;i++){
-              if ( !(faces_iterator->neighbor(i)->is_in_domain()) ||
-                  (faces_iterator->neighbor(i)->info().agent_id != faces_iterator->info().agent_id) ){
-                faces_iterator->info().depth = constants::coverage_depth_max;
-                faces_iterator->info().cover_depth = true;
-              }
-          }
-          // counting cells
-          number_of_assigned_cells[faces_iterator->info().agent_id].first = faces_iterator->info().agent_id;
-          number_of_assigned_cells[faces_iterator->info().agent_id].second += 1;
+            total_cells++;
+            number_of_assigned_cells[faces_iterator->info().agent_id].first = faces_iterator->info().agent_id;
+            number_of_assigned_cells[faces_iterator->info().agent_id].second += 1;
       }
-  }
+    }
 
-  std::cout << "Total cells: " << total_cells << std::endl;
-  std::cout << "Assigned cells: " << std::endl;
-  for (int i=0; i< id_cell_count.size() + 1; i++){
+    std::cout << "Total cells: " << total_cells << std::endl;
+    std::cout << "Assigned cells: " << std::endl;
+    for (int i=0; i< id_cell_count.size() + 1; i++){
     std::cout << "agent " << i << ": " << number_of_assigned_cells[i].second << std::endl;
-  }
-  std::cout << "Remaining cells: " << std::endl;
-  for (int i=0; i< id_cell_count.size(); i++){
+    }
+    std::cout << "Remaining cells: " << std::endl;
+    for (int i=0; i< id_cell_count.size(); i++){
     std::cout << "agent " << id_cell_count[i].first << ": " << id_cell_count[i].second << std::endl;
-  }
+    }
 
 
-  // FIXME replenishing algorithm // could be refactored
-  std::vector<std::pair<int,int> > map_agent_missing_cells;
-  std::vector<std::pair<int,int> > map_agent_surplus_cells;
-  for (int i=0; i< id_cell_count.size(); i++){
+    // FIXME replenishing algorithm // could be refactored
+    std::vector<std::pair<int,int> > map_agent_missing_cells;
+    std::vector<std::pair<int,int> > map_agent_surplus_cells;
+    for (int i=0; i< id_cell_count.size(); i++){
       if (id_cell_count[i].second > 0) map_agent_missing_cells.push_back(std::pair<int,int>(id_cell_count[i].first, id_cell_count[i].second-1));
-  }
-  if (number_of_assigned_cells[0].second > 0) map_agent_surplus_cells.push_back(std::pair<int,int>(0,number_of_assigned_cells[0].second));
+    }
+    if (number_of_assigned_cells[0].second > 0) map_agent_surplus_cells.push_back(std::pair<int,int>(0,number_of_assigned_cells[0].second));
 
-  std::vector<int> move_path;
-  std::vector<int> dead_end;
+    std::vector<int> move_path;
+    std::vector<int> dead_end;
 
-  do {
+    do {
 
       int agent_missing = map_agent_missing_cells[0].first;
-      int cells_missing = map_agent_missing_cells[0].second;
       if (move_path.empty()) move_path.push_back(agent_missing);
       int current_neighbor_id = find_neighbor(move_path, dead_end); // this find_neighbor, checks if neighbor is already in move_path or dead_end
 
@@ -682,44 +664,58 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
           move_path.erase(std::remove(move_path.begin(), move_path.end(), current_neighbor_id), move_path.end());
           current_neighbor_id = move_path[move_path.size() -1];
       }
-  } while (!map_agent_missing_cells.empty() && !map_agent_surplus_cells.empty());
+    } while (!map_agent_missing_cells.empty() && !map_agent_surplus_cells.empty());
 
-  // ENDOF replenishing algorithm
+    // ENDOF replenishing algorithm
 
+    // initializing again depth and number var in order to perform again hop cost (after replenishing algo)
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            if (faces_iterator->is_in_domain()) {
+                faces_iterator->info().visited = false;
+                    if (faces_iterator->info().depth != 1){
+                        faces_iterator->info().depth = 0;
+                        faces_iterator->info().numbered = false;
+                    }
+            }
+    }
 
-  std::cout << "Ended. Maximum Jumps: " << jumpsIterator << " . While loop repetitions: " << repeatIterator << "." << std::endl;
-  int zeros(0), ones(0), twos(0), threes(0);
-  for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
-      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-        if (faces_iterator->info().agent_id == 0){
-            zeros++;
+    // performing again hop cost with the moved cells.
+    bool finished = false;
+    int hopIterator = 1;
+
+    do {
+        hopIterator++; // including non domain triangles
+
+        finished = true;
+
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+            faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+
+            // too many comparisons. we need to refactor the algorithm
+            if ((faces_iterator->is_in_domain()) && (faces_iterator->info().has_number())
+                && !(faces_iterator->info().is_visited()) && !(faces_iterator->info().depth == hopIterator)) {
+                finished = false;
+                faces_iterator->info().visited = true;
+                for (int i=0; i<3; i++){
+                    if ((faces_iterator->neighbor(i)->is_in_domain()) && !(faces_iterator->neighbor(i)->info().has_number())) {
+                        // assign jumpers id in order to see which growing function has managed
+                        // to reach the end or target.
+                        if (faces_iterator->info().depth != 1){
+                            faces_iterator->neighbor(i)->info().jumps_agent_id = faces_iterator->info().jumps_agent_id;
+                        }
+                        faces_iterator->neighbor(i)->info().depth = hopIterator;
+                        faces_iterator->neighbor(i)->info().numbered = true;
+                        // agent id propagation
+                        faces_iterator->neighbor(i)->info().agent_id = faces_iterator->info().agent_id;
+                    }
+                }
+            }
         }
-        if (faces_iterator->info().agent_id == 1){
-            ones++;
-        }
-        if (faces_iterator->info().agent_id == 2){
-            twos++;
-        }
-        if (faces_iterator->info().agent_id == 3){
-            threes++;
-        }
-  }
+    } while (!finished);
 
-  std::cout << "zeros: " << zeros << std::endl;
-  std::cout << "ones: " << ones << std::endl;
-  std::cout << "twos: " << twos << std::endl;
-  std::cout << "threes: " << threes<< std::endl;
-
-
-
-
-  // -------- END OF JUMP COST ALGORITHM -------------------//
+    // -------- END OF JUMP COST ALGORITHM -------------------//
 }
-
-
-
-
-
 
 
 void Tnp_update::mesh_coloring(){
@@ -756,24 +752,24 @@ void Tnp_update::mesh_coloring(){
         triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
         triangle_color.a = 1.0f;// + (face_depth/900.0);
 
-        // TODO remove this
-        if (face->info().agent_id == 1){
-            triangle_color.r = 0.0f + 100.0;
-            triangle_color.b = 0.0f;
-            triangle_color.g = 0.0f;
-        }
-        if (face->info().agent_id == 2){
-            triangle_color.r = 0.0f;
-            triangle_color.b = 0.0f + 100.0;
-            triangle_color.g = 0.0f;
-        }
-        if (face->info().agent_id == 3){
-            triangle_color.r = 0.0f;
-            triangle_color.b = 0.0f;
-            triangle_color.g = 0.0f + 100.0;
-        }
+        // NOTE: agent coloring for partition viz
+//        if (face->info().agent_id == 1){
+//            triangle_color.r = 0.0f + 100.0;
+//            triangle_color.b = 0.0f;
+//            triangle_color.g = 0.0f;
+//        }
+//        if (face->info().agent_id == 2){
+//            triangle_color.r = 0.0f;
+//            triangle_color.b = 0.0f + 100.0;
+//            triangle_color.g = 0.0f;
+//        }
+//        if (face->info().agent_id == 3){
+//            triangle_color.r = 0.0f;
+//            triangle_color.b = 0.0f;
+//            triangle_color.g = 0.0f + 100.0;
+//        }
 
-        // also: if (face->info().jumps_agent_id == target_jumps_agent_id)
+        // NOTE: initial positions are white
         if (face->info().depth == 1){ // also include target coloring
           triangle_color.r = 1.0f;// + (face->info().depth/30.0);
           triangle_color.g = 1.0f;// + (face->info().depth/50.0);//color_iterator*2.50/100;
