@@ -710,7 +710,7 @@
             <string>lon:</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="line_edit_task_lon">
            <property name="geometry">
             <rect>
              <x>220</x>
@@ -725,8 +725,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="inputMask">
+            <string>#009.999999</string>
+           </property>
           </widget>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="button_go_to_goal">
            <property name="geometry">
             <rect>
              <x>320</x>
@@ -777,7 +780,7 @@
             <string>Go to lat:</string>
            </property>
           </widget>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="line_edit_task_lat">
            <property name="geometry">
             <rect>
              <x>90</x>
@@ -791,6 +794,9 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="inputMask">
+            <string>#009.999999</string>
            </property>
           </widget>
           <widget class="QPushButton" name="button_partition">

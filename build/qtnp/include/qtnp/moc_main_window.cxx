@@ -22,7 +22,7 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      13,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -41,8 +41,9 @@ static const uint qt_meta_data_qtnp__MainWindow[] = {
      298,   45,   17,   17, 0x0a,
      332,   45,   17,   17, 0x0a,
      365,   45,   17,   17, 0x0a,
-     405,   45,   17,   17, 0x0a,
-     448,   17,   17,   17, 0x0a,
+     400,   45,   17,   17, 0x0a,
+     440,   45,   17,   17, 0x0a,
+     483,   17,   17,   17, 0x0a,
 
        0        // eod
 };
@@ -58,6 +59,7 @@ static const char qt_meta_stringdata_qtnp__MainWindow[] = {
     "on_button_remove_clicked(bool)\0"
     "on_button_partition_clicked(bool)\0"
     "on_button_coverage_clicked(bool)\0"
+    "on_button_go_to_goal_clicked(bool)\0"
     "on_button_save_uas_config_clicked(bool)\0"
     "on_button_load_last_uas_conf_clicked(bool)\0"
     "updateLoggingView()\0"
@@ -79,9 +81,10 @@ void qtnp::MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 7: _t->on_button_remove_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 8: _t->on_button_partition_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 9: _t->on_button_coverage_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 10: _t->on_button_save_uas_config_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 11: _t->on_button_load_last_uas_conf_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 12: _t->updateLoggingView(); break;
+        case 10: _t->on_button_go_to_goal_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 11: _t->on_button_save_uas_config_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 12: _t->on_button_load_last_uas_conf_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 13: _t->updateLoggingView(); break;
         default: ;
         }
     }
@@ -119,9 +122,9 @@ int qtnp::MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 13)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 13;
+        _id -= 14;
     }
     return _id;
 }

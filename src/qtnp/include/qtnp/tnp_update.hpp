@@ -69,14 +69,15 @@ class Tnp_update {
 
     void path_planning_callback(const InitialCoordinates::ConstPtr& msg);
     void path_planning_coverage(int uas);
-    void path_planning_to_goal();
+    void path_planning_to_goal(int uas, double lat, double lon);
     void partition(std::vector<std::pair<std::pair<double, double>, int> > uas_coords_with_percentage);
 
     void hop_cost_attribution(std::vector<std::pair<int, int> > id_cell_count);
     void coverage_cost_attribution();
-    void shortest_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int agent, int target_face_id);
+    void path_to_goal(int uas, int goal_cell_id);
     void complete_path_coverage(int uav_id);
 
+    int coordinates_to_cdt_cell_id(double lat, double lon);
     bool are_neighbors (int a, int b);
     std::vector<int> find_path(int a, int b);
     int find_neighbor(std::vector<int> &move_path, std::vector<int> &dead_end);

@@ -300,6 +300,19 @@ void MainWindow::on_button_coverage_clicked(bool checked){
 
 }
 
+void MainWindow::on_button_go_to_goal_clicked(bool checked){
+
+    int uas = ui.spinBox_coverage->value();
+    double lat = ui.line_edit_task_lat->text().toDouble();
+    double lon = ui.line_edit_task_lon->text().toDouble();
+    std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) <<
+                 std::setprecision(6) << "uas: " << uas << " lat: " << lat << " lon: " << lon << std::endl;
+    if ((uas < 1) || (uas > ui.table_view_uas->model()->rowCount()) ) showGenericMessage("Please select a valid UAS");
+    else qnode.get_tnp_update_pointer()->path_planning_to_goal(uas, lat, lon);
+
+}
+
+
 void MainWindow::on_button_save_uas_config_clicked(bool check){
 
     QFile file("/home/fotis/uas_table.conf");

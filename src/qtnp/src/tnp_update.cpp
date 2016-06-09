@@ -62,6 +62,58 @@ namespace qtnp {
 ** Implementation
 *****************************************************************************/
 
+int Tnp_update::coordinates_to_cdt_cell_id(double lat, double lon){
+
+    std::vector<std::pair<int, geometry_msgs::Point> > id_center_list(this->rviz_objects_ref.get_center_points_with_cell_id());
+
+    // TODO: they are upside down. if test file is correct, change lat, lon
+    double cdt_lat = utilities::convert_range(this->area_extremes.min_lat,this->area_extremes.max_lat,
+                                constants::rviz_range_min,constants::rviz_range_max,lon);//here
+    double cdt_lon = utilities::convert_range(this->area_extremes.min_lon,this->area_extremes.max_lon,
+                                constants::rviz_range_min,constants::rviz_range_max,lat); // and here
+
+    kernel_Point_2 initial_position(cdt_lat, cdt_lon);
+
+    int result_id(0);
+    int comparison_id(0);
+
+    //FIXME refactor conversion below, its a spaggeti shit
+    for (int j=0; j<id_center_list.size(); j++){
+
+        CGAL::Comparison_result result =
+                CGAL::compare_distance_to_point(
+                    initial_position,
+                      utilities::ros_to_cgal_point(id_center_list[j].second),
+                        utilities::ros_to_cgal_point(id_center_list[j+1].second));
+
+        if (result == CGAL::SMALLER){
+            if (CGAL::compare_distance_to_point(
+                        initial_position,
+                          utilities::ros_to_cgal_point(id_center_list[j].second),
+                            utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
+                comparison_id = j;
+                result_id = id_center_list[j].first;
+            } else {
+                comparison_id = comparison_id;
+                result_id = id_center_list[comparison_id].first;
+            }
+        } else {
+            if (CGAL::compare_distance_to_point(
+                        initial_position,
+                          utilities::ros_to_cgal_point(id_center_list[j].second),
+                            utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
+                comparison_id = j;
+                result_id = id_center_list[j].first;
+            } else {
+                comparison_id = comparison_id;
+                result_id = id_center_list[comparison_id].first;
+            }
+
+        }
+    }
+    return result_id;
+}
+
 std::vector<int> Tnp_update::find_path(int a, int b){
 
     std::vector<int> path;
@@ -455,60 +507,14 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
     int total_cdt_cells = rviz_objects_ref.count_cells();
 
     std::vector< std::pair<int,int> > id_cell_count_vector;
-    std::vector<std::pair<int, geometry_msgs::Point> > id_center_list(rviz_objects_ref.get_center_points_with_cell_id());
-
     std::vector<int> initial_positions_cell_ids;
 
-    int agent_id = 1;
     int jumps_ad = 1;
 
     for (int i=0; i<uas_count; i++){
 
-        // TODO: they are upside down. if test file is correct, change lat, lon
-        double cdt_lat = utilities::convert_range(this->area_extremes.min_lat,this->area_extremes.max_lat,
-                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords_with_percentage[i].first.second);//here
-        double cdt_lon = utilities::convert_range(this->area_extremes.min_lon,this->area_extremes.max_lon,
-                                    constants::rviz_range_min,constants::rviz_range_max,uas_coords_with_percentage[i].first.first); // and here
-
-        kernel_Point_2 initial_position(cdt_lat, cdt_lon);
-
-        int result_id(0);
-        int comparison_id(0);
-
-        // refactor conversion below, its a spaggeti shit
-        for (int j=0; j<id_center_list.size(); j++){
-
-            CGAL::Comparison_result result =
-                    CGAL::compare_distance_to_point(
-                        initial_position,
-                          utilities::ros_to_cgal_point(id_center_list[j].second),
-                            utilities::ros_to_cgal_point(id_center_list[j+1].second));
-
-            if (result == CGAL::SMALLER){
-                if (CGAL::compare_distance_to_point(
-                            initial_position,
-                              utilities::ros_to_cgal_point(id_center_list[j].second),
-                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
-                    comparison_id = j;
-                    result_id = id_center_list[j].first;
-                } else {
-                    comparison_id = comparison_id;
-                    result_id = id_center_list[comparison_id].first;
-                }
-            } else {
-                if (CGAL::compare_distance_to_point(
-                            initial_position,
-                              utilities::ros_to_cgal_point(id_center_list[j].second),
-                                utilities::ros_to_cgal_point(id_center_list[comparison_id].second)) == CGAL::SMALLER){
-                    comparison_id = j;
-                    result_id = id_center_list[j].first;
-                } else {
-                    comparison_id = comparison_id;
-                    result_id = id_center_list[comparison_id].first;
-                }
-
-            }
-        }
+        int result_id = coordinates_to_cdt_cell_id(uas_coords_with_percentage[i].first.first,
+                                                   uas_coords_with_percentage[i].first.second);
         initial_positions_cell_ids.push_back(result_id);
 
         int cells_for_agent = ( (uas_coords_with_percentage[i].second * total_cdt_cells) / 100) + 0.5;
@@ -790,14 +796,100 @@ void Tnp_update::mesh_coloring(){
 void Tnp_update::path_planning_coverage(int uas){
 
     coverage_cost_attribution();
-    // perform complete_path_coverage
     complete_path_coverage(uas);
     mesh_coloring();
 
 }
-void Tnp_update::path_planning_to_goal(){}
 
-// -------- COMPLETE COVERAGE (BORDER-TO-INNER) COST ALGORITHM -------------------//
+void Tnp_update::path_planning_to_goal(int uas, double lat, double lon){
+
+    path_to_goal(uas, coordinates_to_cdt_cell_id(lat,lon) );
+    mesh_coloring();
+
+}
+
+// TODO: make it go backwards
+void Tnp_update::path_to_goal(int uas, int goal_cell_id){
+
+
+    CDT::Face_handle current_face;
+
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+        // TODO make uas_model class. make current_cell_id member var inside and take it in situations like this
+        if( (faces_iterator->info().agent_id == uas) && (faces_iterator->info().depth == 1) ){
+            current_face = faces_iterator;
+            rviz_objects_ref.push_path_point(utilities::build_pose_stamped(utilities::face_to_center(cdt, current_face)));
+            break;
+        }
+    }
+
+
+  // TODO: missing initialization function
+  CDT::Face_handle target_face;
+  // TODO: missing initialization function
+  geometry_msgs::Point target_face_center;
+  int target_face_depth = 0;
+
+  // put it in the path
+  rviz_objects_ref.push_path_point(utilities::build_pose_stamped(utilities::face_to_center(cdt, current_face)));
+
+  Distance_Vector distance_vector;
+
+  // get target face
+  for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+    if (faces_iterator->info().id == goal_cell_id){
+      target_face = faces_iterator;
+      target_face_center = utilities::face_to_center(cdt, target_face);
+      target_face_depth = target_face->info().depth;
+      // if it happens our target to be at the borders, we temporaly change its depth
+      if (target_face_depth == constants::coverage_depth_max){
+        int previous = 0;
+          for (int i=0; i<3; i++){
+            if (target_face->neighbor(i)->is_in_domain()){
+                target_face_depth = (target_face->neighbor(i)->info().depth > previous) ?
+                            target_face->neighbor(i)->info().depth : previous;
+                previous = target_face->neighbor(i)->info().depth;
+            }
+        }
+      }
+      break;
+    }
+  }
+
+  float previous_distance = utilities::calculate_distance(
+              (utilities::face_to_center(cdt, current_face)) , target_face_center);
+  std::cout << "Initial distance from start: " << previous_distance << std::endl;
+  int depth_runs = 1;
+  int branch_id = target_face->info().jumps_agent_id;
+
+  do {
+
+    depth_runs+=4;
+
+    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin(); faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+      if ( (faces_iterator->info().agent_id == uas) &&
+           (faces_iterator->info().depth < depth_runs) &&
+           (faces_iterator->info().jumps_agent_id == branch_id) ){
+
+        float distance = utilities::calculate_distance(utilities::face_to_center(cdt, faces_iterator), target_face_center);
+        Distance_Entry this_entry = std::make_pair(faces_iterator, distance);
+        distance_vector.push_back(this_entry);
+      }
+    }
+
+    std::sort(distance_vector.begin(), distance_vector.end(), utilities::distance_comparison);
+    // put the nearer to path
+    rviz_objects_ref.push_path_point(utilities::build_pose_stamped
+                                     (utilities::face_to_center(cdt, distance_vector.front().first)));
+    distance_vector.clear();
+
+
+  }while (depth_runs < target_face_depth);
+
+}
+
 void Tnp_update::coverage_cost_attribution(){
 
   std::cout << "----Beginning complete coverage cost attribution----" << std::endl;
@@ -838,74 +930,6 @@ void Tnp_update::coverage_cost_attribution(){
   } while (!never_ever_again);
 }
 
-// TODO: make it go backwards
-void Tnp_update::shortest_path_coverage(CDT &cdt, CDT::Face_handle &starter_face, int agent, int target_face_id){
-
-  // TODO: missing initialization function
-  CDT::Face_handle target_face;
-  // TODO: missing initialization function
-  geometry_msgs::Point target_face_center;
-  int target_face_depth = 0;
-
-  CDT::Face_handle& current_face = starter_face;
-  // put it in the path
-  rviz_objects_ref.push_path_point(utilities::build_pose_stamped(utilities::face_to_center(cdt, current_face)));
-
-  Distance_Vector distance_vector;
-
-  // get target face
-  for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
-      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-    if (faces_iterator->info().id == target_face_id){
-      target_face = faces_iterator;
-      target_face_center = utilities::face_to_center(cdt, target_face);
-      target_face_depth = target_face->info().depth;
-      // if it happens our target to be at the borders, we temporaly change its depth
-      if (target_face_depth == constants::coverage_depth_max){
-        int previous = 0;
-          for (int i=0; i<3; i++){
-            if (target_face->neighbor(i)->is_in_domain()){
-                target_face_depth = (target_face->neighbor(i)->info().depth > previous) ?
-                            target_face->neighbor(i)->info().depth : previous;
-                previous = target_face->neighbor(i)->info().depth;
-            }
-        }
-      }
-      break;
-    }
-  }
-
-  float previous_distance = utilities::calculate_distance(
-              (utilities::face_to_center(cdt, current_face)) , target_face_center);
-  std::cout << "Initial distance from start: " << previous_distance << std::endl;
-  int depth_runs = 1;
-  int branch_id = target_face->info().jumps_agent_id;
-
-  do {
-
-    depth_runs+=4;
-
-    for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin(); faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-      if ( (faces_iterator->info().agent_id == agent) &&
-           (faces_iterator->info().depth < depth_runs) &&
-           (faces_iterator->info().jumps_agent_id == branch_id) ){
-
-        float distance = utilities::calculate_distance(utilities::face_to_center(cdt, faces_iterator), target_face_center);
-        Distance_Entry this_entry = std::make_pair(faces_iterator, distance);
-        distance_vector.push_back(this_entry);
-      }
-    }
-
-    std::sort(distance_vector.begin(), distance_vector.end(), utilities::distance_comparison);
-    // put the nearer to path
-    rviz_objects_ref.push_path_point(utilities::build_pose_stamped
-                                     (utilities::face_to_center(cdt, distance_vector.front().first)));
-    distance_vector.clear();
-
-
-  }while (depth_runs < target_face_depth);
-
-}
 
 // TODO: make starter face a static and remove double reference in body
 void Tnp_update::complete_path_coverage(int uas_id){
