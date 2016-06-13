@@ -34,6 +34,14 @@ namespace qtnp {
 /*****************************************************************************
 ** Class
 *****************************************************************************/
+struct Rviz_settings {
+
+  bool task_cost;
+  bool coverage_cost;
+  bool waypoints;
+  bool borders;
+};
+
 
 class Rviz_objects {
 
@@ -47,6 +55,10 @@ public:
     /*****************************************************************************
     ** Getters
     *****************************************************************************/
+
+    Rviz_settings get_settings(){
+      return rviz_settings;
+    }
 
     geometry_msgs::Polygon get_polygon(){ return polygon; }
     geometry_msgs::PolygonStamped get_polygonStamped(){
@@ -82,6 +94,10 @@ public:
     void clear_triangulation_mesh();
     void clear_center_points_with_cell_id();
 
+    void set_settings(bool task, bool coverage, bool waypoints, bool borders){
+      rviz_settings.task_cost = task; rviz_settings.coverage_cost = coverage; rviz_settings.waypoints = waypoints; rviz_settings.borders = borders;
+    }
+
     int count_cells(){ return center_points.points.size(); }
     void set_polygon_ready (bool option){ polygon_ready = option; }
     void set_planning_ready (bool option){ planning_ready = option; }
@@ -89,6 +105,8 @@ public:
 private:
     bool polygon_ready;
     bool planning_ready;
+
+    Rviz_settings rviz_settings;
     geometry_msgs::Polygon polygon;
     geometry_msgs::PolygonStamped polygonStamped;
     visualization_msgs::Marker edges, center_points, triangulation_mesh;

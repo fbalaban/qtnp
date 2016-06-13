@@ -26,6 +26,8 @@ void Rviz_objects::init(){
 
   polygon_ready = false;
   planning_ready = false;
+  rviz_settings.borders = rviz_settings.coverage_cost = false;
+  rviz_settings.waypoints = rviz_settings.task_cost = true;
 
   // TODO: replace with constant or UI selection
   edges.header.frame_id = polygonStamped.header.frame_id = center_points.header.frame_id =

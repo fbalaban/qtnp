@@ -301,12 +301,14 @@ public:
         sizePolicy9.setVerticalStretch(0);
         sizePolicy9.setHeightForWidth(groupBox_9->sizePolicy().hasHeightForWidth());
         groupBox_9->setSizePolicy(sizePolicy9);
+        groupBox_9->setCheckable(false);
         verticalLayout_9 = new QVBoxLayout(groupBox_9);
         verticalLayout_9->setObjectName(QString::fromUtf8("verticalLayout_9"));
         radioButton = new QRadioButton(groupBox_9);
         radioButton->setObjectName(QString::fromUtf8("radioButton"));
         sizePolicy5.setHeightForWidth(radioButton->sizePolicy().hasHeightForWidth());
         radioButton->setSizePolicy(sizePolicy5);
+        radioButton->setChecked(true);
 
         verticalLayout_9->addWidget(radioButton);
 
@@ -630,7 +632,7 @@ public:
         tab_manager->setTabText(tab_manager->indexOf(tab_status), QApplication::translate("MainWindowDesign", "Ros Communications", 0, QApplication::UnicodeUTF8));
         groupBox_3->setTitle(QString());
         label_8->setText(QApplication::translate("MainWindowDesign", "UAS Table", 0, QApplication::UnicodeUTF8));
-        groupBox_4->setTitle(QApplication::translate("MainWindowDesign", "Rows", 0, QApplication::UnicodeUTF8));
+        groupBox_4->setTitle(QString());
         button_add->setText(QApplication::translate("MainWindowDesign", "add row", 0, QApplication::UnicodeUTF8));
         button_remove->setText(QApplication::translate("MainWindowDesign", "remove row", 0, QApplication::UnicodeUTF8));
         button_save_uas_config->setText(QApplication::translate("MainWindowDesign", "save configuration", 0, QApplication::UnicodeUTF8));

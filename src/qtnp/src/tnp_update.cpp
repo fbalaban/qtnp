@@ -171,13 +171,17 @@ int Tnp_update::find_neighbor(std::vector<int> &move_path, std::vector<int> &dea
                         return faces_iterator->neighbor(j)->info().agent_id;
             } else if ( !(std::find(dead_end.begin(), dead_end.end(), faces_iterator->neighbor(j)->info().agent_id) != dead_end.end()) &&
                         !(std::find(move_path.begin(), move_path.end(), faces_iterator->neighbor(j)->info().agent_id) != move_path.end()) &&
-                         faces_iterator->neighbor(j)->is_in_domain() &&
-                        !(faces_iterator->neighbor(j)->info().agent_id != faces_iterator->info().agent_id) ){
+                         faces_iterator->neighbor(j)->is_in_domain()) {
+//                        &&
+//                        !(faces_iterator->neighbor(j)->info().agent_id != faces_iterator->info().agent_id) ){
                     return faces_iterator->neighbor(j)->info().agent_id;
                 }
             }
         }
     }
+    dead_end.push_back(move_path[move_path.size()-1]);
+    move_path.erase(std::remove(move_path.begin(), move_path.end(), move_path[move_path.size()-1]), move_path.end());
+    return -1;
 }
 
 void Tnp_update::move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB, std::vector<int> path){
@@ -196,12 +200,17 @@ void Tnp_update::move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB,
 int Tnp_update::move(int cells, std::vector<int> path){
 
     int cells_remaining = cells;
+    std::cout << "the path: [";
+    for (int i=0; i<path.size(); i++){
+        std::cout << path[i] << " ";
+    }
+    std::cout << "]" << std::endl;
 
     for (int i=0; i<path.size() -1; i++){
 
         cells_remaining = cells;
         bool found = false;
-        int depth(1000); // FIXME magic number, chooses the closest to the agent. should find a better way. if the furthest is
+        int depth(-1); // FIXME magic number, chooses the closest to the agent. should find a better way. if the furthest is
         // chosen also creates some problems, but probably less
         int that_depth_id(0);
 
@@ -210,8 +219,11 @@ int Tnp_update::move(int cells, std::vector<int> path){
           if (faces_iterator->info().agent_id == path[i]) {
             for (int z=0; z<3; z++){
               if (faces_iterator->neighbor(z)->info().agent_id == path[i+1]){
-               that_depth_id = faces_iterator->neighbor(z)->info().depth < depth ? faces_iterator->neighbor(z)->info().id : that_depth_id;
-               found = true;
+               if (faces_iterator->neighbor(z)->info().depth > depth){
+                    that_depth_id = faces_iterator->neighbor(z)->info().id;
+                    depth = faces_iterator->neighbor(z)->info().depth;
+                    found = true;
+               }
               }
             }
           }
@@ -241,17 +253,20 @@ int Tnp_update::move(int cells, std::vector<int> path){
                         if (faces_iterator->neighbor(z)->info().agent_id == path[i+1] && cells_remaining > 0){
                             faces_iterator->neighbor(z)->info().agent_id = path[i];
                             faces_iterator->neighbor(z)->info().aux = true;
+                            faces_iterator->info().aux = false;
                             j++;
                             cells_remaining--;
                         }
                     }
                 }
             }
-        };
+        }
+
         for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
           faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
             if (faces_iterator->info().aux) faces_iterator->info().aux = false;
         }
+
         std::cout << "tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
         std::cout << cells_remaining << " cells remained somewhere.." << std::endl;
         if (cells_remaining > 0) {
@@ -517,8 +532,9 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
                                                    uas_coords_with_percentage[i].first.second);
         initial_positions_cell_ids.push_back(result_id);
 
-        int cells_for_agent = ( (uas_coords_with_percentage[i].second * total_cdt_cells) / 100) + 0.5;
-        id_cell_count_vector.push_back(std::pair<int,int>(i+1,cells_for_agent));
+        int cells_for_agent =  ( (uas_coords_with_percentage[i].second * total_cdt_cells) / 100.0) + 0.5 ;
+         // +1 for the agent id, -1 for calculating the initial cell
+        id_cell_count_vector.push_back(std::pair<int,int>(i+1,cells_for_agent-1));
 
     }
 
@@ -533,7 +549,6 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
           faces_iterator->info().numbered = true;
           faces_iterator->info().depth = 1;
           faces_iterator->info().agent_id = std::find(initial_positions_cell_ids.begin(), initial_positions_cell_ids.end(), faces_iterator->info().id) - initial_positions_cell_ids.begin() + 1;
-          //agent_id++;
           for (int j=0; j<3; j++){
               faces_iterator->neighbor(j)->info().jumps_agent_id = jumps_ad;
               jumps_ad++;
@@ -631,41 +646,51 @@ void Tnp_update::hop_cost_attribution(std::vector< std::pair<int,int> > id_cell_
 
 
     // FIXME replenishing algorithm // could be refactored
+    std::vector<std::pair<int,int> > cell_map;
     std::vector<std::pair<int,int> > map_agent_missing_cells;
     std::vector<std::pair<int,int> > map_agent_surplus_cells;
-    for (int i=0; i< id_cell_count.size(); i++){
+
+    cell_map.push_back(std::pair<int,int>(0,number_of_assigned_cells[0].second));
+    for (int i=0; i< id_cell_count.size() + 1; i++){
       if (id_cell_count[i].second > 0) map_agent_missing_cells.push_back(std::pair<int,int>(id_cell_count[i].first, id_cell_count[i].second-1));
+      cell_map.push_back(std::pair<int,int>(id_cell_count[i].first, - id_cell_count[i].second));
+        std::cout << "agent " << cell_map[i].first << " has: " << cell_map[i].second << " cells" << std::endl;
     }
+
     if (number_of_assigned_cells[0].second > 0) map_agent_surplus_cells.push_back(std::pair<int,int>(0,number_of_assigned_cells[0].second));
 
     std::vector<int> move_path;
     std::vector<int> dead_end;
 
-    do {
+    if (number_of_assigned_cells[0].second > 0){
 
-      int agent_missing = map_agent_missing_cells[0].first;
-      if (move_path.empty()) move_path.push_back(agent_missing);
-      int current_neighbor_id = find_neighbor(move_path, dead_end); // this find_neighbor, checks if neighbor is already in move_path or dead_end
+        do {
+            // REFACTORING
+          // take agent which misses. is agent where cell_map.second is below zero
+          int agent_missing = map_agent_missing_cells[0].first;
+          if (move_path.empty()) move_path.push_back(agent_missing);
+          int current_neighbor_id = find_neighbor(move_path, dead_end); // this find_neighbor, checks if neighbor is already in move_path or dead_end
 
-      // check if the current neighbor is in the list of agents that have a cell surplus
-      if (list_contains(current_neighbor_id, map_agent_surplus_cells)){
-          std::pair<int,int> &from_agent = get_agent_pair_by_id(current_neighbor_id, map_agent_surplus_cells);
-          move_path.push_back(current_neighbor_id);
-          move_cells(map_agent_missing_cells[0], from_agent, move_path); // (found = true) ?
-          clear_list(map_agent_missing_cells);
-          clear_list(map_agent_surplus_cells);
-          move_path.clear();
-          dead_end.clear();
-      } else if ( !(std::find(move_path.begin(), move_path.end(), current_neighbor_id) != move_path.end()) &&
-                  !(std::find(dead_end.begin(), dead_end.end(), current_neighbor_id) != dead_end.end()) ){
-          move_path.push_back(current_neighbor_id); // found = true ?
-      } else {
-          dead_end.push_back(current_neighbor_id);
-          move_path.erase(std::remove(move_path.begin(), move_path.end(), current_neighbor_id), move_path.end());
-          current_neighbor_id = move_path[move_path.size() -1];
-      }
-    } while (!map_agent_missing_cells.empty() && !map_agent_surplus_cells.empty());
-
+          // check if the current neighbor is in the list of agents that have a cell surplus
+          if (list_contains(current_neighbor_id, map_agent_surplus_cells)){
+              std::pair<int,int> &from_agent = get_agent_pair_by_id(current_neighbor_id, map_agent_surplus_cells);
+              move_path.push_back(current_neighbor_id);
+              move_cells(map_agent_missing_cells[0], from_agent, move_path); // (found = true) ?
+              clear_list(map_agent_missing_cells);
+              clear_list(map_agent_surplus_cells);
+              move_path.clear();
+              dead_end.clear();
+          } else if ( (current_neighbor_id != -1) &&
+                     !(std::find(move_path.begin(), move_path.end(), current_neighbor_id) != move_path.end()) &&
+                      !(std::find(dead_end.begin(), dead_end.end(), current_neighbor_id) != dead_end.end()) ){
+              move_path.push_back(current_neighbor_id); // found = true ?
+          } else {
+              dead_end.push_back(current_neighbor_id);
+              move_path.erase(std::remove(move_path.begin(), move_path.end(), current_neighbor_id), move_path.end());
+              current_neighbor_id = move_path[move_path.size() -1];
+          }
+        } while (!map_agent_missing_cells.empty() && !map_agent_surplus_cells.empty());
+    }
     // ENDOF replenishing algorithm
 
     // initializing again depth and number var in order to perform again hop cost (after replenishing algo)
@@ -737,8 +762,7 @@ void Tnp_update::mesh_coloring(){
         CDT::Point point2 = cdt.triangle(face)[1];
         CDT::Point point3 = cdt.triangle(face)[2];
 
-        int face_depth = face->info().depth;
-        //int face_depth = face->info().coverage_depth;
+        int face_depth = rviz_objects_ref.get_settings().task_cost ? face->info().depth : face->info().coverage_depth;
         float z = -face_depth;
 
         // each triangle in rviz mesh need three points..
@@ -750,19 +774,17 @@ void Tnp_update::mesh_coloring(){
         triangle_color.a = 1.0f;// + (face_depth/900.0);
 
         // NOTE: hop cost depth coloring
-        triangle_color.r = 0.0f + (face_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
-        triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
-        triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
-
+        if (rviz_objects_ref.get_settings().task_cost){
+            triangle_color.r = 0.0f + (face_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
+            triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
+            triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+        }
         // NOTE: borders coloring
-//        if (face->info().coverage_depth == constants::coverage_depth_max){
-//            triangle_color.b = 1.0f;
-//        }
-
-// NOTE: coverage depth coloring
-//        triangle_color.r = 0.0f + (face->info().coverage_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
-//        triangle_color.b = 0.0f + (face->info().coverage_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
-//        triangle_color.g = 0.0f + (face->info().coverage_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+        if (rviz_objects_ref.get_settings().borders){
+            if (face->info().coverage_depth == constants::coverage_depth_max){
+                triangle_color.b = 1.0f;
+            }
+        }
 
  //NOTE: agent coloring for partition viz
 //        if (face->info().agent_id == 1){
@@ -791,6 +813,7 @@ void Tnp_update::mesh_coloring(){
       }
     }
     rviz_objects_ref.set_planning_ready(true) ;
+
 }
 
 void Tnp_update::path_planning_coverage(int uas){
@@ -803,6 +826,7 @@ void Tnp_update::path_planning_coverage(int uas){
 
 void Tnp_update::path_planning_to_goal(int uas, double lat, double lon){
 
+    this->rviz_objects_ref.clear_path();
     path_to_goal(uas, coordinates_to_cdt_cell_id(lat,lon) );
     mesh_coloring();
 
@@ -810,7 +834,6 @@ void Tnp_update::path_planning_to_goal(int uas, double lat, double lon){
 
 // TODO: make it go backwards
 void Tnp_update::path_to_goal(int uas, int goal_cell_id){
-
 
     CDT::Face_handle current_face;
 
@@ -930,7 +953,6 @@ void Tnp_update::coverage_cost_attribution(){
   } while (!never_ever_again);
 }
 
-
 // TODO: make starter face a static and remove double reference in body
 void Tnp_update::complete_path_coverage(int uas_id){
     std::cout << "----Beginning complete coverage for agent : " << uas_id << "----" << std::endl;
@@ -1021,9 +1043,5 @@ void Tnp_update::complete_path_coverage(int uas_id){
     std::cout << "----Finished complete coverage ----" << std::endl;
 
 }
-
-
-
-
 
 }

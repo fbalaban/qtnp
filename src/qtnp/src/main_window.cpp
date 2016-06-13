@@ -219,6 +219,7 @@ void MainWindow::on_button_browse_clicked(bool check ) {
 
     set_kml_filename(filename);
 
+
 }
 
 void MainWindow::on_button_validate_kml_clicked(bool check ) {
@@ -229,6 +230,9 @@ void MainWindow::on_button_validate_kml_clicked(bool check ) {
 }
 
 void MainWindow::on_button_perform_cdt_clicked(bool check ) {
+
+    // FIXME static kml file name
+    set_kml_filename("/home/fotis/Dev/Data/elefsinaOuterKML.kml");
 
     double angle_cons(constants::angle_criterion_default);
     double edge_cons(constants::edge_criterion_default);

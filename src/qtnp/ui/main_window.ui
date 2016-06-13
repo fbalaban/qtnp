@@ -110,7 +110,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox_4">
              <property name="title">
-              <string>Rows</string>
+              <string/>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
               <item row="0" column="0">
@@ -245,6 +245,9 @@
              <property name="title">
               <string>General</string>
              </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
                <widget class="QRadioButton" name="radioButton">
@@ -256,6 +259,9 @@
                 </property>
                 <property name="text">
                  <string>Task cost</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
