@@ -422,11 +422,9 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     }
 
     // ------------- rviz coloring schema ----------------//
-    // also counting the biggest and smalest side //
-    double smallest_side = 999.999;
-    double biggest_side = 0.0;
-    double smallest_angle = 190.0;
-    double biggest_angle = 0.0;
+    // TODO center (waypoints) coloring should go to coloring function.
+    // unfortunately in the same function we also use the center points for further operations before the coloring.
+    // So waypoints (centers) should be distinguished from their coloring cousins.
 
     int initialize_iterator = 0;
 
@@ -448,21 +446,6 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         CDT::Point point2 = cdt.triangle(face)[1];
         CDT::Point point3 = cdt.triangle(face)[2];
 
-        // here gathering the smallest and biggest distances:
-        smallest_side =  ( utilities::smallest_distance(point1, point2, point3) < smallest_side) ?
-                    utilities::smallest_distance(point1, point2, point3) : smallest_side;
-        biggest_side = ( utilities::biggest_distance(point1, point2, point3) > biggest_side) ?
-                    utilities::biggest_distance(point1, point2, point3) : biggest_side;
-
-        // calulating an angle (only one...)
-        double angle = atan2((point2.y() - point1.y()), (point2.x() - point1.x()) ) -
-                atan2( (point3.y() - point1.y()) , (point3.x() - point1.x()) );
-        angle = abs(angle*180.0/3.14159265);
-
-        angle = (angle > 180) ? (360.0 - angle) : angle;
-
-        if (angle < smallest_angle) smallest_angle = angle;
-        if (angle > biggest_angle) biggest_angle = angle;
         // adding the center of every triangle
         rviz_objects_ref.push_center_point(utilities::face_points_to_center(point1, point2, point3));
         // adding it also to the center-id vector
@@ -779,6 +762,7 @@ void Tnp_update::mesh_coloring(){
             triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
             triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
         }
+
         // NOTE: borders coloring
         if (rviz_objects_ref.get_settings().borders){
             if (face->info().coverage_depth == constants::coverage_depth_max){
@@ -786,22 +770,24 @@ void Tnp_update::mesh_coloring(){
             }
         }
 
- //NOTE: agent coloring for partition viz
-//        if (face->info().agent_id == 1){
-//            triangle_color.r = 0.0f + 100.0;
-//            triangle_color.b = 0.0f;
-//            triangle_color.g = 0.0f;
-//        }
-//        if (face->info().agent_id == 2){
-//            triangle_color.r = 0.0f;
-//            triangle_color.b = 0.0f + 100.0;
-//            triangle_color.g = 0.0f;
-//        }
-//        if (face->info().agent_id == 3){
-//            triangle_color.r = 0.0f;
-//            triangle_color.b = 0.0f;
-//            triangle_color.g = 0.0f + 100.0;
-//        }
+        //NOTE: agent coloring for partition viz
+        if (rviz_objects_ref.get_settings().partition){
+            if (face->info().agent_id == 1){
+                triangle_color.r = 0.0f + 100.0;
+                triangle_color.b = 0.0f;
+                triangle_color.g = 0.0f;
+            }
+            if (face->info().agent_id == 2){
+                triangle_color.r = 0.0f;
+                triangle_color.b = 0.0f + 100.0;
+                triangle_color.g = 0.0f;
+            }
+            if (face->info().agent_id == 3){
+                triangle_color.r = 0.0f;
+                triangle_color.b = 0.0f;
+                triangle_color.g = 0.0f + 100.0;
+            }
+        }
 
         // NOTE: initial positions are white
         if (face->info().depth == 1){ // also include target coloring

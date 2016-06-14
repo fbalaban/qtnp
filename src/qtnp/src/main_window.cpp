@@ -103,7 +103,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     model = new QStandardItemModel(2,4,this); //2 Rows and 4 Columns
 
     model->setHorizontalHeaderItem(0, new QStandardItem(QString("Sensor type")));
-    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Footprint size (m)")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Cell size (m)")));
     model->setHorizontalHeaderItem(2, new QStandardItem(QString("Autonomy %")));
     model->setHorizontalHeaderItem(3, new QStandardItem(QString("Task")));
     model->setHorizontalHeaderItem(4, new QStandardItem(QString("Latitude")));
@@ -116,8 +116,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt())); // qApp is a global variable for the application
 
     ReadSettings();
-	setWindowIcon(QIcon(":/images/icon.png"));
-	ui.tab_manager->setCurrentIndex(0); // ensure the first tab is showing - qt-designer should have this already hardwired, but often loses it (settings?).
+    setWindowIcon(QIcon(":/images/earth.png"));
+    ui.tab_manager->setCurrentIndex(1); // ensure the second tab is showing - qt-designer should have this already hardwired, but often loses it (settings?).
     QObject::connect(&qnode, SIGNAL(rosShutdown()), this, SLOT(close()));
 
     /*********************
@@ -292,6 +292,15 @@ void MainWindow::on_button_partition_clicked(bool check ) {
                      std::setprecision(6) << "lat: " << coord_item.first  << ", lon: " << coord_item.second <<
                      ", percentage: " << percentage << std::endl;
     }
+      int button_checked = ui.button_group_color_coding->checkedId();
+      std::cout << "button id: " << button_checked << std::endl;
+      qnode.get_rviz_objects_pointer()->set_settings(
+                  (button_checked == -2 ? true :false ),
+                  (button_checked == -3 ? true :false ),
+                  (button_checked == -4 ? true :false ),
+                  ui.check_box_borders->isChecked(),
+                  ui.check_box_waypoints->isChecked());
+
       qnode.get_tnp_update_pointer()->partition(uas_coords_with_percentage);
 }
 

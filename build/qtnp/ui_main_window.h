@@ -66,17 +66,18 @@ public:
     QPushButton *button_load_last_uas_conf;
     QGroupBox *groupBox_6;
     QGridLayout *gridLayout_2;
-    QGroupBox *groupBox_7;
-    QVBoxLayout *verticalLayout_5;
-    QCheckBox *checkBox;
-    QCheckBox *checkBox_2;
     QGroupBox *groupBox_8;
     QVBoxLayout *verticalLayout_6;
     QCheckBox *checkBox_3;
+    QGroupBox *groupBox_7;
+    QVBoxLayout *verticalLayout_5;
+    QCheckBox *check_box_borders;
+    QCheckBox *check_box_waypoints;
     QGroupBox *groupBox_9;
     QVBoxLayout *verticalLayout_9;
-    QRadioButton *radioButton;
-    QRadioButton *radioButton_2;
+    QRadioButton *radio_button_hop;
+    QRadioButton *radio_button_coverage;
+    QRadioButton *radio_button_partitions;
     QMenuBar *menubar;
     QMenu *menu_File;
     QStatusBar *statusbar;
@@ -119,6 +120,7 @@ public:
     QSpinBox *spinBox_coverage;
     QPushButton *button_coverage;
     QPushButton *quit_button;
+    QButtonGroup *button_group_color_coding;
 
     void setupUi(QMainWindow *MainWindowDesign)
     {
@@ -255,35 +257,13 @@ public:
         groupBox_6->setSizePolicy(sizePolicy6);
         gridLayout_2 = new QGridLayout(groupBox_6);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
-        groupBox_7 = new QGroupBox(groupBox_6);
-        groupBox_7->setObjectName(QString::fromUtf8("groupBox_7"));
-        QSizePolicy sizePolicy7(QSizePolicy::Maximum, QSizePolicy::Minimum);
-        sizePolicy7.setHorizontalStretch(0);
-        sizePolicy7.setVerticalStretch(0);
-        sizePolicy7.setHeightForWidth(groupBox_7->sizePolicy().hasHeightForWidth());
-        groupBox_7->setSizePolicy(sizePolicy7);
-        verticalLayout_5 = new QVBoxLayout(groupBox_7);
-        verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
-        checkBox = new QCheckBox(groupBox_7);
-        checkBox->setObjectName(QString::fromUtf8("checkBox"));
-
-        verticalLayout_5->addWidget(checkBox);
-
-        checkBox_2 = new QCheckBox(groupBox_7);
-        checkBox_2->setObjectName(QString::fromUtf8("checkBox_2"));
-
-        verticalLayout_5->addWidget(checkBox_2);
-
-
-        gridLayout_2->addWidget(groupBox_7, 0, 1, 1, 1);
-
         groupBox_8 = new QGroupBox(groupBox_6);
         groupBox_8->setObjectName(QString::fromUtf8("groupBox_8"));
-        QSizePolicy sizePolicy8(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-        sizePolicy8.setHorizontalStretch(0);
-        sizePolicy8.setVerticalStretch(0);
-        sizePolicy8.setHeightForWidth(groupBox_8->sizePolicy().hasHeightForWidth());
-        groupBox_8->setSizePolicy(sizePolicy8);
+        QSizePolicy sizePolicy7(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+        sizePolicy7.setHorizontalStretch(0);
+        sizePolicy7.setVerticalStretch(0);
+        sizePolicy7.setHeightForWidth(groupBox_8->sizePolicy().hasHeightForWidth());
+        groupBox_8->setSizePolicy(sizePolicy7);
         verticalLayout_6 = new QVBoxLayout(groupBox_8);
         verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
         checkBox_3 = new QCheckBox(groupBox_8);
@@ -293,6 +273,29 @@ public:
 
 
         gridLayout_2->addWidget(groupBox_8, 0, 2, 1, 1);
+
+        groupBox_7 = new QGroupBox(groupBox_6);
+        groupBox_7->setObjectName(QString::fromUtf8("groupBox_7"));
+        QSizePolicy sizePolicy8(QSizePolicy::Maximum, QSizePolicy::Minimum);
+        sizePolicy8.setHorizontalStretch(0);
+        sizePolicy8.setVerticalStretch(0);
+        sizePolicy8.setHeightForWidth(groupBox_7->sizePolicy().hasHeightForWidth());
+        groupBox_7->setSizePolicy(sizePolicy8);
+        verticalLayout_5 = new QVBoxLayout(groupBox_7);
+        verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
+        check_box_borders = new QCheckBox(groupBox_7);
+        check_box_borders->setObjectName(QString::fromUtf8("check_box_borders"));
+
+        verticalLayout_5->addWidget(check_box_borders);
+
+        check_box_waypoints = new QCheckBox(groupBox_7);
+        check_box_waypoints->setObjectName(QString::fromUtf8("check_box_waypoints"));
+        check_box_waypoints->setEnabled(false);
+
+        verticalLayout_5->addWidget(check_box_waypoints);
+
+
+        gridLayout_2->addWidget(groupBox_7, 0, 1, 1, 1);
 
         groupBox_9 = new QGroupBox(groupBox_6);
         groupBox_9->setObjectName(QString::fromUtf8("groupBox_9"));
@@ -304,18 +307,28 @@ public:
         groupBox_9->setCheckable(false);
         verticalLayout_9 = new QVBoxLayout(groupBox_9);
         verticalLayout_9->setObjectName(QString::fromUtf8("verticalLayout_9"));
-        radioButton = new QRadioButton(groupBox_9);
-        radioButton->setObjectName(QString::fromUtf8("radioButton"));
-        sizePolicy5.setHeightForWidth(radioButton->sizePolicy().hasHeightForWidth());
-        radioButton->setSizePolicy(sizePolicy5);
-        radioButton->setChecked(true);
+        radio_button_hop = new QRadioButton(groupBox_9);
+        button_group_color_coding = new QButtonGroup(MainWindowDesign);
+        button_group_color_coding->setObjectName(QString::fromUtf8("button_group_color_coding"));
+        button_group_color_coding->addButton(radio_button_hop);
+        radio_button_hop->setObjectName(QString::fromUtf8("radio_button_hop"));
+        sizePolicy5.setHeightForWidth(radio_button_hop->sizePolicy().hasHeightForWidth());
+        radio_button_hop->setSizePolicy(sizePolicy5);
+        radio_button_hop->setChecked(true);
 
-        verticalLayout_9->addWidget(radioButton);
+        verticalLayout_9->addWidget(radio_button_hop);
 
-        radioButton_2 = new QRadioButton(groupBox_9);
-        radioButton_2->setObjectName(QString::fromUtf8("radioButton_2"));
+        radio_button_coverage = new QRadioButton(groupBox_9);
+        button_group_color_coding->addButton(radio_button_coverage);
+        radio_button_coverage->setObjectName(QString::fromUtf8("radio_button_coverage"));
 
-        verticalLayout_9->addWidget(radioButton_2);
+        verticalLayout_9->addWidget(radio_button_coverage);
+
+        radio_button_partitions = new QRadioButton(groupBox_9);
+        button_group_color_coding->addButton(radio_button_partitions);
+        radio_button_partitions->setObjectName(QString::fromUtf8("radio_button_partitions"));
+
+        verticalLayout_9->addWidget(radio_button_partitions);
 
 
         gridLayout_2->addWidget(groupBox_9, 0, 0, 1, 1);
@@ -430,8 +443,8 @@ public:
 
         checkbox_remember_settings = new QCheckBox(groupBox);
         checkbox_remember_settings->setObjectName(QString::fromUtf8("checkbox_remember_settings"));
-        sizePolicy7.setHeightForWidth(checkbox_remember_settings->sizePolicy().hasHeightForWidth());
-        checkbox_remember_settings->setSizePolicy(sizePolicy7);
+        sizePolicy8.setHeightForWidth(checkbox_remember_settings->sizePolicy().hasHeightForWidth());
+        checkbox_remember_settings->setSizePolicy(sizePolicy8);
         checkbox_remember_settings->setLayoutDirection(Qt::RightToLeft);
 
         gridLayout->addWidget(checkbox_remember_settings, 8, 0, 1, 1);
@@ -542,8 +555,8 @@ public:
         label_11 = new QLabel(groupBox_5);
         label_11->setObjectName(QString::fromUtf8("label_11"));
         label_11->setGeometry(QRect(187, 115, 31, 16));
-        sizePolicy7.setHeightForWidth(label_11->sizePolicy().hasHeightForWidth());
-        label_11->setSizePolicy(sizePolicy7);
+        sizePolicy8.setHeightForWidth(label_11->sizePolicy().hasHeightForWidth());
+        label_11->setSizePolicy(sizePolicy8);
         line_edit_task_lon = new QLineEdit(groupBox_5);
         line_edit_task_lon->setObjectName(QString::fromUtf8("line_edit_task_lon"));
         line_edit_task_lon->setGeometry(QRect(220, 110, 91, 24));
@@ -558,13 +571,13 @@ public:
         label_9 = new QLabel(groupBox_5);
         label_9->setObjectName(QString::fromUtf8("label_9"));
         label_9->setGeometry(QRect(100, 80, 151, 16));
-        sizePolicy7.setHeightForWidth(label_9->sizePolicy().hasHeightForWidth());
-        label_9->setSizePolicy(sizePolicy7);
+        sizePolicy8.setHeightForWidth(label_9->sizePolicy().hasHeightForWidth());
+        label_9->setSizePolicy(sizePolicy8);
         label_10 = new QLabel(groupBox_5);
         label_10->setObjectName(QString::fromUtf8("label_10"));
         label_10->setGeometry(QRect(27, 115, 61, 16));
-        sizePolicy7.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
-        label_10->setSizePolicy(sizePolicy7);
+        sizePolicy8.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
+        label_10->setSizePolicy(sizePolicy8);
         line_edit_task_lat = new QLineEdit(groupBox_5);
         line_edit_task_lat->setObjectName(QString::fromUtf8("line_edit_task_lat"));
         line_edit_task_lat->setGeometry(QRect(90, 110, 91, 24));
@@ -578,8 +591,8 @@ public:
         spinBox_coverage = new QSpinBox(groupBox_5);
         spinBox_coverage->setObjectName(QString::fromUtf8("spinBox_coverage"));
         spinBox_coverage->setGeometry(QRect(260, 74, 46, 25));
-        sizePolicy7.setHeightForWidth(spinBox_coverage->sizePolicy().hasHeightForWidth());
-        spinBox_coverage->setSizePolicy(sizePolicy7);
+        sizePolicy8.setHeightForWidth(spinBox_coverage->sizePolicy().hasHeightForWidth());
+        spinBox_coverage->setSizePolicy(sizePolicy8);
         spinBox_coverage->setMaximum(10);
         button_coverage = new QPushButton(groupBox_5);
         button_coverage->setObjectName(QString::fromUtf8("button_coverage"));
@@ -594,8 +607,8 @@ public:
 
         quit_button = new QPushButton(dockWidgetContents_2);
         quit_button->setObjectName(QString::fromUtf8("quit_button"));
-        sizePolicy14.setHeightForWidth(quit_button->sizePolicy().hasHeightForWidth());
-        quit_button->setSizePolicy(sizePolicy14);
+        sizePolicy11.setHeightForWidth(quit_button->sizePolicy().hasHeightForWidth());
+        quit_button->setSizePolicy(sizePolicy11);
 
         verticalLayout->addWidget(quit_button);
 
@@ -638,14 +651,15 @@ public:
         button_save_uas_config->setText(QApplication::translate("MainWindowDesign", "save configuration", 0, QApplication::UnicodeUTF8));
         button_load_last_uas_conf->setText(QApplication::translate("MainWindowDesign", "load last configuration", 0, QApplication::UnicodeUTF8));
         groupBox_6->setTitle(QApplication::translate("MainWindowDesign", "Visualizations", 0, QApplication::UnicodeUTF8));
-        groupBox_7->setTitle(QApplication::translate("MainWindowDesign", "Rviz", 0, QApplication::UnicodeUTF8));
-        checkBox->setText(QApplication::translate("MainWindowDesign", "Borders", 0, QApplication::UnicodeUTF8));
-        checkBox_2->setText(QApplication::translate("MainWindowDesign", "Waypoints", 0, QApplication::UnicodeUTF8));
         groupBox_8->setTitle(QApplication::translate("MainWindowDesign", "Gazebo", 0, QApplication::UnicodeUTF8));
         checkBox_3->setText(QApplication::translate("MainWindowDesign", "Whatever", 0, QApplication::UnicodeUTF8));
-        groupBox_9->setTitle(QApplication::translate("MainWindowDesign", "General", 0, QApplication::UnicodeUTF8));
-        radioButton->setText(QApplication::translate("MainWindowDesign", "Task cost", 0, QApplication::UnicodeUTF8));
-        radioButton_2->setText(QApplication::translate("MainWindowDesign", "Coverage cost", 0, QApplication::UnicodeUTF8));
+        groupBox_7->setTitle(QApplication::translate("MainWindowDesign", "Rviz", 0, QApplication::UnicodeUTF8));
+        check_box_borders->setText(QApplication::translate("MainWindowDesign", "Borders", 0, QApplication::UnicodeUTF8));
+        check_box_waypoints->setText(QApplication::translate("MainWindowDesign", "Waypoints", 0, QApplication::UnicodeUTF8));
+        groupBox_9->setTitle(QApplication::translate("MainWindowDesign", "Color coding", 0, QApplication::UnicodeUTF8));
+        radio_button_hop->setText(QApplication::translate("MainWindowDesign", "Hop cost", 0, QApplication::UnicodeUTF8));
+        radio_button_coverage->setText(QApplication::translate("MainWindowDesign", "Coverage cost", 0, QApplication::UnicodeUTF8));
+        radio_button_partitions->setText(QApplication::translate("MainWindowDesign", "Partitions", 0, QApplication::UnicodeUTF8));
         tab_manager->setTabText(tab_manager->indexOf(tab_uas_manager), QApplication::translate("MainWindowDesign", "UAS Manager", 0, QApplication::UnicodeUTF8));
         menu_File->setTitle(QApplication::translate("MainWindowDesign", "&App", 0, QApplication::UnicodeUTF8));
         dock_status->setWindowTitle(QApplication::translate("MainWindowDesign", "Command Panel", 0, QApplication::UnicodeUTF8));

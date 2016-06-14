@@ -38,6 +38,7 @@ struct Rviz_settings {
 
   bool task_cost;
   bool coverage_cost;
+  bool partition;
   bool waypoints;
   bool borders;
 };
@@ -94,8 +95,9 @@ public:
     void clear_triangulation_mesh();
     void clear_center_points_with_cell_id();
 
-    void set_settings(bool task, bool coverage, bool waypoints, bool borders){
-      rviz_settings.task_cost = task; rviz_settings.coverage_cost = coverage; rviz_settings.waypoints = waypoints; rviz_settings.borders = borders;
+    void set_settings(bool task, bool coverage, bool partition, bool waypoints, bool borders){
+      rviz_settings.task_cost = task; rviz_settings.coverage_cost = coverage;
+      rviz_settings.partition = partition; rviz_settings.waypoints = waypoints; rviz_settings.borders = borders;
     }
 
     int count_cells(){ return center_points.points.size(); }

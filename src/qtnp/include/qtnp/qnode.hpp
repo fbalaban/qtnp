@@ -49,6 +49,7 @@ public:
     void init_publishers(ros::NodeHandle n);
 
     Tnp_update *get_tnp_update_pointer(){ return &tnp_update; }
+    Rviz_objects *get_rviz_objects_pointer(){ return &rviz_objects; }
 
 	/*********************
 	** Logging
