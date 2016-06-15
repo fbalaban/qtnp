@@ -421,6 +421,12 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << cdt.number_of_vertices() << std::endl;
     }
 
+
+//    CGAL::lloyd_optimize_mesh_2(cdt,
+//      CGAL::parameters::max_iteration_number = 10);
+
+    std::cout << "Number of vertices AFTER LLOYD: " << cdt.number_of_vertices() << std::endl;
+
     // ------------- rviz coloring schema ----------------//
     // TODO center (waypoints) coloring should go to coloring function.
     // unfortunately in the same function we also use the center points for further operations before the coloring.
@@ -458,7 +464,7 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     rviz_objects_ref.set_polygon_ready(true);
 }
 
-// custom callback function of the ROS listener for path planning
+// FIXME: DEPRECATED custom callback function of the ROS listener for path planning
 void Tnp_update::path_planning_callback(const InitialCoordinates::ConstPtr &msg){
 
     std::cout << std::setprecision(7);

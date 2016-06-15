@@ -10,7 +10,7 @@ project(qtnp)
 ##############################################################################
 
 set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "Don't override flags")
-set(CMAKE_CXX_FLAGS " -lgmp -lCGAL -lCGAL_Core -frounding-math ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=gnu++11 -lgmp -lCGAL -lCGAL_Core -frounding-math ${CMAKE_CXX_FLAGS}")
 
 find_package(CGAL REQUIRED COMPONENTS Core)
 
