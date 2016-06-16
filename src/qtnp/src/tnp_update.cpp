@@ -421,7 +421,6 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << cdt.number_of_vertices() << std::endl;
     }
 
-
 //    CGAL::lloyd_optimize_mesh_2(cdt,
 //      CGAL::parameters::max_iteration_number = 10);
 
@@ -550,8 +549,6 @@ void Tnp_update::partition(std::vector<std::pair< std::pair<double,double> , int
 
     // hop cost/partitioning, passing autonomy percentage table
     hop_cost_attribution(id_cell_count_vector);
-    // coverage_cost_attribution();
-    // rviz coloring
     mesh_coloring();
 }
 
