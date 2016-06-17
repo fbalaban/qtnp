@@ -414,6 +414,9 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
     std::cout << "Number of vertices after meshing and refining with new criteria: "
             << cdt.number_of_vertices() << std::endl;
 
+    CGAL::lloyd_optimize_mesh_2(cdt,
+      CGAL::parameters::max_iteration_number = 50);
+
     //  Adding the seeds which define the holes.
     if (!list_of_seeds.empty()){
         std::cout << "Refining and meshing the domain including seeds defining holes" << std::endl;
@@ -421,10 +424,7 @@ void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_
         std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << cdt.number_of_vertices() << std::endl;
     }
 
-//    CGAL::lloyd_optimize_mesh_2(cdt,
-//      CGAL::parameters::max_iteration_number = 10);
-
-    std::cout << "Number of vertices AFTER LLOYD: " << cdt.number_of_vertices() << std::endl;
+    std::cout << "Number of vertices AFTER LLOYD (10 iterations): " << cdt.number_of_vertices() << std::endl;
 
     // ------------- rviz coloring schema ----------------//
     // TODO center (waypoints) coloring should go to coloring function.

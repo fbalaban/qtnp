@@ -63,8 +63,6 @@ CGAL/Exact_predicates_inexact_constructions_kernel.h
 -
 CGAL/Delaunay_mesh_vertex_base_2.h
 -
-CGAL/Triangulation_vertex_base_2.h
--
 CGAL/Delaunay_mesher_2.h
 -
 CGAL/Delaunay_mesh_face_base_2.h

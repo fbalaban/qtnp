@@ -25,7 +25,6 @@
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Delaunay_mesh_vertex_base_2.h>
-#include <CGAL/Triangulation_vertex_base_2.h>
 #include <CGAL/Delaunay_mesher_2.h>
 #include <CGAL/Delaunay_mesh_face_base_2.h>
 #include <CGAL/Delaunay_mesh_size_criteria_2.h>
@@ -81,10 +80,8 @@ typedef CGAL::Simple_cartesian<double> Kernel;
 typedef Kernel::Point_2 kernel_Point_2;
 // the constructions Kernel
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-//typedef CGAL::Triangulation_vertex_base_2<K> Vb;
 typedef CGAL::Delaunay_mesh_vertex_base_2<K> Vb;
 typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
-//typedef CGAL::Constrained_triangulation_face_base_2<K,Fb>        CTFb;
 typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2,K,Fb>    InfoFbb;
 typedef CGAL::Triangulation_data_structure_2<Vb, InfoFbb> Tds;
 typedef CGAL::Exact_predicates_tag Itag;
