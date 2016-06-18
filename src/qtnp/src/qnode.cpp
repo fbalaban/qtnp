@@ -22,6 +22,8 @@
 #include "../include/qtnp/rviz_objects.hpp"
 #include "../include/qtnp/tnp_update.hpp"
 
+#include "mavros_msgs/WaypointList.h"
+
 /*****************************************************************************
 ** Implementation (includes two wrapper functions to overload the subscribers callbacks)
 *****************************************************************************/
@@ -145,6 +147,7 @@ void QNode::run() {
           triangulation_mesh_pub.publish(rviz_objects.get_triangulation_mesh());
           path_pub.publish(rviz_objects.get_path());
           std::cout << "Number of waypoints: " << rviz_objects.get_number_of_waypoints() << std::endl;
+          waypoints_pub.publish(this->tnp_update.get_waypoint_list());
           // TODO define data file or log
           //dataFile << rviz_objects.get_number_of_waypoints() << " ";
           rviz_objects.set_planning_ready(false);
@@ -209,6 +212,8 @@ void QNode::init_publishers(ros::NodeHandle n){
     center_pub = n.advertise<visualization_msgs::Marker>("center_points", 150);
     // publishing the produced path(s)(?)
     path_pub = n.advertise<nav_msgs::Path>("path_planning", 150);
+    // publishing waypoint lists in mavros nodes
+    waypoints_pub = n.advertise<mavros_msgs::WaypointList>("mavros/mission/waypoints", 150);
 
 }
 

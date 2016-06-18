@@ -105,6 +105,8 @@ qtnp/Coordinates.h
 /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qtnp/Coordinates.h
 qtnp/Placemarks.h
 /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qtnp/Placemarks.h
+mavros_msgs/WaypointList.h
+/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/mavros_msgs/WaypointList.h
 
 /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/utilities.hpp
 ros/ros.h
@@ -119,6 +121,8 @@ geometry_msgs/PolygonStamped.h
 -
 cdt_types.hpp
 /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/cdt_types.hpp
+constants.hpp
+/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/constants.hpp
 
 /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/tnp_update.cpp
 ros/ros.h
@@ -133,6 +137,10 @@ qtnp/Coordinates.h
 /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/qtnp/Coordinates.h
 qtnp/Placemarks.h
 /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/qtnp/Placemarks.h
+mavros_msgs/Waypoint.h
+/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/mavros_msgs/Waypoint.h
+mavros_msgs/WaypointList.h
+/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/mavros_msgs/WaypointList.h
 
 /opt/ros/indigo/include/XmlRpcDecl.h
 ros/macros.h
@@ -290,6 +298,40 @@ ros/serialization.h
 ros/builtin_message_traits.h
 -
 ros/message_operations.h
+-
+
+/opt/ros/indigo/include/mavros_msgs/Waypoint.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+
+/opt/ros/indigo/include/mavros_msgs/WaypointList.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+mavros_msgs/Waypoint.h
 -
 
 /opt/ros/indigo/include/nav_msgs/Path.h

@@ -26,6 +26,8 @@
 #include "qtnp/Coordinates.h"
 #include "qtnp/Placemarks.h"
 
+#include "mavros_msgs/WaypointList.h"
+
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
@@ -68,14 +70,14 @@ class Tnp_update {
     void perform_polygon_definition(std::vector<Coordinates> placemarks_array, double angle_cons, double edge_cons);
 
     void path_planning_callback(const InitialCoordinates::ConstPtr& msg);
-    void path_planning_coverage(int uas);
+    void path_planning_coverage(std::pair<int, std::pair<double, double> > uas);
     void path_planning_to_goal(int uas, double lat, double lon);
     void partition(std::vector<std::pair<std::pair<double, double>, int> > uas_coords_with_percentage);
 
     void hop_cost_attribution(std::vector<std::pair<int, int> > id_cell_count);
     void coverage_cost_attribution();
     void path_to_goal(int uas, int goal_cell_id);
-    void complete_path_coverage(int uav_id);
+    void complete_path_coverage(std::pair<int, std::pair<double,double> > uas);
 
     int coordinates_to_cdt_cell_id(double lat, double lon);
     bool are_neighbors (int a, int b);
@@ -83,6 +85,9 @@ class Tnp_update {
     int find_neighbor(std::vector<int> &move_path, std::vector<int> &dead_end);
     void move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB, std::vector<int> path);
     int move(int cells, std::vector<int> path);
+
+    void make_mavros_waypoint_list(std::pair<double, double> coords, nav_msgs::Path path);
+    mavros_msgs::WaypointList get_waypoint_list(){ return waypoint_list; }
 
     void mesh_coloring();
     void init();
@@ -95,6 +100,8 @@ class Tnp_update {
     CDT cdt;
     CDT_Point_2_vector cdt_polygon_edges;
     Area_extremes area_extremes;
+
+    mavros_msgs::WaypointList waypoint_list;
 
 };
 

@@ -25,6 +25,7 @@
 #include <geometry_msgs/PolygonStamped.h>
 
 #include "cdt_types.hpp"
+#include "constants.hpp"
 
 /*****************************************************************************
 ** Namespaces
@@ -187,6 +188,19 @@ inline bool distance_comparison (const Distance_Entry& i, const Distance_Entry& 
 
 inline bool depth_comparison  (const Distance_Entry& i, const Distance_Entry& j) {
     return (i.first->info().depth < j.first->info().depth);
+}
+
+inline double latitudeDisplacement (double initialLatitude, double meters){
+
+    return initialLatitude + (((meters/1000.0) / constants::r_earth) * (180/constants::PI));
+
+}
+
+inline double longitudeDisplacement(double initialLongitude, double displacedLatitude, double meters){
+
+    return initialLongitude + ((((meters/1000.0) / constants::r_earth) * (180/constants::PI)) /
+                               cos(displacedLatitude * (constants::PI/180)));
+
 }
 
 }

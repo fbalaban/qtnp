@@ -26,6 +26,8 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
  /opt/ros/indigo/include/geometry_msgs/Quaternion.h
  /opt/ros/indigo/include/geometry_msgs/Vector3.h
+ /opt/ros/indigo/include/mavros_msgs/Waypoint.h
+ /opt/ros/indigo/include/mavros_msgs/WaypointList.h
  /opt/ros/indigo/include/nav_msgs/Path.h
  /opt/ros/indigo/include/ros/advertise_options.h
  /opt/ros/indigo/include/ros/advertise_service_options.h
@@ -289,6 +291,8 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o
  /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
  /opt/ros/indigo/include/geometry_msgs/Quaternion.h
  /opt/ros/indigo/include/geometry_msgs/Vector3.h
+ /opt/ros/indigo/include/mavros_msgs/Waypoint.h
+ /opt/ros/indigo/include/mavros_msgs/WaypointList.h
  /opt/ros/indigo/include/nav_msgs/Path.h
  /opt/ros/indigo/include/ros/advertise_options.h
  /opt/ros/indigo/include/ros/advertise_service_options.h
@@ -502,6 +506,8 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o
  /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
  /opt/ros/indigo/include/geometry_msgs/Quaternion.h
  /opt/ros/indigo/include/geometry_msgs/Vector3.h
+ /opt/ros/indigo/include/mavros_msgs/Waypoint.h
+ /opt/ros/indigo/include/mavros_msgs/WaypointList.h
  /opt/ros/indigo/include/nav_msgs/Path.h
  /opt/ros/indigo/include/ros/advertise_options.h
  /opt/ros/indigo/include/ros/advertise_service_options.h
@@ -1030,6 +1036,8 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
  /opt/ros/indigo/include/geometry_msgs/Quaternion.h
  /opt/ros/indigo/include/geometry_msgs/Vector3.h
+ /opt/ros/indigo/include/mavros_msgs/Waypoint.h
+ /opt/ros/indigo/include/mavros_msgs/WaypointList.h
  /opt/ros/indigo/include/nav_msgs/Path.h
  /opt/ros/indigo/include/ros/advertise_options.h
  /opt/ros/indigo/include/ros/advertise_service_options.h
@@ -1563,6 +1571,8 @@ qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o
  /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
  /opt/ros/indigo/include/geometry_msgs/Quaternion.h
  /opt/ros/indigo/include/geometry_msgs/Vector3.h
+ /opt/ros/indigo/include/mavros_msgs/Waypoint.h
+ /opt/ros/indigo/include/mavros_msgs/WaypointList.h
  /opt/ros/indigo/include/nav_msgs/Path.h
  /opt/ros/indigo/include/ros/advertise_options.h
  /opt/ros/indigo/include/ros/advertise_service_options.h
@@ -1837,6 +1847,8 @@ qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o
  /opt/ros/indigo/include/geometry_msgs/PoseStamped.h
  /opt/ros/indigo/include/geometry_msgs/Quaternion.h
  /opt/ros/indigo/include/geometry_msgs/Vector3.h
+ /opt/ros/indigo/include/mavros_msgs/Waypoint.h
+ /opt/ros/indigo/include/mavros_msgs/WaypointList.h
  /opt/ros/indigo/include/nav_msgs/Path.h
  /opt/ros/indigo/include/ros/advertise_options.h
  /opt/ros/indigo/include/ros/advertise_service_options.h

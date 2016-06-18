@@ -76,7 +76,7 @@ private:
     Rviz_objects rviz_objects;
     Tnp_update tnp_update;
 
-    ros::Publisher chatter_publisher, edges_pub, polygon_pub, triangulation_mesh_pub, center_pub, path_pub;
+    ros::Publisher chatter_publisher, edges_pub, polygon_pub, triangulation_mesh_pub, center_pub, path_pub, waypoints_pub;
     ros::Subscriber home_spot_sub, polygon_def_sub;
 
     QStringListModel logging_model;

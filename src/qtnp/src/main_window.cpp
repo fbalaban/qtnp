@@ -307,10 +307,21 @@ void MainWindow::on_button_partition_clicked(bool check ) {
 
 void MainWindow::on_button_coverage_clicked(bool checked){
 
-    int uas= ui.spinBox_coverage->value();
+    int uas = ui.spinBox_coverage->value();
     if ((uas < 1) || (uas > ui.table_view_uas->model()->rowCount()) ) showGenericMessage("Please select a valid UAS");
-    else qnode.get_tnp_update_pointer()->path_planning_coverage(uas);
+    else {
+        std::pair<double, double> coords;
+        //lat
+        coords.first = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(uas -1, 4))).toDouble();
+        //lon
+        coords.second = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(uas -1, 5))).toDouble();
 
+        std::pair<int, std::pair<double,double> > coverage_for;
+        coverage_for.first = uas;
+        coverage_for.second = coords;
+
+        qnode.get_tnp_update_pointer()->path_planning_coverage(coverage_for);
+    }
 }
 
 void MainWindow::on_button_go_to_goal_clicked(bool checked){
