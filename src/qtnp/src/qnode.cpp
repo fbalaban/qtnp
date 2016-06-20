@@ -159,6 +159,7 @@ void QNode::run() {
                it != the_list.end(); it++){
               std::cout << "lat: " << it->x_lat << "lat: " << it->y_long << std::endl;
           }
+
           waypoints_s_client.call(push_srv);
 
           // TODO define data file or log

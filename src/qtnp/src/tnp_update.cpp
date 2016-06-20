@@ -364,16 +364,16 @@ namespace qtnp {
             longitude_array = it->longitude;
             latitude_array  = it->latitude;
 
-            // TODO: Warning. this info (min,max,range) should be propagated to the path planning callback,
-            // or else the visualization information will be wrong
-
             for (int i=1; i<size; i++){
 
-                double previous_latitude = utilities::convert_range(area_extremes.min_lat,area_extremes.max_lat,constants::rviz_range_min,constants::rviz_range_max,latitude_array[i-1]);
-                double previous_longitude = utilities::convert_range(area_extremes.min_lon,area_extremes.max_lon,constants::rviz_range_min,constants::rviz_range_max,longitude_array[i-1]);
-
-                double current_latitude = utilities::convert_range(area_extremes.min_lat,area_extremes.max_lat,constants::rviz_range_min,constants::rviz_range_max,latitude_array[i]);
-                double current_longitude = utilities::convert_range(area_extremes.min_lon,area_extremes.max_lon,constants::rviz_range_min,constants::rviz_range_max,longitude_array[i]);
+                double previous_latitude = utilities::convert_range(area_extremes.min_lat,area_extremes.max_lat,
+                                                                    constants::rviz_range_min,constants::rviz_range_max,latitude_array[i-1]);
+                double previous_longitude = utilities::convert_range(area_extremes.min_lon,area_extremes.max_lon,
+                                                                     constants::rviz_range_min,constants::rviz_range_max,longitude_array[i-1]);
+                double current_latitude = utilities::convert_range(area_extremes.min_lat,area_extremes.max_lat,
+                                                                   constants::rviz_range_min,constants::rviz_range_max,latitude_array[i]);
+                double current_longitude = utilities::convert_range(area_extremes.min_lon,area_extremes.max_lon,
+                                                                    constants::rviz_range_min,constants::rviz_range_max,longitude_array[i]);
 
                 // inserting the area definition vertexes by drawing points and connecting them
                 CDT::Vertex_handle va = cdt.insert(CDT::Point(previous_latitude,previous_longitude));
@@ -401,9 +401,10 @@ namespace qtnp {
         }
 
         // TODO: seperate rest of function
-        // FIXME: edge constrain is in cgal points that doesn't correspond to meters. depending on max values, transform given value
+        // FIXME: edge constrain is in cgal points that doesn't correspond to meters.
+        // depending on max values, transform given value
         double crAngle = angle_cons;// 0.125; -- the default angle criteria
-        double crEdge = edge_cons; // 25.0; -- the default edge criteria(50m footprint)
+        double crEdge = edge_cons; // 25.0; -- the default edge criteria(50m footprint) (it's the number given/500 (the max rviz range))
         std::cout << "Number of vertices before meshing and refining: " << cdt.number_of_vertices() << std::endl;
         std::cout << "Meshing the triangulation with default criteria..." << std::endl;
         Mesher mesher(cdt);
@@ -438,25 +439,29 @@ namespace qtnp {
         for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
             faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
 
-          // for every face, we need a face handle to perform the various operations.
-          CDT::Face_handle face = faces_iterator;
-
-
-          // if this face is in the domain, meaning inside the contrained borders but outside the defined holes
-          if (face->is_in_domain()){
+          if (faces_iterator->is_in_domain()){
 
             // initialize face, along with it's id. TODO remove it from partition (initialize_mesh function)
             faces_iterator->info().initialize(initialize_iterator);
 
             // create a point for each of the edges of the face.
-            CDT::Point point1 = cdt.triangle(face)[0];
-            CDT::Point point2 = cdt.triangle(face)[1];
-            CDT::Point point3 = cdt.triangle(face)[2];
+            CDT::Point point1 = cdt.triangle(faces_iterator)[0];
+            CDT::Point point2 = cdt.triangle(faces_iterator)[1];
+            CDT::Point point3 = cdt.triangle(faces_iterator)[2];
+            geometry_msgs::Point center = utilities::face_points_to_center(point1, point2, point3);
+            // adding it's respective lat and lon to its struct
+            // TODO rviz_range_min and max should not be constants e.g. 500x500 because in conversion,
+            // if area is not square like it will create a distortion in visualization. They should be proportional (good luck)
+            faces_iterator->info().center_lat = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
+                                                                         area_extremes.min_lat,area_extremes.max_lat,center.y);
+            faces_iterator->info().center_lon = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
+                                                                         area_extremes.min_lon,area_extremes.max_lon,center.x);
+            // adding the center of every triangle to rviz
+            rviz_objects_ref.push_center_point(center);
 
-            // adding the center of every triangle
-            rviz_objects_ref.push_center_point(utilities::face_points_to_center(point1, point2, point3));
             // adding it also to the center-id vector
-            rviz_objects_ref.push_center_point_with_cell_id(initialize_iterator, utilities::face_points_to_center(point1, point2, point3));
+            rviz_objects_ref.push_center_point_with_cell_id(initialize_iterator,center);
+
             initialize_iterator++;
 
           }

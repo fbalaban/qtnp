@@ -44,6 +44,7 @@ struct FaceInfo2
 
   bool visited, numbered, path_visited, cover_depth, aux, occupied;
   int id, depth, agent_id, jumps_agent_id, coverage_depth;
+  double center_lat, center_lon;
 
   void initialize(int face_id){
     visited = numbered = path_visited = cover_depth = aux = occupied = false;
@@ -60,12 +61,15 @@ struct FaceInfo2
   bool is_visited(){
     return visited;
   }
+
   bool is_path_visited(){
     return path_visited;
   }
+
   bool has_number(){
     return numbered;
   }
+
   bool has_coverage_depth(){
     return cover_depth;
   }
