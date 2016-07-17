@@ -50,6 +50,7 @@ include qtnp/CMakeFiles/qtnp.dir/progress.make
 include qtnp/CMakeFiles/qtnp.dir/flags.make
 
 qtnp/qrc_images.cxx: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/resources/images/icon.png
+qtnp/qrc_images.cxx: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/resources/images/earth.png
 qtnp/qrc_images.cxx: qtnp/resources/images.qrc.depends
 qtnp/qrc_images.cxx: /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/resources/images.qrc
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/fotis/Dev/Workspaces/ROS/qTnP/build/CMakeFiles $(CMAKE_PROGRESS_1)

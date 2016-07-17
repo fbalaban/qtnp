@@ -148,7 +148,7 @@ inline kernel_Point_2 ros_to_cgal_point(geometry_msgs::Point point){
   return cgal_point;
 }
 
-// TODO: frame_id is hardcoded
+// TODO frame_id is hardcoded
 inline geometry_msgs::PoseStamped build_pose_stamped(geometry_msgs::Point point_position){
 
   geometry_msgs::Pose pose;

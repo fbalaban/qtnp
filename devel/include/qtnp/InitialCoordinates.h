@@ -173,7 +173,7 @@ namespace serialization
       stream.next(m.latitude);
     }
 
-    ROS_DECLARE_ALLINONE_SERIALIZER;
+    ROS_DECLARE_ALLINONE_SERIALIZER
   }; // struct InitialCoordinates_
 
 } // namespace serialization

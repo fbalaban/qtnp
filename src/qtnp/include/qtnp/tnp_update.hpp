@@ -79,15 +79,24 @@ class Tnp_update {
     void path_to_goal(int uas, int goal_cell_id);
     void complete_path_coverage(std::pair<int, std::pair<double,double> > uas);
 
+    void clear_aux();
+    std::vector<int> count_agent_cells();
+    int count_adjacent_cells(int from_agent, int to_agent);
+    int get_max_coverage_depth_against_other(int from_agent, int to_agent);
+    int get_lowest_coverage_depth_against_other(int from_agent, int to_agent);
+
+    void exchange_agent_on_border_cells(int from_agent, int to_agent, int cells);
+
     int coordinates_to_cdt_cell_id(double lat, double lon);
     bool are_neighbors (int a, int b);
     std::vector<int> find_path(int a, int b);
     int find_neighbor(std::vector<int> &move_path, std::vector<int> &dead_end);
     void move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB, std::vector<int> path);
     int move(int cells, std::vector<int> path);
+    void moveCOV(int cells, std::vector<int> path);
 
-    void make_mavros_waypoint_list(std::pair<double, double> coords, nav_msgs::Path path);
-    mavros_msgs::WaypointList get_waypoint_list(){ return waypoint_list; }
+    void make_mavros_waypoint_list(std::pair<double, double> uas_coords, std::vector<std::pair<double, double> > path);
+    mavros_msgs::WaypointList get_waypoint_list(){ return m_waypoint_list; }
 
     void mesh_coloring();
     void init();
@@ -101,7 +110,7 @@ class Tnp_update {
     CDT_Point_2_vector cdt_polygon_edges;
     Area_extremes area_extremes;
 
-    mavros_msgs::WaypointList waypoint_list;
+    mavros_msgs::WaypointList m_waypoint_list;
 
 };
 

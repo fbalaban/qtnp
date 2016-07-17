@@ -25,6 +25,7 @@
 #include "mavros/mavros.h"
 #include "mavros_msgs/WaypointList.h"
 #include "mavros_msgs/WaypointPush.h"
+#include "mavros_msgs/WaypointClear.h"
 
 
 /*****************************************************************************
@@ -151,16 +152,24 @@ void QNode::run() {
           path_pub.publish(rviz_objects.get_path());
           std::cout << "Number of waypoints: " << rviz_objects.get_number_of_waypoints() << std::endl;
           // waypoints_s_client.publish(this->tnp_update.get_waypoint_list());
-          mavros_msgs::WaypointPush push_srv;
-          push_srv.request.waypoints = tnp_update.get_waypoint_list().waypoints;
+//          mavros_msgs::WaypointPush push_srv;
+//          mavros_msgs::WaypointClear clear_wp;
 
-          std::vector<mavros_msgs::Waypoint> the_list = tnp_update.get_waypoint_list().waypoints;
-          for (std::vector<mavros_msgs::Waypoint>::iterator it = the_list.begin();
-               it != the_list.end(); it++){
-              std::cout << "lat: " << it->x_lat << "lat: " << it->y_long << std::endl;
-          }
+//          for (int i=0; i< tnp_update.get_waypoint_list().waypoints.size(); i++){
 
-          waypoints_s_client.call(push_srv);
+//              push_srv.request.waypoints.push_back(tnp_update.get_waypoint_list().waypoints[i]);
+//            waypoints_s_client.call(push_srv);
+//            ros::Duration(0.3).sleep();
+
+//          }
+
+//          std::vector<mavros_msgs::Waypoint> the_list = push_srv.request.waypoints;
+//          for (std::vector<mavros_msgs::Waypoint>::iterator it = the_list.begin();
+//               it != the_list.end(); it++){
+//              std::cout << "lat: " << it->x_lat << "lat: " << it->y_long << std::endl;
+//          }
+//            std::cout << "total:" << the_list.size() << std::endl;
+//          waypoints_s_client.call(push_srv);
 
           // TODO define data file or log
           //dataFile << rviz_objects.get_number_of_waypoints() << " ";

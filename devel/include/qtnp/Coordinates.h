@@ -187,7 +187,7 @@ namespace serialization
       stream.next(m.latitude);
     }
 
-    ROS_DECLARE_ALLINONE_SERIALIZER;
+    ROS_DECLARE_ALLINONE_SERIALIZER
   }; // struct Coordinates_
 
 } // namespace serialization

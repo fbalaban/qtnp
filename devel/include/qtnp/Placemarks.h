@@ -168,7 +168,7 @@ namespace serialization
       stream.next(m.placemarks);
     }
 
-    ROS_DECLARE_ALLINONE_SERIALIZER;
+    ROS_DECLARE_ALLINONE_SERIALIZER
   }; // struct Placemarks_
 
 } // namespace serialization

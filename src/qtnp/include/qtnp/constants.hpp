@@ -17,10 +17,10 @@
 namespace constants
 {
     const int coverage_depth_max(999);
-    const double max_lat(90.1);
-    const double min_lat(-90.1);
-    const double max_lon(180.1);
-    const double min_lon(-180.1);
+    const double max_lat(90.001);
+    const double min_lat(-90.001);
+    const double max_lon(180.001);
+    const double min_lon(-180.001);
 
     const double rviz_range_min(0.0);
     const double rviz_range_max(500.0);

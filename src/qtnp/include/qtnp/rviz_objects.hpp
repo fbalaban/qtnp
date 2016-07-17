@@ -95,7 +95,7 @@ public:
     void clear_triangulation_mesh();
     void clear_center_points_with_cell_id();
 
-    void set_settings(bool task, bool coverage, bool partition, bool waypoints, bool borders){
+    void set_settings(bool task, bool coverage, bool partition, bool borders, bool waypoints ){
       rviz_settings.task_cost = task; rviz_settings.coverage_cost = coverage;
       rviz_settings.partition = partition; rviz_settings.waypoints = waypoints; rviz_settings.borders = borders;
     }

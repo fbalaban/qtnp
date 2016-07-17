@@ -14,5 +14,4 @@ export PATH="/opt/ros/indigo/bin:/home/fotis/Dev/Tools/Qt/5.5/gcc_64/bin:/usr/li
 export PKG_CONFIG_PATH="/home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PWD="/home/fotis/Dev/Workspaces/ROS/qTnP/build"
 export PYTHONPATH="/home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/python2.7/dist-packages:$PYTHONPATH"
-export ROSLISP_PACKAGE_DIRECTORIES="/home/fotis/Dev/Workspaces/ROS/qTnP/devel/share/common-lisp"
 export ROS_PACKAGE_PATH="/home/fotis/Dev/Workspaces/ROS/triangulation_and_planning/src:/home/fotis/Dev/Workspaces/ROS/qTnP/src:$ROS_PACKAGE_PATH"

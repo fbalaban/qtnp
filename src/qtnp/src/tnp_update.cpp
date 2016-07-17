@@ -36,6 +36,26 @@ struct comp
     int _i;
 };
 
+
+inline double round( double val )
+{
+    if( val < 0 ) return ceil(val - 0.5);
+    return floor(val + 0.5);
+}
+
+// Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+const std::string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+}
+
 bool list_contains(int id, std::vector<std::pair<int,int> > list){
 
     std::vector<std::pair<int,int> >::iterator it = std::find_if(list.begin(), list.end(), comp(id));
@@ -150,6 +170,26 @@ namespace qtnp {
         } while (true);
     }
 
+    std::vector<int> Tnp_update::count_agent_cells(){
+
+        std::vector<int> cells_per_agent;
+
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            if (faces_iterator->is_in_domain()){
+                int agent = faces_iterator->info().agent_id;
+                if (agent > cells_per_agent.size()) {
+                   for( int i=0; i<= (agent - cells_per_agent.size()); i++){
+                    cells_per_agent.push_back(0);
+                    }
+                }
+                cells_per_agent[agent] = cells_per_agent[agent] + 1;
+            }
+        }
+
+        return cells_per_agent;
+    }
+
     bool Tnp_update::are_neighbors (int a, int b){
         for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
           faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
@@ -189,18 +229,140 @@ namespace qtnp {
     void Tnp_update::move_cells(std::pair<int, int> &mapA, std::pair<int,int> &mapB, std::vector<int> path){
 
         if (abs(mapA.second) <= abs(mapB.second)){
-            move(mapA.second, path);
+            //move(mapA.second, path);
+            moveCOV(mapA.second, path);
             mapB.second = mapB.second - abs(mapA.second);
             mapA.second = 0;
         } else {
-            move(mapB.second, path);
+            //move(mapB.second, path);
+            moveCOV(mapB.second, path);
             mapA.second = mapA.second - abs(mapB.second);
             mapB.second = 0;
         }
     }
 
+    void Tnp_update::clear_aux(){
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+          faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            faces_iterator->info().aux = false;
+        }
+    }
+
+    int Tnp_update::count_adjacent_cells(int from_agent, int to_agent){
+        int cells(0);
+        clear_aux();
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+                      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            for (int i=0; i<3; i++){
+                if ( (faces_iterator->info().agent_id == from_agent) &&
+                     (faces_iterator->neighbor(i)->info().agent_id == to_agent) &&
+                     (!faces_iterator->neighbor(i)->info().aux) ) {
+                    faces_iterator->neighbor(i)->info().aux = true;
+                    cells++;
+                }
+            }
+        }
+        clear_aux();
+        return cells;
+    }
+
+    int Tnp_update::get_max_coverage_depth_against_other(int from_agent, int to_agent){
+
+        int coverage_depth(0);
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+                      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            if ( (faces_iterator->info().agent_id == from_agent) &&
+                 (faces_iterator->info().coverage_depth > coverage_depth) ) {
+                for (int i=0; i<3; i++){
+                    if(faces_iterator->neighbor(i)->info().agent_id == to_agent){
+                        coverage_depth = faces_iterator->info().coverage_depth;
+                    }
+                }
+            }
+        }
+        return coverage_depth;
+    }
+
+    int Tnp_update::get_lowest_coverage_depth_against_other(int from_agent, int to_agent){
+
+        int current_coverage_depth = get_max_coverage_depth_against_other(from_agent, to_agent);
+
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+                      faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            if (faces_iterator->info().agent_id == from_agent) {
+                for (int z=0; z<3; z++){
+                    if ( (faces_iterator->neighbor(z)->info().agent_id == to_agent) &&
+                         (faces_iterator->info().coverage_depth < current_coverage_depth) ){
+                        current_coverage_depth = faces_iterator->info().coverage_depth;
+                    }
+                }
+            }
+        }
+        return current_coverage_depth;
+    }
+
+    void Tnp_update::exchange_agent_on_border_cells(int from_agent, int to_agent, int cells){
+
+        int current_coverage_depth = get_lowest_coverage_depth_against_other(from_agent, to_agent);
+        bool not_inside(false);
+
+        for (int i=0; i< cells; i++){
+            not_inside = false;
+            for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+              faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+
+                if ( (faces_iterator->info().agent_id == from_agent) &&
+                     (faces_iterator->info().coverage_depth == current_coverage_depth)){
+                    for (int j=0; j<3; j++){
+                        if ( (faces_iterator->neighbor(j)->info().agent_id == to_agent) && (i < cells) ){
+                            faces_iterator->neighbor(j)->info().agent_id = from_agent;
+                            faces_iterator->neighbor(j)->info().depth = faces_iterator->info().depth + 1;
+                            faces_iterator->neighbor(j)->info().coverage_depth = current_coverage_depth + 10;
+                            i++;
+                            not_inside = true;
+                        }
+                    }
+                }
+            }
+            if (!not_inside) {
+                current_coverage_depth = get_lowest_coverage_depth_against_other(from_agent, to_agent);
+                i--;
+            }
+        }
+    }
+
+    void Tnp_update::moveCOV(int cells, std::vector<int> path){
+
+        std::cout << "the path: [";
+        for (int i=0; i<path.size(); i++){
+            std::cout << path[i] << " ";
+        }
+        std::cout << "]" << std::endl;
+
+        for (int i=0; i<path.size() -1; i++){
+
+            int adjacent_cells = count_adjacent_cells(path[i], path[i+1]);
+            if (adjacent_cells >= cells){
+                exchange_agent_on_border_cells(path[i], path[i+1], cells);
+                std::cout << "COV: tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
+            } else {
+                std::vector<int> rest_of_the_path;
+                for (int j = i; j < path.size(); j++) {
+                    rest_of_the_path.push_back(path[j]);
+                }
+                std::cout << "]" << std::endl;
+                moveCOV(adjacent_cells, rest_of_the_path);
+                cells = cells - adjacent_cells;
+                std::cout << "COV: tried to move " << adjacent_cells << " ADJACENT CELLS from agent " << path[i+1] << " to agent " << path[i] << std::endl;
+                std::cout << "COV: Those: " << cells << " cells remained " << std::endl;
+                i--;
+            }
+        }
+    }
+
     int Tnp_update::move(int cells, std::vector<int> path){
 
+        clear_aux();
         int cells_remaining = cells;
         std::cout << "the path: [";
         for (int i=0; i<path.size(); i++){
@@ -214,6 +376,7 @@ namespace qtnp {
             bool found = false;
             int depth(-1); // FIXME magic number, chooses the closest to the agent. should find a better way. if the furthest is
             // chosen also creates some problems, but probably less
+
             int that_depth_id(0);
 
             for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
@@ -264,25 +427,20 @@ namespace qtnp {
                 }
             }
 
-            for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
-              faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
-                if (faces_iterator->info().aux) faces_iterator->info().aux = false;
-            }
+            clear_aux();
 
             std::cout << "tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
             std::cout << cells_remaining << " cells remained somewhere.." << std::endl;
             if (cells_remaining > 0) {
-                bool another_found(false);
                 std::vector<int> remaining_vector;
-                std::vector<int> another_dead_end;
                 remaining_vector.push_back(path[i]);
                 if (are_neighbors(path[i],path[i+1])){
                     remaining_vector.push_back(path[i+1]);
                     cells_remaining = move(cells_remaining, remaining_vector);
                 }
-
                 if (cells_remaining > 0){
                     std::cout << "these cells remain:" << cells_remaining << std::endl;
+
                       std::vector<int> new_path = find_path(path[i], path[i+1]);
                       cells_remaining = move(cells_remaining, new_path);
                 }
@@ -453,9 +611,9 @@ namespace qtnp {
             // TODO rviz_range_min and max should not be constants e.g. 500x500 because in conversion,
             // if area is not square like it will create a distortion in visualization. They should be proportional (good luck)
             faces_iterator->info().center_lat = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
-                                                                         area_extremes.min_lat,area_extremes.max_lat,center.y);
+                                                                         area_extremes.min_lat,area_extremes.max_lat,center.x);
             faces_iterator->info().center_lon = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
-                                                                         area_extremes.min_lon,area_extremes.max_lon,center.x);
+                                                                         area_extremes.min_lon,area_extremes.max_lon,center.y);
             // adding the center of every triangle to rviz
             rviz_objects_ref.push_center_point(center);
 
@@ -556,6 +714,12 @@ namespace qtnp {
 
         // hop cost/partitioning, passing autonomy percentage table
         hop_cost_attribution(id_cell_count_vector);
+        coverage_cost_attribution();
+
+        std::vector<int> cells_per_agent = count_agent_cells();
+        for (int i=0; i<cells_per_agent.size(); i++){
+            std::cout << "agent " << i << " has " << cells_per_agent[i] << " cells." << std::endl;
+        }
         mesh_coloring();
     }
 
@@ -637,6 +801,7 @@ namespace qtnp {
         std::cout << "agent " << id_cell_count[i].first << ": " << id_cell_count[i].second << std::endl;
         }
 
+        coverage_cost_attribution();
 
         // FIXME replenishing algorithm // could be refactored
         std::vector<std::pair<int,int> > cell_map;
@@ -755,7 +920,7 @@ namespace qtnp {
             CDT::Point point2 = cdt.triangle(face)[1];
             CDT::Point point3 = cdt.triangle(face)[2];
 
-            int face_depth = rviz_objects_ref.get_settings().task_cost ? face->info().depth : face->info().coverage_depth;
+            double face_depth = rviz_objects_ref.get_settings().task_cost ? face->info().depth : face->info().coverage_depth;
             float z = -face_depth;
 
             // each triangle in rviz mesh need three points..
@@ -766,19 +931,6 @@ namespace qtnp {
             std_msgs::ColorRGBA triangle_color;
             triangle_color.a = 1.0f;// + (face_depth/900.0);
 
-            // NOTE: hop cost depth coloring
-            if (rviz_objects_ref.get_settings().task_cost){
-                triangle_color.r = 0.0f + (face_depth/85.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
-                triangle_color.b = 0.0f + (face_depth/85.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
-                triangle_color.g = 0.0f + (face_depth/85.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
-            }
-
-            // NOTE: borders coloring
-            if (rviz_objects_ref.get_settings().borders){
-                if (face->info().coverage_depth == constants::coverage_depth_max){
-                    triangle_color.b = 1.0f;
-                }
-            }
 
             //NOTE: agent coloring for partition viz
             if (rviz_objects_ref.get_settings().partition){
@@ -799,6 +951,26 @@ namespace qtnp {
                 }
             }
 
+            // NOTE: hop cost depth coloring
+            if (rviz_objects_ref.get_settings().task_cost){
+                triangle_color.r = 0.0f + (face_depth/100.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
+                triangle_color.b = 0.0f + (face_depth/100.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
+                triangle_color.g = 0.0f + (face_depth/100.0) +0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+            }
+
+            // NOTE: coverage depth coloring
+            if (rviz_objects_ref.get_settings().coverage_cost){
+                triangle_color.r = 0.0f + (face_depth/900.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
+                triangle_color.b = 0.0f + (face_depth/900.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
+                triangle_color.g = 0.0f + (face_depth/900.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+            }
+
+            // NOTE: borders coloring
+            if (rviz_objects_ref.get_settings().borders){
+                if (face->info().coverage_depth == constants::coverage_depth_max){
+                    triangle_color.g = 0.7f;
+                }
+            }
             // NOTE: initial positions are white
             if (face->info().depth == 1){ // also include target coloring
               triangle_color.r = 1.0f;// + (face->info().depth/30.0);
@@ -821,7 +993,7 @@ namespace qtnp {
 
     void Tnp_update::path_planning_to_goal(int uas, double lat, double lon){
 
-        this->rviz_objects_ref.clear_path();
+        rviz_objects_ref.clear_path();
         path_to_goal(uas, coordinates_to_cdt_cell_id(lat,lon) );
         mesh_coloring();
         rviz_objects_ref.set_planning_ready(true) ;
@@ -911,6 +1083,10 @@ namespace qtnp {
 
     void Tnp_update::coverage_cost_attribution(){
 
+        for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
+        faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
+            faces_iterator->info().coverage_depth = 0;
+        }
       std::cout << "----Beginning complete coverage cost attribution----" << std::endl;
 
       // go through all triangles to give border depth to the borders between agents
@@ -956,7 +1132,8 @@ namespace qtnp {
         std::cout << "----Beginning complete coverage for agent : " << uas_id << "----" << std::endl;
 
         // clearing the path object in case it had a previous path
-        this->rviz_objects_ref.clear_path();
+        rviz_objects_ref.clear_path();
+        std::vector< std::pair<double, double> > coord_path;
 
         for(CDT::Finite_faces_iterator faces_iterator = cdt.finite_faces_begin();
             faces_iterator != cdt.finite_faces_end(); ++faces_iterator){
@@ -983,6 +1160,9 @@ namespace qtnp {
         starter_cell->info().path_visited = true;
         rviz_objects_ref.push_path_point(utilities::build_pose_stamped
                                          (utilities::face_to_center(cdt, starter_cell)));
+        // lat, lon
+        coord_path.push_back(std::pair<double, double>(starter_cell->info().center_lat, starter_cell->info().center_lon));
+
         do {
 
             not_finished = false;
@@ -1032,6 +1212,9 @@ namespace qtnp {
                 rviz_objects_ref.push_path_point(utilities::build_pose_stamped
                                                  (utilities::face_to_center(cdt, first_of_the_border)));
                 first_of_the_border->info().path_visited = true;
+                coord_path.push_back(std::pair<double, double>(first_of_the_border->info().center_lat,
+                                                               first_of_the_border->info().center_lon));
+
                 starter_cell = first_of_the_border;
             }
             borders_vector.clear();
@@ -1041,22 +1224,23 @@ namespace qtnp {
 
         // TODO: prepei na to kanoyme na min pidaei...
         std::cout << "----Finished complete coverage ----" << std::endl;
-        make_mavros_waypoint_list(uas.second, rviz_objects_ref.get_path());
+        make_mavros_waypoint_list(uas.second, coord_path);
     }
 
 
-    void Tnp_update::make_mavros_waypoint_list(std::pair<double, double> coords, nav_msgs::Path path){ // also put uas_id
+    void Tnp_update::make_mavros_waypoint_list(std::pair<double, double> uas_coords,
+                                               std::vector<std::pair<double, double> > path){ // also put uas_id
 
         mavros_msgs::Waypoint initialWaypoint;
-        mavros_msgs::WaypointList &waypoint_list = this->waypoint_list;
+        mavros_msgs::WaypointList &waypoint_list = m_waypoint_list;
 
         waypoint_list.waypoints.clear();
 
-        double initialLatitude = coords.first;// path.poses[0].position.y;
-        double initialLongitude = coords.second; // of the uas agent according to initial position by ui (or later, current)
+        double initialLatitude = uas_coords.first;// path.poses[0].position.y;
+        double initialLongitude = uas_coords.second; // of the uas agent according to initial position by ui (or later, current)
 
-        std::cout << "Waypoint list: " ;
-        std::cout << std::fixed << std::setprecision(7) << "lat: " << initialLatitude << " lon: " << initialLongitude << " | ";
+        std::cout << "Center list: " << std::endl;
+        std::cout << std::fixed << std::setprecision(8) << "lat: " << initialLatitude << " lon: " << initialLongitude << std::endl;
         // this is for first initial position // maybe need to change frame, put it global (0)
         initialWaypoint.frame = 3;
         initialWaypoint.command = 16;
@@ -1068,23 +1252,32 @@ namespace qtnp {
         initialWaypoint.param4 = 0;
         initialWaypoint.x_lat = round(initialLatitude*100000000.0)/100000000.0;
         initialWaypoint.y_long = round(initialLongitude*100000000.0)/100000000.0;
-        initialWaypoint.z_alt = 585; // 0? for initial relevant altitude
+        initialWaypoint.z_alt = 285; // 0? for initial relevant altitude
         waypoint_list.waypoints.push_back(initialWaypoint);
+
+        // -------------------------------------------------//
+        // file generation
+        int sequence = 1;
+
+        std::stringstream mavlink_filename;
+        std::string data_path = "/home/fotis/Dev/Data/Missions/";
+        mavlink_filename << data_path << "mavlink_plan_" << currentDateTime() << ".txt";
+        const std::string& tmp = mavlink_filename.str();
+        const char* cstr = tmp.c_str();
+        std::ofstream mavlink_fWPPlan(cstr);
+        mavlink_fWPPlan << "QGC WPL 110" << std::endl;
+
+        mavlink_fWPPlan << "0\t1\t0\t16\t0\t0\t0\t0\t" << std::fixed << std::setprecision(7) << initialWaypoint.x_lat << "\t"
+                    << std::fixed <<  std::setprecision(7) << initialWaypoint.y_long << "\t585\t1" << std::endl;
+        // -------------------------------------------------//
+
 
         bool initial = true;
 
         // begin() +1 ?
-        for (std::vector<geometry_msgs::PoseStamped>::iterator it = path.poses.begin(); it != path.poses.end(); it++){
+        for (std::vector<std::pair<double, double> >::iterator it = path.begin(); it != path.end(); it++){
 
             mavros_msgs::Waypoint waypoint;
-
-            double pointX = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
-                                   area_extremes.min_lon, area_extremes.max_lon, it->pose.position.x);
-            double pointY = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
-                                   area_extremes.min_lat, area_extremes.max_lat, it->pose.position.y);
-
-            double newLatitude = utilities::latitudeDisplacement(initialLatitude, pointY);
-            double newLongitude = utilities::longitudeDisplacement(initialLongitude, newLatitude, pointX);
 
             if (initial){
 
@@ -1097,12 +1290,18 @@ namespace qtnp {
                 waypoint.param2 = 0;
                 waypoint.param3 = 0;
                 waypoint.param4 = 0;
-                waypoint.x_lat = round(newLatitude*100000000.0)/100000000.0;
-                waypoint.y_long = round(newLongitude*100000000.0)/100000000.0;
+                waypoint.x_lat = round( (it->second) *100000000.0)/100000000.0;
+                waypoint.y_long = round( (it->first)*100000000.0)/100000000.0;
                 waypoint.z_alt = 100; // 100? for takeoff
                 waypoint_list.waypoints.push_back(waypoint);
                 initial = false;
-                std::cout << std::fixed << std::setprecision(7) << " lat: " << newLatitude << " lon: " << newLongitude << " | ";
+                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
+
+                //--------------------------------//
+                // file generation //
+                mavlink_fWPPlan << "1\t0\t3\t22\t15\t0\t0\t0\t" << std::fixed << std::setprecision(7) << waypoint.x_lat << "\t"
+                        << std::fixed << std::setprecision(7) << waypoint.y_long << "\t100\t1" << std::endl;
+                //--------------------------------//
 
             } else {
 
@@ -1115,11 +1314,19 @@ namespace qtnp {
                 waypoint.param2 = 0;
                 waypoint.param3 = 0;
                 waypoint.param4 = 0;
-                waypoint.x_lat = round(newLatitude*100000000.0)/100000000.0;
-                waypoint.y_long = round(newLongitude*100000000.0)/100000000.0;
+                waypoint.x_lat = round( (it->second) *100000000.0)/100000000.0;
+                waypoint.y_long = round( (it->first)*100000000.0)/100000000.0;
                 waypoint.z_alt = 100; // 100? for takeoff
                 waypoint_list.waypoints.push_back(waypoint);
-                std::cout << std::fixed << std::setprecision(7) << " lat: " << newLatitude << " lon: "  << newLongitude << " | ";
+                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
+
+                //-----------------------------------//
+                // file generation //
+                mavlink_fWPPlan << sequence << "\t0\t3\t16\t0\t0\t0\t0\t" << std::fixed << std::setprecision(7) << waypoint.x_lat << "\t"
+                        << std::fixed << std::setprecision(7) << waypoint.y_long << "\t100\t1" << std::endl;
+                sequence++;
+                //-----------------------------------//
+
             }
         }
 
@@ -1137,12 +1344,16 @@ namespace qtnp {
         waypoint.y_long = round(initialLongitude*100000000.0)/100000000.0;
         waypoint.z_alt = 580; // 100? for takeoff
         waypoint_list.waypoints.push_back(waypoint);
-        std::cout << std::fixed << std::setprecision(7) << initialLatitude << " " << initialLongitude << " ";
+        std::cout << std::fixed << std::setprecision(8) << initialLatitude << " " << initialLongitude << std::endl;
+
+
+        //--------------------------------//
+        // file generation //
+        mavlink_fWPPlan << sequence << "\t0\t3\t21\t480\t0\t0\t25\t" << std::fixed << std::setprecision(7) << waypoint.x_lat << "\t"
+                << std::fixed << std::setprecision(7) << waypoint.y_long << "\t580\t1"; // << std::endl;
+        mavlink_fWPPlan.close();
+        //--------------------------------//
 
     }
-    inline double round( double val )
-    {
-        if( val < 0 ) return ceil(val - 0.5);
-        return floor(val + 0.5);
-    }
+
 }

@@ -1863,6 +1863,9 @@ qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros/mavros_
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros/utils.h
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/Mavlink.h
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/Waypoint.h
+qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/WaypointClear.h
+qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/WaypointClearRequest.h
+qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/WaypointClearResponse.h
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/WaypointList.h
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/WaypointPush.h
 qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o: /opt/ros/indigo/include/mavros_msgs/WaypointPushRequest.h

@@ -116,7 +116,6 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt())); // qApp is a global variable for the application
 
     ReadSettings();
-    setWindowIcon(QIcon(":/images/earth.png"));
     ui.tab_manager->setCurrentIndex(1); // ensure the second tab is showing - qt-designer should have this already hardwired, but often loses it (settings?).
     QObject::connect(&qnode, SIGNAL(rosShutdown()), this, SLOT(close()));
 
@@ -232,7 +231,7 @@ void MainWindow::on_button_validate_kml_clicked(bool check ) {
 void MainWindow::on_button_perform_cdt_clicked(bool check ) {
 
     // FIXME static kml file name
-    set_kml_filename("/home/fotis/Dev/Data/elefsinaOuterKML.kml");
+    // set_kml_filename("/home/fotis/Dev/Data/elefsinaOuterKML.kml");
 
     double angle_cons(constants::angle_criterion_default);
     double edge_cons(constants::edge_criterion_default);
@@ -392,7 +391,10 @@ void MainWindow::updateLoggingView() {
 *****************************************************************************/
 
 void MainWindow::on_actionAbout_triggered() {
-    QMessageBox::about(this, tr("About ..."),tr("<h2>PACKAGE_NAME Test Program 0.10</h2><p>Copyright Yujin Robot</p><p>This package needs an about description.</p>"));
+    QMessageBox::about(this, tr("About ..."),tr("<h2>qTnP 0.10</h2><p>Copyright by Fotis Balampanis</p><p>This program performs a "
+                                                "Constrained Delaunay Triangulation on a given area, creating regions of interest "
+                                                "for a number of RPAS based on their autonomy capabilities. It also produces coverage"
+                                                "and go-to-goal task waypoint lists.</p>"));
 }
 
 /*****************************************************************************

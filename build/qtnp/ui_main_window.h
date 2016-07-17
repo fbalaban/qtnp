@@ -128,7 +128,7 @@ public:
             MainWindowDesign->setObjectName(QString::fromUtf8("MainWindowDesign"));
         MainWindowDesign->resize(944, 704);
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/images/icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/images/earth.png"), QSize(), QIcon::Normal, QIcon::On);
         MainWindowDesign->setWindowIcon(icon);
         MainWindowDesign->setLocale(QLocale(QLocale::English, QLocale::Australia));
         action_Quit = new QAction(MainWindowDesign);
@@ -635,7 +635,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindowDesign)
     {
-        MainWindowDesign->setWindowTitle(QApplication::translate("MainWindowDesign", "QRosApp", 0, QApplication::UnicodeUTF8));
+        MainWindowDesign->setWindowTitle(QApplication::translate("MainWindowDesign", "qTnP Application", 0, QApplication::UnicodeUTF8));
         action_Quit->setText(QApplication::translate("MainWindowDesign", "&Quit", 0, QApplication::UnicodeUTF8));
         action_Quit->setShortcut(QApplication::translate("MainWindowDesign", "Ctrl+Q", 0, QApplication::UnicodeUTF8));
         action_Preferences->setText(QApplication::translate("MainWindowDesign", "&Preferences", 0, QApplication::UnicodeUTF8));
@@ -652,7 +652,7 @@ public:
         button_load_last_uas_conf->setText(QApplication::translate("MainWindowDesign", "load last configuration", 0, QApplication::UnicodeUTF8));
         groupBox_6->setTitle(QApplication::translate("MainWindowDesign", "Visualizations", 0, QApplication::UnicodeUTF8));
         groupBox_8->setTitle(QApplication::translate("MainWindowDesign", "Gazebo", 0, QApplication::UnicodeUTF8));
-        checkBox_3->setText(QApplication::translate("MainWindowDesign", "Whatever", 0, QApplication::UnicodeUTF8));
+        checkBox_3->setText(QApplication::translate("MainWindowDesign", "Enable", 0, QApplication::UnicodeUTF8));
         groupBox_7->setTitle(QApplication::translate("MainWindowDesign", "Rviz", 0, QApplication::UnicodeUTF8));
         check_box_borders->setText(QApplication::translate("MainWindowDesign", "Borders", 0, QApplication::UnicodeUTF8));
         check_box_waypoints->setText(QApplication::translate("MainWindowDesign", "Waypoints", 0, QApplication::UnicodeUTF8));
