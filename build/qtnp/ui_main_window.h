@@ -108,6 +108,8 @@ public:
     QPushButton *button_validate_kml;
     QPushButton *button_browse;
     QPushButton *button_perform_cdt;
+    QSpinBox *spinBox_lloyd;
+    QLabel *label_12;
     QGroupBox *groupBox_5;
     QLabel *label_7;
     QLabel *label_11;
@@ -126,7 +128,7 @@ public:
     {
         if (MainWindowDesign->objectName().isEmpty())
             MainWindowDesign->setObjectName(QString::fromUtf8("MainWindowDesign"));
-        MainWindowDesign->resize(944, 704);
+        MainWindowDesign->resize(956, 704);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/images/earth.png"), QSize(), QIcon::Normal, QIcon::On);
         MainWindowDesign->setWindowIcon(icon);
@@ -343,7 +345,7 @@ public:
         MainWindowDesign->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindowDesign);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 944, 21));
+        menubar->setGeometry(QRect(0, 0, 956, 20));
         menu_File = new QMenu(menubar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         MainWindowDesign->setMenuBar(menubar);
@@ -537,6 +539,19 @@ public:
 
         gridLayout_5->addWidget(button_perform_cdt, 5, 2, 1, 1);
 
+        spinBox_lloyd = new QSpinBox(groupBox_2);
+        spinBox_lloyd->setObjectName(QString::fromUtf8("spinBox_lloyd"));
+        spinBox_lloyd->setMinimum(1);
+        spinBox_lloyd->setMaximum(50);
+        spinBox_lloyd->setValue(10);
+
+        gridLayout_5->addWidget(spinBox_lloyd, 6, 2, 1, 1);
+
+        label_12 = new QLabel(groupBox_2);
+        label_12->setObjectName(QString::fromUtf8("label_12"));
+
+        gridLayout_5->addWidget(label_12, 6, 0, 1, 1);
+
 
         verticalLayout_3->addWidget(groupBox_2);
 
@@ -644,7 +659,7 @@ public:
         groupBox_12->setTitle(QApplication::translate("MainWindowDesign", "Logging", 0, QApplication::UnicodeUTF8));
         tab_manager->setTabText(tab_manager->indexOf(tab_status), QApplication::translate("MainWindowDesign", "Ros Communications", 0, QApplication::UnicodeUTF8));
         groupBox_3->setTitle(QString());
-        label_8->setText(QApplication::translate("MainWindowDesign", "UAS Table", 0, QApplication::UnicodeUTF8));
+        label_8->setText(QApplication::translate("MainWindowDesign", "UAV Table", 0, QApplication::UnicodeUTF8));
         groupBox_4->setTitle(QString());
         button_add->setText(QApplication::translate("MainWindowDesign", "add row", 0, QApplication::UnicodeUTF8));
         button_remove->setText(QApplication::translate("MainWindowDesign", "remove row", 0, QApplication::UnicodeUTF8));
@@ -654,13 +669,13 @@ public:
         groupBox_8->setTitle(QApplication::translate("MainWindowDesign", "Gazebo", 0, QApplication::UnicodeUTF8));
         checkBox_3->setText(QApplication::translate("MainWindowDesign", "Enable", 0, QApplication::UnicodeUTF8));
         groupBox_7->setTitle(QApplication::translate("MainWindowDesign", "Rviz", 0, QApplication::UnicodeUTF8));
-        check_box_borders->setText(QApplication::translate("MainWindowDesign", "Borders", 0, QApplication::UnicodeUTF8));
-        check_box_waypoints->setText(QApplication::translate("MainWindowDesign", "Waypoints", 0, QApplication::UnicodeUTF8));
+        check_box_borders->setText(QApplication::translate("MainWindowDesign", "Show Borders", 0, QApplication::UnicodeUTF8));
+        check_box_waypoints->setText(QApplication::translate("MainWindowDesign", "Show Waypoints", 0, QApplication::UnicodeUTF8));
         groupBox_9->setTitle(QApplication::translate("MainWindowDesign", "Color coding", 0, QApplication::UnicodeUTF8));
-        radio_button_hop->setText(QApplication::translate("MainWindowDesign", "Hop cost", 0, QApplication::UnicodeUTF8));
-        radio_button_coverage->setText(QApplication::translate("MainWindowDesign", "Coverage cost", 0, QApplication::UnicodeUTF8));
+        radio_button_hop->setText(QApplication::translate("MainWindowDesign", "Isotropic cost", 0, QApplication::UnicodeUTF8));
+        radio_button_coverage->setText(QApplication::translate("MainWindowDesign", "Watershed cost", 0, QApplication::UnicodeUTF8));
         radio_button_partitions->setText(QApplication::translate("MainWindowDesign", "Partitions", 0, QApplication::UnicodeUTF8));
-        tab_manager->setTabText(tab_manager->indexOf(tab_uas_manager), QApplication::translate("MainWindowDesign", "UAS Manager", 0, QApplication::UnicodeUTF8));
+        tab_manager->setTabText(tab_manager->indexOf(tab_uas_manager), QApplication::translate("MainWindowDesign", "UAV Manager", 0, QApplication::UnicodeUTF8));
         menu_File->setTitle(QApplication::translate("MainWindowDesign", "&App", 0, QApplication::UnicodeUTF8));
         dock_status->setWindowTitle(QApplication::translate("MainWindowDesign", "Command Panel", 0, QApplication::UnicodeUTF8));
         groupBox->setTitle(QApplication::translate("MainWindowDesign", "1. Ros Master", 0, QApplication::UnicodeUTF8));
@@ -688,12 +703,13 @@ public:
         button_validate_kml->setText(QApplication::translate("MainWindowDesign", "Validate", 0, QApplication::UnicodeUTF8));
         button_browse->setText(QApplication::translate("MainWindowDesign", "Browse", 0, QApplication::UnicodeUTF8));
         button_perform_cdt->setText(QApplication::translate("MainWindowDesign", "Perform CDT", 0, QApplication::UnicodeUTF8));
+        label_12->setText(QApplication::translate("MainWindowDesign", "Lloyd Iterations", 0, QApplication::UnicodeUTF8));
         groupBox_5->setTitle(QApplication::translate("MainWindowDesign", "3. Path planning", 0, QApplication::UnicodeUTF8));
-        label_7->setText(QApplication::translate("MainWindowDesign", "Perform partitioning for agents in UAS table", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("MainWindowDesign", "Perform partitioning for agents in UAV table", 0, QApplication::UnicodeUTF8));
         label_11->setText(QApplication::translate("MainWindowDesign", "lon:", 0, QApplication::UnicodeUTF8));
         line_edit_task_lon->setInputMask(QApplication::translate("MainWindowDesign", "#009.999999", 0, QApplication::UnicodeUTF8));
         button_go_to_goal->setText(QApplication::translate("MainWindowDesign", "Go to goal", 0, QApplication::UnicodeUTF8));
-        label_9->setText(QApplication::translate("MainWindowDesign", "Perform task for UAS no ", 0, QApplication::UnicodeUTF8));
+        label_9->setText(QApplication::translate("MainWindowDesign", "Perform task for UAV no ", 0, QApplication::UnicodeUTF8));
         label_10->setText(QApplication::translate("MainWindowDesign", "Go to lat:", 0, QApplication::UnicodeUTF8));
         line_edit_task_lat->setInputMask(QApplication::translate("MainWindowDesign", "#009.999999", 0, QApplication::UnicodeUTF8));
         button_partition->setText(QApplication::translate("MainWindowDesign", "Partitioning", 0, QApplication::UnicodeUTF8));

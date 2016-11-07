@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>944</width>
+    <width>956</width>
     <height>704</height>
    </rect>
   </property>
@@ -73,7 +73,7 @@
         <bool>true</bool>
        </property>
        <attribute name="title">
-        <string>UAS Manager</string>
+        <string>UAV Manager</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_8">
         <item>
@@ -94,7 +94,7 @@
            <item>
             <widget class="QLabel" name="label_8">
              <property name="text">
-              <string>UAS Table</string>
+              <string>UAV Table</string>
              </property>
             </widget>
            </item>
@@ -221,7 +221,7 @@
               <item>
                <widget class="QCheckBox" name="check_box_borders">
                 <property name="text">
-                 <string>Borders</string>
+                 <string>Show Borders</string>
                 </property>
                </widget>
               </item>
@@ -231,7 +231,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>Waypoints</string>
+                 <string>Show Waypoints</string>
                 </property>
                </widget>
               </item>
@@ -262,7 +262,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Hop cost</string>
+                 <string>Isotropic cost</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -275,7 +275,7 @@
               <item>
                <widget class="QRadioButton" name="radio_button_coverage">
                 <property name="text">
-                 <string>Coverage cost</string>
+                 <string>Watershed cost</string>
                 </property>
                 <attribute name="buttonGroup">
                  <string notr="true">button_group_color_coding</string>
@@ -309,8 +309,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>944</width>
-     <height>21</height>
+     <width>956</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -684,6 +684,26 @@
              </property>
             </widget>
            </item>
+           <item row="6" column="2">
+            <widget class="QSpinBox" name="spinBox_lloyd">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>50</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>Lloyd Iterations</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -714,7 +734,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Perform partitioning for agents in UAS table</string>
+            <string>Perform partitioning for agents in UAV table</string>
            </property>
           </widget>
           <widget class="QLabel" name="label_11">
@@ -784,7 +804,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Perform task for UAS no </string>
+            <string>Perform task for UAV no </string>
            </property>
           </widget>
           <widget class="QLabel" name="label_10">

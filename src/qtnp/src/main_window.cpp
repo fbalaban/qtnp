@@ -21,6 +21,9 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <iostream>
 #include "../include/qtnp/main_window.hpp"
+#include "../include/qtnp/uas_model.hpp"
+#include "../include/qtnp/position.hpp"
+
 
 /*****************************************************************************
 ** Namespaces
@@ -103,7 +106,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     model = new QStandardItemModel(2,4,this); //2 Rows and 4 Columns
 
     model->setHorizontalHeaderItem(0, new QStandardItem(QString("Sensor type")));
-    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Cell size (m)")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("FoV size (m)")));
     model->setHorizontalHeaderItem(2, new QStandardItem(QString("Autonomy %")));
     model->setHorizontalHeaderItem(3, new QStandardItem(QString("Task")));
     model->setHorizontalHeaderItem(4, new QStandardItem(QString("Latitude")));
@@ -218,7 +221,6 @@ void MainWindow::on_button_browse_clicked(bool check ) {
 
     set_kml_filename(filename);
 
-
 }
 
 void MainWindow::on_button_validate_kml_clicked(bool check ) {
@@ -230,11 +232,12 @@ void MainWindow::on_button_validate_kml_clicked(bool check ) {
 
 void MainWindow::on_button_perform_cdt_clicked(bool check ) {
 
-    // FIXME static kml file name
+    // NOTE static kml file name
     // set_kml_filename("/home/fotis/Dev/Data/elefsinaOuterKML.kml");
 
     double angle_cons(constants::angle_criterion_default);
     double edge_cons(constants::edge_criterion_default);
+    int lloyd_iterations(10);
 
     if ( get_kml_filename() == "" ) {
         showNoKmlMessage();
@@ -244,10 +247,20 @@ void MainWindow::on_button_perform_cdt_clicked(bool check ) {
             angle_cons = ui.line_edit_angle_constr->text() == "" ?
                         angle_cons : ui.line_edit_angle_constr->text().remove(QRegExp(" .*")).toDouble();
             edge_cons = ui.line_edit_edge_constr->text() == "" ?
-                        angle_cons : ui.line_edit_edge_constr->text().remove(QRegExp(" .*")).toDouble();
+                        edge_cons : ui.line_edit_edge_constr->text().remove(QRegExp(" .*")).toDouble();
+            lloyd_iterations = ui.spinBox_lloyd->value();
+
+            int uas_count = ui.table_view_uas->model()->rowCount();
+            std::vector<double> fov_sizes;
+            for (int i=0; i<uas_count; i++){
+                fov_sizes.push_back(ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 1))).toDouble());
+            }
+            std::sort(fov_sizes.begin(), fov_sizes.end(), std::greater<int>());
+
+            edge_cons = fov_sizes[0];
 
             qnode.get_tnp_update_pointer()->perform_polygon_definition
-                    (kml_parsing(kml_filename).placemarks, angle_cons, edge_cons);
+                    (kml_parsing(kml_filename).placemarks, angle_cons, edge_cons, lloyd_iterations);
         }
     }
 
@@ -261,49 +274,40 @@ void MainWindow::on_button_remove_clicked(bool check ) {
     model->takeRow((model->rowCount()) -1);
 }
 
-
 void MainWindow::on_button_partition_clicked(bool check ) {
 
-    int uas_count = ui.table_view_uas->model()->rowCount();
-    std::vector<std::pair<double,double> > uas_coords;
-    std::vector<std::pair< std::pair<double,double> , int > > uas_coords_with_percentage;
-
-    for (int i=0; i<uas_count; i++){
-
-        std::pair<double,double> coord_item;
-
-        std::pair< std::pair<double,double> , int > coord_item_percentage;
-
-        //lat
-        coord_item.first = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 4))).toDouble();
-        //lon
-        coord_item.second = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 5))).toDouble();
-
-        uas_coords.push_back(coord_item);
-
-        int percentage = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i,2))).toInt();
-        coord_item_percentage.first = coord_item;
-        coord_item_percentage.second = percentage;
-        uas_coords_with_percentage.push_back((coord_item_percentage));
-
-
-        std::cout << setiosflags(std::ios::fixed | std::ios::showpoint) <<
-                     std::setprecision(6) << "lat: " << coord_item.first  << ", lon: " << coord_item.second <<
-                     ", percentage: " << percentage << std::endl;
-    }
-      int button_checked = ui.button_group_color_coding->checkedId();
-      std::cout << "button id: " << button_checked << std::endl;
-      qnode.get_rviz_objects_pointer()->set_settings(
+    // Visualization options setup
+    int button_checked = ui.button_group_color_coding->checkedId();
+    std::cout << "button id: " << button_checked << std::endl;
+    qnode.get_rviz_objects_pointer()->set_settings(
                   (button_checked == -2 ? true :false ),
                   (button_checked == -3 ? true :false ),
                   (button_checked == -4 ? true :false ),
                   ui.check_box_borders->isChecked(),
                   ui.check_box_waypoints->isChecked());
 
-      qnode.get_tnp_update_pointer()->partition(uas_coords_with_percentage);
+    // Partitioning setup.
+    int uas_count = ui.table_view_uas->model()->rowCount();
+    std::vector<qtnp::Uas_model> uas;
+
+    for (int i=0; i < uas_count; i++){
+
+        double latitude = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 4))).toDouble();
+        double longitude = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 5))).toDouble();
+        Position position(latitude, longitude);
+        double fov = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 1))).toDouble();
+        int autonomy_percentage = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i,2))).toInt();
+
+        qtnp::Uas_model uas_i( (i+1), position, fov, autonomy_percentage);
+
+        uas.push_back(uas_i);
+
+    }
+
+    qnode.get_tnp_update_pointer()->partition(uas);
 }
 
-
+// TODO: validate with introduced changes (uas_model)
 void MainWindow::on_button_coverage_clicked(bool checked){
 
     int uas = ui.spinBox_coverage->value();
@@ -315,11 +319,7 @@ void MainWindow::on_button_coverage_clicked(bool checked){
         //lon
         coords.second = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(uas -1, 5))).toDouble();
 
-        std::pair<int, std::pair<double,double> > coverage_for;
-        coverage_for.first = uas;
-        coverage_for.second = coords;
-
-        qnode.get_tnp_update_pointer()->path_planning_coverage(coverage_for);
+        qnode.get_tnp_update_pointer()->path_planning_coverage(uas);
     }
 }
 

@@ -52,8 +52,8 @@ void Rviz_objects::init(){
 
   // POINTS markers use x and y scale for width/height respectively (how big the point is)
   // 1 means 1 meter so 0.5 is 50cm
-  edges.scale.x = 5; // TODO: replace with constant or UI selection
-  edges.scale.y = 5; // TODO: replace with constant or UI selection
+  edges.scale.x = 4; // TODO: replace with constant or UI selection
+  edges.scale.y = 4; // TODO: replace with constant or UI selection
 
   triangulation_mesh.scale.x = 1; // TODO: replace with constant or UI selection
   triangulation_mesh.scale.y = 1; // TODO: replace with constant or UI selection
@@ -62,7 +62,9 @@ void Rviz_objects::init(){
   center_points.scale.x = 3; // TODO: replace with constant or UI selection
   center_points.scale.y = 3; // TODO: replace with constant or UI selection
 
-  edges.color.g = center_points.color.r = 1.0f; // TODO: replace with constant or UI selection
+  center_points.color.r = 1.0f;
+  edges.color.r = center_points.color.g = 0.25f;
+  edges.color.g =  0.75f; // TODO: replace with constant or UI selection
   edges.color.a = center_points.color.a = 1.0f; // TODO: replace with constant or UI selection
 
   triangulation_mesh.color.b = 1.0f; // TODO: replace with constant or UI selection

@@ -119,6 +119,13 @@ inline geometry_msgs::Point cgal_point_to_ros_geometry_point(kernel_Point_2 cgal
   return ros_point;
 }
 
+inline kernel_Point_2  point_2_to_kernel(CGAL::Point_2<K> point_2){
+
+  kernel_Point_2 kernel_point(point_2.x(), point_2.y());
+  return kernel_point;
+
+}
+
 inline geometry_msgs::Point32 point_to_point_32(geometry_msgs::Point point) {
 
   geometry_msgs::Point32 point32;

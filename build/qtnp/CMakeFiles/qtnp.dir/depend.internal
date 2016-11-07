@@ -13,9 +13,11 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_main_window.cxx.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/cdt_types.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/constants.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/main_window.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/position.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qnode.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/rviz_objects.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/tnp_update.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
  /opt/ros/indigo/include/XmlRpcDecl.h
  /opt/ros/indigo/include/XmlRpcValue.h
  /opt/ros/indigo/include/geometry_msgs/Point.h
@@ -278,9 +280,11 @@ qtnp/CMakeFiles/qtnp.dir/include/qtnp/moc_qnode.cxx.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/devel/include/qtnp/Placemarks.h
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/cdt_types.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/constants.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/position.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qnode.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/rviz_objects.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/tnp_update.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
  /opt/ros/indigo/include/XmlRpcDecl.h
  /opt/ros/indigo/include/XmlRpcValue.h
  /opt/ros/indigo/include/geometry_msgs/Point.h
@@ -492,9 +496,11 @@ qtnp/CMakeFiles/qtnp.dir/src/main.cpp.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/cdt_types.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/constants.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/main_window.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/position.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qnode.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/rviz_objects.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/tnp_update.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/main.cpp
  /opt/ros/indigo/include/XmlRpcDecl.h
  /opt/ros/indigo/include/XmlRpcValue.h
@@ -1022,9 +1028,11 @@ qtnp/CMakeFiles/qtnp.dir/src/main_window.cpp.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/cdt_types.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/constants.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/main_window.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/position.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qnode.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/rviz_objects.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/tnp_update.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/main_window.cpp
  /opt/ros/indigo/include/XmlRpcDecl.h
  /opt/ros/indigo/include/XmlRpcValue.h
@@ -1557,9 +1565,11 @@ qtnp/CMakeFiles/qtnp.dir/src/qnode.cpp.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/devel/include/qtnp/Placemarks.h
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/cdt_types.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/constants.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/position.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/qnode.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/rviz_objects.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/tnp_update.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/qnode.cpp
  /opt/ros/indigo/include/XmlRpcDecl.h
  /opt/ros/indigo/include/XmlRpcValue.h
@@ -2163,8 +2173,10 @@ qtnp/CMakeFiles/qtnp.dir/src/tnp_update.cpp.o
  /home/fotis/Dev/Workspaces/ROS/qTnP/devel/include/qtnp/Placemarks.h
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/cdt_types.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/constants.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/position.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/rviz_objects.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/tnp_update.hpp
+ /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/uas_model.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp/utilities.hpp
  /home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/src/tnp_update.cpp
  /opt/ros/indigo/include/XmlRpcDecl.h

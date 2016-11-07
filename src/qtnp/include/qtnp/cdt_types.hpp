@@ -46,12 +46,12 @@ struct FaceInfo2
   int id, depth, agent_id, jumps_agent_id, coverage_depth;
   double center_lat, center_lon;
 
-  void initialize(int face_id){
+  void initialize(int agent, int face_id){
     visited = numbered = path_visited = cover_depth = aux = occupied = false;
     depth = 0;
-    coverage_depth = constants::coverage_depth_max;
+    coverage_depth = 0; // TODO turn to 0
     id = face_id;
-    agent_id = 0;
+    agent_id = agent;
   }
 
   void reset_path_visited(){

@@ -29,23 +29,6 @@
 
 
 /*****************************************************************************
-** Implementation (includes two wrapper functions to overload the subscribers callbacks)
-*****************************************************************************/
-
-static void wrapper_path_planning_callback(void *pt2Object, const qtnp::InitialCoordinates::ConstPtr &msg){
-    //explicitly cast to a pointer to class Tnp_update
-    qtnp::Tnp_update *update = (qtnp::Tnp_update*) pt2Object;
-    // and call the member function
-    update->path_planning_callback(msg);
-}
-static void wrapper_polygon_def_callback(void *pt2Object, const qtnp::Placemarks::ConstPtr &msg){
-    //explicitly cast to a pointer to class Tnp_update
-    qtnp::Tnp_update *update = (qtnp::Tnp_update*) pt2Object;
-    // and call the member function
-    update->polygon_def_callback(msg);
-}
-
-/*****************************************************************************
 ** Namespaces
 *****************************************************************************/
 
@@ -75,18 +58,9 @@ bool QNode::init() {
 
     rviz_objects.init();
 
-    // when a path is requested, for agent i
-    path_plan_callback bound_path_planning_callback = boost::bind(&wrapper_path_planning_callback, &tnp_update, _1); //--
-    // when a new polygon is defined by a kml file
-    poly_def_callback bound_polygon_def_callback = boost::bind(&wrapper_polygon_def_callback, &tnp_update, _1); //--
-
     ros::NodeHandle n;
 
     init_publishers(n);
-    // subscribing to the tnp_release_spot, waiting for lon,lat and agent id in order to publish to the guys below
-    home_spot_sub = n.subscribe("tnp_release_spot", 1000, bound_path_planning_callback);
-    // define_poly. first step of node
-    polygon_def_sub = n.subscribe("tnp_polygon_def", 1000, bound_polygon_def_callback);
 
 	start();
 	return true;
@@ -104,21 +78,9 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
     ros::start(); // explicitly needed since our nodehandle is going out of scope.
 
     rviz_objects.init();
-
-    // when a path is requested, for agent i
-    path_plan_callback bound_path_planning_callback = boost::bind(&wrapper_path_planning_callback, &tnp_update, _1); //--
-    // when a new polygon is defined by a kml file
-    poly_def_callback bound_polygon_def_callback = boost::bind(&wrapper_polygon_def_callback, &tnp_update, _1); //--
-
     ros::NodeHandle n;
 
     init_publishers(n);
-
-    // subscribing to the tnp_release_spot (lon,lat, agent_id) for service calls
-    home_spot_sub = n.subscribe("tnp_release_spot", 1000, bound_path_planning_callback);
-    // subscribing to kml area definition for service calls
-    polygon_def_sub = n.subscribe("tnp_polygon_def", 1000, bound_polygon_def_callback);
-
 	start();
 	return true;
 }
@@ -144,11 +106,12 @@ void QNode::run() {
           polygon_pub.publish(rviz_objects.get_polygonStamped());
           edges_pub.publish(rviz_objects.get_edges());
           center_pub.publish(rviz_objects.get_center_points());
+
+          triangulation_mesh_pub.publish(rviz_objects.get_triangulation_mesh());
           rviz_objects.set_polygon_ready(false);
         }
 
         if (rviz_objects.is_planning_ready()){
-          triangulation_mesh_pub.publish(rviz_objects.get_triangulation_mesh());
           path_pub.publish(rviz_objects.get_path());
           std::cout << "Number of waypoints: " << rviz_objects.get_number_of_waypoints() << std::endl;
           // waypoints_s_client.publish(this->tnp_update.get_waypoint_list());
@@ -232,12 +195,12 @@ void QNode::init_publishers(ros::NodeHandle n){
     // publishing the mesh
     triangulation_mesh_pub = n.advertise<visualization_msgs::Marker>("triangulation_mesh", 300);
     // publishing the centers of each cell of the triangulation (waypoints)
-    center_pub = n.advertise<visualization_msgs::Marker>("center_points", 150);
+    center_pub = n.advertise<visualization_msgs::Marker>("center_points", 450);
     // publishing the produced path(s)(?)
     path_pub = n.advertise<nav_msgs::Path>("path_planning", 150);
     // publishing waypoint lists in mavros nodes
     // waypoints_pub = n.advertise<mavros_msgs::WaypointList>("mavros/mission/waypoints", 150);
-    waypoints_s_client = n.serviceClient<mavros_msgs::WaypointPush>("/mavros/mission/push");
+    // waypoints_s_client = n.serviceClient<mavros_msgs::WaypointPush>("/mavros/mission/push");
 }
 
 }  // namespace qtnp
