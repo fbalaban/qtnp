@@ -182,6 +182,7 @@ inline geometry_msgs::Point face_to_center(CDT &cdt, CDT::Face_handle face){
 
 }
 
+/// \brief Calculates distance between two ROS rviz points
 inline double calculate_distance(geometry_msgs::Point center1, geometry_msgs::Point center2){
 
   return hypot(abs(center1.x - center2.x),abs(center1.y - center2.y));

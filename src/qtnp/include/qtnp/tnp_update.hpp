@@ -75,7 +75,7 @@ class Tnp_update {
                                     double edge_cons,
                                     int lloyd_iterations);
 
-    void path_planning_coverage(int uas);
+    void path_planning_coverage(int uas, int mountain_sensitivity);
     void path_planning_to_goal(int uas, double lat, double lon);
     void partition(std::vector<Uas_model> &uas);
 
@@ -89,7 +89,7 @@ class Tnp_update {
     void hop_cost_attribution(std::vector<std::pair<int, int> > id_cell_count);
     void coverage_cost_attribution(CDT &l_cdt);
     void path_to_goal(int uas, int goal_cell_id);
-    void complete_path_coverage(int uas);
+    void complete_path_coverage(int uas, int mountain_sensitivity);
 
     void clear_aux(CDT &l_cdt);
     void clear_rviz_objects();

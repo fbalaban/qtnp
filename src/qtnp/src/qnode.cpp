@@ -34,7 +34,6 @@
 
 namespace qtnp {
 
-
 QNode::QNode(int argc, char** argv) :
 	init_argc(argc),
     init_argv(argv),
@@ -46,7 +45,7 @@ QNode::~QNode() {
       ros::shutdown(); // explicitly needed since we use ros::start();
       ros::waitForShutdown();
     }
-	wait();
+    wait();
 }
 
 bool QNode::init() {

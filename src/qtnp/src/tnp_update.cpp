@@ -517,8 +517,8 @@ namespace qtnp {
         double crEdge = edge_cons; // 25.0; -- the default edge criteria(50m footprint) (it's the number given/500 (the max rviz range))
         std::cout << "Number of vertices before meshing and refining: " << l_cdt.number_of_vertices() << std::endl;
         Mesher mesher(l_cdt);
-        mesher.refine_mesh();
-        std::cout << "Number of vertices after meshing: " << l_cdt.number_of_vertices() << std::endl;
+        //mesher.refine_mesh();
+        std::cout << "Number of vertices after creating mesher: " << l_cdt.number_of_vertices() << std::endl;
         std::cout << "Meshing again with new criteria..." << std::endl;
 
         mesher.set_criteria(Criteria(crAngle, crEdge));
@@ -643,7 +643,7 @@ namespace qtnp {
                 }
             }
         }
-
+    // TODO NOW: add list of seeds in global class or somewhere in order for the sub cdts to inherit the holes
         std::list<CDT::Point> list_of_seeds;
         for (std::vector<qtnp::Coordinates>::iterator it = placemarks_array.begin(); it<placemarks_array.end(); it++){
 
@@ -703,7 +703,7 @@ namespace qtnp {
         //  Adding the seeds which define the holes.
         if (!list_of_seeds.empty()){
             std::cout << "Refining and meshing the domain including seeds defining holes" << std::endl;
-            CGAL::refine_Delaunay_mesh_2(m_cdt, list_of_seeds.begin(), list_of_seeds.end(), Criteria());
+            CGAL::refine_Delaunay_mesh_2(m_cdt, list_of_seeds.begin(), list_of_seeds.end(), Criteria(angle_cons, edge_cons));
             std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << m_cdt.number_of_vertices() << std::endl;
         }
 
@@ -1115,7 +1115,7 @@ namespace qtnp {
             // static version of angle constrain, edge_cons is the fov_size
             double angle_cons(constants::angle_criterion_default);
             perform_cdt(sub_cdt, angle_cons, uas[i].get_fov());
-            initialize_cdt_struct(i+1, sub_cdt, ((i+1)*1000) );
+            initialize_cdt_struct(i+1, sub_cdt, ((i+1)*3000) );
             std::vector<Uas_model> single_uas;
             single_uas.push_back(uas[i]);
             initialize_starting_positions(sub_cdt, single_uas);
@@ -1167,16 +1167,19 @@ namespace qtnp {
 
                 // isotropic cost depth coloring
                 if (rviz_objects_ref.get_settings().task_cost){
-                    triangle_color.r = 0.0f + (face_depth/2.0) +0.2f + (face->info().agent_id*2);// + (the_agent/5.0);
-                    triangle_color.b = 0.0f + (face_depth/2.0) +0.2f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
-                    triangle_color.g = 0.0f + (face_depth/2.0) +0.5f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+                    triangle_color.r = 1.0f - (face_depth/100.0) - (face->info().agent_id*0.05);
+                    triangle_color.b = 1.0f - (face_depth/100.0) - (face->info().agent_id*0.05);
+                    triangle_color.g = 1.0f - (face_depth/100.0) - (face->info().agent_id*0.05);
+                    if (triangle_color.r < 0.5f) triangle_color.r -= 0.5f;
+                    if (triangle_color.b < 0.5f) triangle_color.b -= 0.5f;
+                    if (triangle_color.g < 0.5f) triangle_color.g -= 0.5f;
                 }
 
-                // coverage depth coloring
+                // coverage depth coloring.. it's rbg not rgb..
                 if (rviz_objects_ref.get_settings().coverage_cost){
-                    triangle_color.r = 0.3f - (face_depth/500.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
-                    triangle_color.b = 0.3f - (face_depth/500.0)+0.02f + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
-                    triangle_color.g = 0.3f - (face_depth/500.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
+                    triangle_color.r = 1.0f;// - (face_depth/500.0) +0.02f + (face->info().agent_id*2);// + (the_agent/5.0);
+                    triangle_color.b = 0.1f - (face_depth/500.0)+0.02f ; + (face->info().agent_id*2);// + (the_agent/5.0);// + (face->info().depth/45.0);//color_iterator*2.50/100;
+                    triangle_color.g = 0.4f + (face_depth/250.0)+0.05f+ (face->info().agent_id*2);// + (the_agent/5.0);// + (face_depth/75.0);//color_iterator*8.0/100;
                 }
 
                 // borders coloring
@@ -1198,9 +1201,9 @@ namespace qtnp {
         }
     }
 
-    void Tnp_update::path_planning_coverage(int uas){
+    void Tnp_update::path_planning_coverage(int uas, int mountain_sensitivity){
 
-        complete_path_coverage(uas);
+        complete_path_coverage(uas, mountain_sensitivity);
         mesh_coloring();
         rviz_objects_ref.set_planning_ready(true) ;
     }
@@ -1343,13 +1346,12 @@ namespace qtnp {
         } while (!never_ever_again);
     }
 
-    void Tnp_update::complete_path_coverage(int uas){
+    void Tnp_update::complete_path_coverage(int uas, int mountain_sensitivity){
 
         int uas_id = uas;
 
         std::cout << "----Beginning complete coverage for agent : " << uas_id << "----" << std::endl;
         CDT &l_cdt = m_sub_cdt_vector[uas_id - 1];
-        // clearing the path object in case it had a previous path
         rviz_objects_ref.clear_path();
         std::vector< std::pair<double, double> > coord_path;
 
@@ -1370,10 +1372,17 @@ namespace qtnp {
         CDT::Face_handle &starter_cell = initial_cell;
         Face_Handle_Vector borders_vector;
         Distance_Vector borders_distance_vector;
+
+        Face_Handle_Vector mountain_vector;
+        Distance_Vector mountain_distance_vector;
+
         int current_depth = constants::coverage_depth_max;
         int smallest_depth = constants::coverage_depth_max - 1;
         bool not_finished = true;
         bool initial = true;
+
+        bool mountain_found = false;
+        bool mountain_cross = false;
 
         starter_cell->info().path_visited = true;
         rviz_objects_ref.push_path_point(utilities::build_pose_stamped
@@ -1384,29 +1393,69 @@ namespace qtnp {
         do {
 
             not_finished = false;
+            mountain_found = false;
+            mountain_cross = false;
 
-            // go through all triangles, get the starter cell and the borders vector
-            for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
-                faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
+            // a mountain is found
+            if (current_depth < smallest_depth){
 
-                if ( (faces_iterator->info().coverage_depth >= current_depth)
-                     && (faces_iterator->info().agent_id == uas_id)
-                     && (!faces_iterator->info().is_path_visited())) {
-
-                    borders_vector.push_back(faces_iterator);
-                    not_finished = true;
+                // the closest one to the current, from the list of mountains
+                // calculate the distance from all borders to the starter cell in order to choose the first border cell to visit
+                for (std::vector<CDT::Face_handle>::iterator it = mountain_vector.begin(); it != mountain_vector.end(); it++){
+                    float this_distance = utilities::calculate_distance(utilities::face_to_center(l_cdt, *it),
+                                             utilities::face_to_center(l_cdt, starter_cell));
+                    Distance_Entry this_entry = std::make_pair(*it, this_distance);
+                    mountain_distance_vector.push_back(this_entry);
                 }
 
-                if (initial){
-                    if (faces_iterator->info().coverage_depth < smallest_depth){
-                        smallest_depth = faces_iterator->info().coverage_depth;
+                not_finished = false;
+                std::sort(mountain_distance_vector.begin(), mountain_distance_vector.end(), utilities::distance_comparison);
+                CDT::Face_handle next_cell = mountain_distance_vector.front().first;
+                // giati tha meiwthei meta
+                current_depth = next_cell->info().coverage_depth + 10 ;
+
+                // removes the cell from the mountain vector
+                std::cout << "Mountain vector BEFORE removal: " << mountain_vector.size() << std::endl;
+                mountain_vector.erase(std::remove(mountain_vector.begin(), mountain_vector.end(), next_cell), mountain_vector.end());
+                std::cout << "Mountain vector AFTER removal: " << mountain_vector.size() << std::endl;
+
+
+                rviz_objects_ref.push_path_point(utilities::build_pose_stamped
+                                             (utilities::face_to_center(l_cdt, next_cell)));
+                next_cell->info().path_visited = true;
+                coord_path.push_back(std::pair<double, double>(next_cell->info().center_lat, next_cell->info().center_lon));
+                starter_cell = next_cell;
+
+                mountain_distance_vector.clear();
+
+                mesh_coloring();
+                rviz_objects_ref.set_planning_ready(true) ;
+
+
+            } else {
+
+                // go through all triangles, get the starter cell and the borders vector
+                for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
+                    faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
+
+                    if ( (faces_iterator->info().coverage_depth >= current_depth)
+                         && (faces_iterator->info().agent_id == uas_id)
+                         && (!faces_iterator->info().is_path_visited())) {
+                        //current_depth = faces_iterator->info().coverage_depth;
+                        borders_vector.push_back(faces_iterator);
+                        not_finished = true;
+                    }
+
+                    if (initial){
+                        if ((faces_iterator->info().coverage_depth < smallest_depth)
+                            && (faces_iterator->info().agent_id == uas_id)){
+                            smallest_depth = faces_iterator->info().coverage_depth;
+                        }
                     }
                 }
             }
 
-            initial = false;
-
-            if (!not_finished){
+            if (!not_finished){ // or mountain == true
                 current_depth = current_depth - 10;
             } else {
 
@@ -1420,24 +1469,52 @@ namespace qtnp {
 
                 std::sort(borders_distance_vector.begin(), borders_distance_vector.end(), utilities::distance_comparison);
                 // and this is the closest
+                // edw mpainoun ta mountains
                 CDT::Face_handle first_of_the_border = borders_distance_vector.front().first;
+                //////////////////////////////
+
+                float next_waypoint_distance = borders_distance_vector.front().second;
+                // panw apo 3 fores megaliteri apostasi apo oti apo ton neighbor tou
+                for (int i=0; i<3; i++){
+                    if (!initial && (starter_cell->neighbor(i)->is_in_domain()) ){
+                        if ( (utilities::calculate_distance(
+                                utilities::face_to_center(l_cdt, starter_cell),
+                                utilities::face_to_center(l_cdt, starter_cell->neighbor(i))) * mountain_sensitivity) < next_waypoint_distance){
+
+                            // TODO V2 not optimized solution ( O(N^2) ). Look at http://stackoverflow.com/questions/10376065/pushing-unique-data-into-vector=
+                            if (std::find(mountain_vector.begin(), mountain_vector.end(), borders_distance_vector.front().first) == mountain_vector.end()) {
+                                std::cout << "Adding cell no " << borders_distance_vector.front().first->info().id << " to mountains list" << std::endl;
+                                mountain_vector.push_back(borders_distance_vector.front().first);
+                            }
+
+                            current_depth = current_depth - 10;
+                            mountain_found = true;
+                            break;
+                        }
+                    }
+                }
 
                 // an o geitonas tou starter_cell, diladi toy proigoymenoy vimatos, pou einai pio konta
                 // ston first of the border, den exei ton firstOfTHeBor ws geitona,
                 // tote vale ayton ton geitona sto path, kanton visited an den einai,
                 // valton ws starter cell kai epanelave
+                if (!mountain_found){
 
-                rviz_objects_ref.push_path_point(utilities::build_pose_stamped
+                    current_depth = first_of_the_border->info().coverage_depth;
+                    mountain_vector.erase(std::remove(mountain_vector.begin(), mountain_vector.end(), first_of_the_border), mountain_vector.end());
+                    rviz_objects_ref.push_path_point(utilities::build_pose_stamped
                                                  (utilities::face_to_center(l_cdt, first_of_the_border)));
-                first_of_the_border->info().path_visited = true;
-                coord_path.push_back(std::pair<double, double>(first_of_the_border->info().center_lat,
+                    first_of_the_border->info().path_visited = true;
+                    coord_path.push_back(std::pair<double, double>(first_of_the_border->info().center_lat,
                                                                first_of_the_border->info().center_lon));
-
-                starter_cell = first_of_the_border;
+                    starter_cell = first_of_the_border;
+                }
             }
+
+            initial = false;
             borders_vector.clear();
             borders_distance_vector.clear();
-        } while (current_depth >= smallest_depth);
+        } while (current_depth >= smallest_depth || !mountain_vector.empty());
 
         // TODO: prepei na to kanoyme na min pidaei...
         std::cout << "----Finished complete coverage ----" << std::endl;

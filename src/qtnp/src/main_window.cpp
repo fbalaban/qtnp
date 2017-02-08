@@ -13,6 +13,7 @@
 #include <QtGui>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QDialogButtonBox>
 #include <QString>
 #include <QFile>
 #include <QIODevice>
@@ -21,6 +22,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <iostream>
 #include "../include/qtnp/main_window.hpp"
+#include "../include/qtnp/log_settings.hpp"
 #include "../include/qtnp/uas_model.hpp"
 #include "../include/qtnp/position.hpp"
 
@@ -63,8 +65,8 @@ qtnp::Placemarks kml_parsing(const QString &filename) {
             std::vector<std::string> seed_tokens;
             for (std::string each; std::getline(split_seed, each, split_char); seed_tokens.push_back(each));
 
-            placemark_coordinates.seed_latitude = ::atof(seed_tokens[0].c_str());
-            placemark_coordinates.seed_longitude = ::atof(seed_tokens[1].c_str());
+            placemark_coordinates.seed_latitude = std::atof(seed_tokens[0].c_str());
+            placemark_coordinates.seed_longitude = std::atof(seed_tokens[1].c_str());
         }
 
         // pushing all coordinates to form the shape
@@ -81,8 +83,8 @@ qtnp::Placemarks kml_parsing(const QString &filename) {
             std::vector<std::string> tokens2;
             // TODO: it takes lat and lon incorrectly. in kml file, lon is first
             for (std::string each; std::getline(split2, each, split_char); tokens2.push_back(each));
-            placemark_coordinates.latitude.push_back(::atof(tokens2[0].c_str()));
-            placemark_coordinates.longitude.push_back(::atof(tokens2[1].c_str()));
+            placemark_coordinates.latitude.push_back(std::atof(tokens2[0].data()));
+            placemark_coordinates.longitude.push_back(std::atof(tokens2[1].data()));
         }
 
         placemarks_msg.placemarks.push_back(placemark_coordinates);
@@ -116,7 +118,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
 
     /*******************************************/
 
-    QObject::connect(ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt())); // qApp is a global variable for the application
+    QObject::connect(ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
 
     ReadSettings();
     ui.tab_manager->setCurrentIndex(1); // ensure the second tab is showing - qt-designer should have this already hardwired, but often loses it (settings?).
@@ -202,9 +204,9 @@ void MainWindow::on_button_connect_clicked(bool check ) {
 void MainWindow::on_checkbox_use_environment_stateChanged(int state) {
 	bool enabled;
 	if ( state == 0 ) {
-		enabled = true;
+        enabled = true;
 	} else {
-		enabled = false;
+        enabled = false;
 	}
 	ui.line_edit_master->setEnabled(enabled);
 	ui.line_edit_host->setEnabled(enabled);
@@ -311,6 +313,8 @@ void MainWindow::on_button_partition_clicked(bool check ) {
 void MainWindow::on_button_coverage_clicked(bool checked){
 
     int uas = ui.spinBox_coverage->value();
+    int mountain_sensitivity = ui.spinBox_mountain->value();
+
     if ((uas < 1) || (uas > ui.table_view_uas->model()->rowCount()) ) showGenericMessage("Please select a valid UAS");
     else {
         std::pair<double, double> coords;
@@ -319,7 +323,7 @@ void MainWindow::on_button_coverage_clicked(bool checked){
         //lon
         coords.second = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(uas -1, 5))).toDouble();
 
-        qnode.get_tnp_update_pointer()->path_planning_coverage(uas);
+        qnode.get_tnp_update_pointer()->path_planning_coverage(uas, mountain_sensitivity);
     }
 }
 
@@ -334,7 +338,6 @@ void MainWindow::on_button_go_to_goal_clicked(bool checked){
     else qnode.get_tnp_update_pointer()->path_planning_to_goal(uas, lat, lon);
 
 }
-
 
 void MainWindow::on_button_save_uas_config_clicked(bool check){
 
@@ -394,7 +397,23 @@ void MainWindow::on_actionAbout_triggered() {
     QMessageBox::about(this, tr("About ..."),tr("<h2>qTnP 0.10</h2><p>Copyright by Fotis Balampanis</p><p>This program performs a "
                                                 "Constrained Delaunay Triangulation on a given area, creating regions of interest "
                                                 "for a number of RPAS based on their autonomy capabilities. It also produces coverage"
-                                                "and go-to-goal task waypoint lists.</p>"));
+                                                " and go-to-goal task waypoint lists.</p>"));
+}
+
+
+void MainWindow::on_actionLog_options_triggered() {
+
+
+    Ui::LogSettings settings_dialog(this);
+
+    int result = settings_dialog.exec(); // 0: rejected, 1: accepted
+
+}
+
+void MainWindow::log_settings() {
+
+    //ui_log_settings.setupUi(this);
+
 }
 
 /*****************************************************************************

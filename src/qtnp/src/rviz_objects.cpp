@@ -62,7 +62,10 @@ void Rviz_objects::init(){
   center_points.scale.x = 3; // TODO: replace with constant or UI selection
   center_points.scale.y = 3; // TODO: replace with constant or UI selection
 
-  center_points.color.r = 1.0f;
+  center_points.color.r = 0.0f;
+  center_points.color.g = 0.0f;
+  center_points.color.b = 0.0f;
+
   edges.color.r = center_points.color.g = 0.25f;
   edges.color.g =  0.75f; // TODO: replace with constant or UI selection
   edges.color.a = center_points.color.a = 1.0f; // TODO: replace with constant or UI selection
