@@ -1,11 +1,11 @@
 # qtnp
-Qt+CGAL+ROS area partition and path planning for coastal regions.
+Qt+CGAL+ROS area partition and path planning for multiple UAVs for coastal regions.
 
 ***
 
 # Multiple UAV waypoint path planning application.
 
-Made with Qt, ROS and CGAL.
+Made with Qt5.5, for ROS Kinetic, using CGAL 4.8.
 
 A kml file defines area borders and no-fly zones. 
 
