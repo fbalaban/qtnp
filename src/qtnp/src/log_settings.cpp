@@ -119,7 +119,7 @@ namespace Ui {
                 settings->setValue(key,true);
             }
         }
-        foreach (QCheckBox *box, boxes){
+        foreach (QCheckBox *box, ui_log_settings.groupBox_3->findChildren<QCheckBox *>()){
             box->setChecked(true);
         }
     }
