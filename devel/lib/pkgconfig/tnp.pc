@@ -1,8 +1,0 @@
-prefix=/home/fotis/Dev/Workspaces/ROS/triangulation_and_planning/devel
-
-Name: tnp
-Description: Description of tnp
-Version: 0.1.0
-Cflags: -I/home/fotis/Dev/Workspaces/ROS/triangulation_and_planning/devel/include -I/home/fotis/Dev/Workspaces/ROS/triangulation_and_planning/src/tnp/include
-Libs: -L/home/fotis/Dev/Workspaces/ROS/triangulation_and_planning/devel/lib 
-Requires: roscpp rospy std_msgs message_runtime visualization_msgs

@@ -66,12 +66,9 @@ float64[] latitude
         if python3 or type(_x) == unicode:
           _x = _x.encode('utf-8')
           length = len(_x)
-        if python3:
-          buff.write(struct.pack('<I%sB'%length, length, *_x))
-        else:
-          buff.write(struct.pack('<I%ss'%length, length, _x))
+        buff.write(struct.pack('<I%ss'%length, length, _x))
         _x = val1
-        buff.write(_struct_2d.pack(_x.seed_longitude, _x.seed_latitude))
+        buff.write(_get_struct_2d().pack(_x.seed_longitude, _x.seed_latitude))
         length = len(val1.longitude)
         buff.write(_struct_I.pack(length))
         pattern = '<%sd'%length
@@ -110,7 +107,7 @@ float64[] latitude
         _x = val1
         start = end
         end += 16
-        (_x.seed_longitude, _x.seed_latitude,) = _struct_2d.unpack(str[start:end])
+        (_x.seed_longitude, _x.seed_latitude,) = _get_struct_2d().unpack(str[start:end])
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
@@ -146,12 +143,9 @@ float64[] latitude
         if python3 or type(_x) == unicode:
           _x = _x.encode('utf-8')
           length = len(_x)
-        if python3:
-          buff.write(struct.pack('<I%sB'%length, length, *_x))
-        else:
-          buff.write(struct.pack('<I%ss'%length, length, _x))
+        buff.write(struct.pack('<I%ss'%length, length, _x))
         _x = val1
-        buff.write(_struct_2d.pack(_x.seed_longitude, _x.seed_latitude))
+        buff.write(_get_struct_2d().pack(_x.seed_longitude, _x.seed_latitude))
         length = len(val1.longitude)
         buff.write(_struct_I.pack(length))
         pattern = '<%sd'%length
@@ -191,7 +185,7 @@ float64[] latitude
         _x = val1
         start = end
         end += 16
-        (_x.seed_longitude, _x.seed_latitude,) = _struct_2d.unpack(str[start:end])
+        (_x.seed_longitude, _x.seed_latitude,) = _get_struct_2d().unpack(str[start:end])
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
@@ -212,4 +206,12 @@ float64[] latitude
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_2d = struct.Struct("<2d")
+def _get_struct_I():
+    global _struct_I
+    return _struct_I
+_struct_2d = None
+def _get_struct_2d():
+    global _struct_2d
+    if _struct_2d is None:
+        _struct_2d = struct.Struct("<2d")
+    return _struct_2d

@@ -1,4 +1,4 @@
-FILE(REMOVE_RECURSE
+file(REMOVE_RECURSE
   "CMakeFiles/qtnp_generate_messages_py"
   "/home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/python2.7/dist-packages/qtnp/msg/_InitialCoordinates.py"
   "/home/fotis/Dev/Workspaces/ROS/qTnP/devel/lib/python2.7/dist-packages/qtnp/msg/_Coordinates.py"
@@ -7,6 +7,6 @@ FILE(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-FOREACH(lang)
-  INCLUDE(CMakeFiles/qtnp_generate_messages_py.dir/cmake_clean_${lang}.cmake OPTIONAL)
-ENDFOREACH(lang)
+foreach(lang )
+  include(CMakeFiles/qtnp_generate_messages_py.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

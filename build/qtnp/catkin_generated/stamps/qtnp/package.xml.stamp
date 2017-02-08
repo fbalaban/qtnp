@@ -30,7 +30,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>qt_build</build_depend>
-  <build_depend>libqt4-dev</build_depend>
+  <build_depend>libqt5</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>message_generation</build_depend>
@@ -43,7 +43,7 @@
   <run_depend>CGAL</run_depend>
   <run_depend>qt_build</run_depend>
   <run_depend>roscpp</run_depend>  
-  <run_depend>libqt4-dev</run_depend>
+  <run_depend>libqt5</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>gmp</run_depend>
   <run_depend>std_msgs</run_depend>

@@ -1,35 +1,11 @@
 # The set of languages for which implicit dependencies are needed:
-SET(CMAKE_DEPENDS_LANGUAGES
+set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 
-# Preprocessor definitions for this target.
-SET(CMAKE_TARGET_DEFINITIONS
-  "QT_CORE_LIB"
-  "QT_DEBUG"
-  "QT_GUI_LIB"
-  "QT_NO_KEYWORDS"
-  "QT_XML_LIB"
-  "ROSCONSOLE_BACKEND_LOG4CXX"
-  "ROS_BUILD_SHARED_LIBS=1"
-  "ROS_PACKAGE_NAME=\"qtnp\""
-  )
-
 # Targets to which this target links.
-SET(CMAKE_TARGET_LINKED_INFO_FILES
+set(CMAKE_TARGET_LINKED_INFO_FILES
   )
 
-# The include file search paths:
-SET(CMAKE_C_TARGET_INCLUDE_PATH
-  "/home/fotis/Dev/Workspaces/ROS/qTnP/devel/include"
-  "/opt/ros/indigo/include"
-  "qtnp"
-  "/home/fotis/Dev/Workspaces/ROS/qTnP/src/qtnp/include/qtnp"
-  "/usr/include/qt4"
-  "/usr/include/qt4/QtGui"
-  "/usr/include/qt4/QtXml"
-  "/usr/include/qt4/QtCore"
-  )
-SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
-SET(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
-SET(CMAKE_ASM_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")

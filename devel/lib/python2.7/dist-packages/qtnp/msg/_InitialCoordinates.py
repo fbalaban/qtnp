@@ -58,7 +58,7 @@ float64 latitude
     """
     try:
       _x = self
-      buff.write(_struct_b2d.pack(_x.uav_id, _x.longitude, _x.latitude))
+      buff.write(_get_struct_b2d().pack(_x.uav_id, _x.longitude, _x.latitude))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -72,7 +72,7 @@ float64 latitude
       _x = self
       start = end
       end += 17
-      (_x.uav_id, _x.longitude, _x.latitude,) = _struct_b2d.unpack(str[start:end])
+      (_x.uav_id, _x.longitude, _x.latitude,) = _get_struct_b2d().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -86,7 +86,7 @@ float64 latitude
     """
     try:
       _x = self
-      buff.write(_struct_b2d.pack(_x.uav_id, _x.longitude, _x.latitude))
+      buff.write(_get_struct_b2d().pack(_x.uav_id, _x.longitude, _x.latitude))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -101,10 +101,18 @@ float64 latitude
       _x = self
       start = end
       end += 17
-      (_x.uav_id, _x.longitude, _x.latitude,) = _struct_b2d.unpack(str[start:end])
+      (_x.uav_id, _x.longitude, _x.latitude,) = _get_struct_b2d().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_b2d = struct.Struct("<b2d")
+def _get_struct_I():
+    global _struct_I
+    return _struct_I
+_struct_b2d = None
+def _get_struct_b2d():
+    global _struct_b2d
+    if _struct_b2d is None:
+        _struct_b2d = struct.Struct("<b2d")
+    return _struct_b2d

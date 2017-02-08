@@ -1,4 +1,4 @@
-FILE(REMOVE_RECURSE
+file(REMOVE_RECURSE
   "CMakeFiles/qtnp_generate_messages_cpp"
   "/home/fotis/Dev/Workspaces/ROS/qTnP/devel/include/qtnp/InitialCoordinates.h"
   "/home/fotis/Dev/Workspaces/ROS/qTnP/devel/include/qtnp/Coordinates.h"
@@ -6,6 +6,6 @@ FILE(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-FOREACH(lang)
-  INCLUDE(CMakeFiles/qtnp_generate_messages_cpp.dir/cmake_clean_${lang}.cmake OPTIONAL)
-ENDFOREACH(lang)
+foreach(lang )
+  include(CMakeFiles/qtnp_generate_messages_cpp.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

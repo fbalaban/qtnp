@@ -122,7 +122,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/fotis/Dev/Workspaces/ROS/qTnP/install/lib;/opt/ros/indigo/lib)
+    foreach(path /home/fotis/Dev/Workspaces/ROS/qTnP/install/lib;/opt/ros/kinetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
@@ -145,7 +145,7 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
-set(qtnp_EXPORTED_TARGETS "qtnp_generate_messages_cpp;qtnp_generate_messages_lisp;qtnp_generate_messages_py")
+set(qtnp_EXPORTED_TARGETS "qtnp_generate_messages_cpp;qtnp_generate_messages_eus;qtnp_generate_messages_lisp;qtnp_generate_messages_nodejs;qtnp_generate_messages_py")
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${qtnp_EXPORTED_TARGETS})
   if(NOT TARGET ${t})
@@ -162,12 +162,12 @@ foreach(depend ${depends})
   if(${count} EQUAL 1)
     # simple dependencies must only be find_package()-ed once
     if(NOT ${qtnp_dep}_FOUND)
-      find_package(${qtnp_dep} REQUIRED)
+      find_package(${qtnp_dep} REQUIRED NO_MODULE)
     endif()
   else()
     # dependencies with components must be find_package()-ed again
     list(REMOVE_AT depend_list 0)
-    find_package(${qtnp_dep} REQUIRED ${depend_list})
+    find_package(${qtnp_dep} REQUIRED NO_MODULE ${depend_list})
   endif()
   _list_append_unique(qtnp_INCLUDE_DIRS ${${qtnp_dep}_INCLUDE_DIRS})
 
