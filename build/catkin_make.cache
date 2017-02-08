@@ -1,2 +1,0 @@
-qtnp
--DCATKIN_DEVEL_PREFIX=/home/fotis/Dev/Workspaces/ROS/qTnP/devel -DCMAKE_INSTALL_PREFIX=/home/fotis/Dev/Workspaces/ROS/qTnP/install -G Unix Makefiles
