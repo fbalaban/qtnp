@@ -75,8 +75,6 @@ public Q_SLOTS:
     void on_button_save_uas_config_clicked(bool check);
     void on_button_load_last_uas_conf_clicked(bool check);
 
-    void log_settings();
-
     /******************************************
     ** Manual connections
     *******************************************/

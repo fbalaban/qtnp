@@ -511,26 +511,29 @@ namespace qtnp {
     // angle constrain is static in this version
     void Tnp_update::perform_cdt(CDT &l_cdt, double angle_cons, double edge_cons){
 
+        std::cout << currentDateTime() << " Started CDT perform" << std::endl;
+
         // FIXME: edge constrain is in cgal points that doesn't correspond to meters.
         // depending on max values, transform given value
+        // TODO Remove verbose
         double crAngle = angle_cons;// 0.125; -- the default angle criteria
         double crEdge = edge_cons; // 25.0; -- the default edge criteria(50m footprint) (it's the number given/500 (the max rviz range))
-        std::cout << "Number of vertices before meshing and refining: " << l_cdt.number_of_vertices() << std::endl;
+        //std::cout << "Number of vertices before meshing and refining: " << l_cdt.number_of_vertices() << std::endl;
         Mesher mesher(l_cdt);
         //mesher.refine_mesh();
-        std::cout << "Number of vertices after creating mesher: " << l_cdt.number_of_vertices() << std::endl;
-        std::cout << "Meshing again with new criteria..." << std::endl;
+        //std::cout << "Number of vertices after creating mesher: " << l_cdt.number_of_vertices() << std::endl;
+        //std::cout << "Meshing again with new criteria..." << std::endl;
 
         mesher.set_criteria(Criteria(crAngle, crEdge));
         mesher.refine_mesh();
-        std::cout << "Number of vertices after meshing and refining with new criteria: "
-                << l_cdt.number_of_vertices() << std::endl;
+        //std::cout << "Number of vertices after meshing and refining with new criteria: " << l_cdt.number_of_vertices() << std::endl;
 
         CGAL::lloyd_optimize_mesh_2(l_cdt,
                                     CGAL::parameters::max_iteration_number = get_lloyd_iter());
 
-        std::cout << "Number of vertices AFTER LLOYD (" << get_lloyd_iter() << " iterations): " <<
-                     l_cdt.number_of_vertices() << std::endl;
+        //std::cout << "Number of vertices AFTER LLOYD (" << get_lloyd_iter() << " iterations): " << l_cdt.number_of_vertices() << std::endl;
+        std::cout << currentDateTime() << " Ended CDT perform" << std::endl;
+
     }
 
     // initialization functions on a CDT
@@ -714,6 +717,8 @@ namespace qtnp {
 
     CDT Tnp_update::find_new_cdt_constrains(CDT &l_cdt, int agent_id){
 
+        std::cout << currentDateTime() << " Started Finding new CDT for UAV: " << agent_id << std::endl;
+
         std::set< std::pair<CGAL::Point_2<K> ,CGAL::Point_2<K> > > outer_triangle_vertices;
         std::set< std::pair<CGAL::Point_2<K> ,CGAL::Point_2<K> > > inner_triangle_vertices;
         std::vector< std::pair<CGAL::Point_2<K> ,CGAL::Point_2<K> > > constrains_list;
@@ -722,11 +727,12 @@ namespace qtnp {
             faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
 
             if (faces_iterator->info().agent_id == agent_id){
-
+                // TODO LOG take this code from vertex handling for side/angle calculation: http://stackoverflow.com/questions/29435384/angles-of-triangles-of-a-3d-mesh-using-cgal
+                // ALSO can be used for vertice min/max sizes
                 CGAL::Point_2<K> vertex1 = l_cdt.triangle(faces_iterator)[0];
                 CGAL::Point_2<K> vertex2 = l_cdt.triangle(faces_iterator)[1];
                 CGAL::Point_2<K> vertex3 = l_cdt.triangle(faces_iterator)[2];
-
+                // TODO V3 -> replace these pairs with CGAL::Vector_2 which is used to represent segments
                 std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > cw_segment_1(vertex1, vertex2);
                 std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > cw_segment_2(vertex2, vertex3);
                 std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > cw_segment_3(vertex3, vertex1);
@@ -836,7 +842,7 @@ namespace qtnp {
         CDT sub_cdt;
 
         for(std::vector<std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > >::iterator it = constrains_list.begin(); it!= constrains_list.end(); ++it){
-            std::cout << "unique segment: Ax:" << it->first.x() << " Ay: " << it->first.y() << " Bx: " << it->second.x() << " By: " << it->second.y() << std::endl;
+            //std::cout << "unique segment: Ax:" << it->first.x() << " Ay: " << it->first.y() << " Bx: " << it->second.x() << " By: " << it->second.y() << std::endl;
             counter++;
             CDT::Vertex_handle va = sub_cdt.insert(it->first);
             CDT::Vertex_handle vb = sub_cdt.insert(it->second);
@@ -851,7 +857,8 @@ namespace qtnp {
             //rviz_objects_ref.push_polygon_point(utilities::point_to_point_32(utilities::cgal_point_to_ros_geometry_point(utilities::point_2_to_kernel(it->second))));
         }
 
-        std::cout << "Total segments: " << counter << std::endl;
+        //std::cout << "Total segments: " << counter << std::endl;
+        std::cout << currentDateTime() << " Ended Finding new CDT for UAV: " << agent_id << std::endl;
 
         return sub_cdt;
 
@@ -923,11 +930,12 @@ namespace qtnp {
 
     void Tnp_update::partition(std::vector<qtnp::Uas_model> &uas){
 
+        std::cout << currentDateTime() << " Partitioning started " << std::endl;
         rviz_objects_ref.clear_triangulation_mesh();
 
         initialize_starting_positions(m_cdt, uas);
         isotropic_initial_partition(m_cdt, uas); // or initial partitioning..
-        report_initial_partitioning(m_cdt, uas);
+        //TODO remove: report_initial_partitioning(m_cdt, uas);
         coverage_cost_attribution(m_cdt);
         replenish(uas);
         replenish_revisited(m_cdt, uas);
@@ -949,13 +957,14 @@ namespace qtnp {
         isotropic_cost_attribution(m_cdt);
         coverage_cost_attribution(m_cdt);
 
-        for (int i=0; i< uas.size(); i++){
-            std::cout << "UAS " << i+1 << " has " << uas[i].get_assigned_cells() << " cells. (" <<
-                         uas[i].get_capability_cells() << ")" << std::endl;
-        }
-        std::cout << "Agent -1 has " << agent_minus_one << " cells" << std::endl;
+//TODO Remove
+        //        for (int i=0; i< uas.size(); i++){
+//            std::cout << "UAS " << i+1 << " has " << uas[i].get_assigned_cells() << " cells. (" <<
+//                         uas[i].get_capability_cells() << ")" << std::endl;
+//        }
+//        std::cout << "Agent -1 has " << agent_minus_one << " cells" << std::endl;
 
-        std::cout << "Beginning CDT separation for " << uas.size() << " UAS." <<std::endl;
+        std::cout << currentDateTime() << " Beginning CDT separation for " << uas.size() << " UAS." <<std::endl;
         if (uas.size() > 1){
             seperate_cdts(m_cdt, uas);
         } else {
@@ -964,6 +973,9 @@ namespace qtnp {
 
         // TODO V2 remove that, make either connected UAS class or member vector through code.
         set_instance_uas_vector(uas);
+
+        std::cout << currentDateTime() << " Partitioning ended " << std::endl;
+
         mesh_coloring();
         rviz_objects_ref.set_polygon_ready(true);
 
@@ -1010,8 +1022,6 @@ namespace qtnp {
     }
 
     void Tnp_update::isotropic_initial_partition(CDT &l_cdt, std::vector<qtnp::Uas_model > &uas){
-
-        std::cout << "----- Isotropic initial partition ------" << std::endl;
 
         bool neverInside(false);
         int jumpsIterator(1);
@@ -1109,12 +1119,16 @@ namespace qtnp {
 
     void Tnp_update::seperate_cdts(CDT &l_cdt, std::vector<qtnp::Uas_model> &uas){
 
+
+        std::cout << currentDateTime() << " CDT seperation started " << std::endl;
         clear_rviz_objects();
         for (int i=0; i < uas.size(); i++){
+
             CDT sub_cdt = find_new_cdt_constrains(l_cdt, i+1);
             // static version of angle constrain, edge_cons is the fov_size
             double angle_cons(constants::angle_criterion_default);
             perform_cdt(sub_cdt, angle_cons, uas[i].get_fov());
+            // TODO LOG here put sub_cdt min,max angle and side logging
             initialize_cdt_struct(i+1, sub_cdt, ((i+1)*3000) );
             std::vector<Uas_model> single_uas;
             single_uas.push_back(uas[i]);
@@ -1123,6 +1137,9 @@ namespace qtnp {
             coverage_cost_attribution(sub_cdt);
             m_sub_cdt_vector.push_back(sub_cdt);
         }
+
+        std::cout << currentDateTime() << " CDT seperation ended " << std::endl;
+
     }
 
     void Tnp_update::mesh_coloring(){
@@ -1203,10 +1220,103 @@ namespace qtnp {
 
     void Tnp_update::path_planning_coverage(int uas, int mountain_sensitivity){
 
+
+        std::cout << currentDateTime() << " Complete coverage started " << std::endl;
         complete_path_coverage(uas, mountain_sensitivity);
+        std::cout << currentDateTime() << " Complete coverage finished " << std::endl;
+        // TODO LOG here is the log, after all operations. The time which the computation finished is now.
+        create_log(uas, get_lloyd_iter(), mountain_sensitivity);
+        // TODO after mesh coloring, and planning ready, could add function to form to begin the flight, upload the new plan and monitor
         mesh_coloring();
         rviz_objects_ref.set_planning_ready(true) ;
     }
+
+    // TODO V2 seperate log class:
+    void Tnp_update::create_log(int uas_id, int lloyd_iterations, int mountain_sensitivity){
+
+        CDT &l_cdt = m_sub_cdt_vector[uas_id - 1];
+
+        std::stringstream log_filename;
+        std::string data_path = "/home/fotis/Dev/Data/logs/";
+        log_filename << data_path << currentDateTime() << "_BF_" << "UAV_" << uas_id << ".txt";
+        const std::string& tmp = log_filename.str();
+        const char* cstr = tmp.c_str();
+        std::ofstream log_file(cstr);
+        log_file << "UAV_ID LLOYD MOUNTAIN_SENSITIVITY" << std::endl;
+        log_file << uas_id << " " << lloyd_iterations << " " << mountain_sensitivity << std::endl;
+        log_file << "CELL_ID ANGLE_1 ANGLE_2 ANGLE_3 SIDE_1 SIDE_2 SIDE_3 NEIGHB_1_DIST NEIGHB_2_DIST NEIGHB_3_DIST" << std::endl;
+
+        for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
+            faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
+
+            if (faces_iterator->info().agent_id == uas_id){
+
+                int cell_id = faces_iterator->info().id;
+
+                // TODO LOG ALSO can be used for vertice min/max sizes
+                CGAL::Point_2<K> vertex1 = l_cdt.triangle(faces_iterator)[0];
+                CGAL::Point_2<K> vertex2 = l_cdt.triangle(faces_iterator)[1];
+                CGAL::Point_2<K> vertex3 = l_cdt.triangle(faces_iterator)[2];
+                // angle calculation is wrong
+
+                CGAL::Vector_2<K> v11 = vertex2 - vertex1;
+                CGAL::Vector_2<K> v12 = vertex3 - vertex1;
+                CGAL::Vector_2<K> v21 = vertex1 - vertex2;
+                CGAL::Vector_2<K> v22 = vertex3 - vertex2;
+                CGAL::Vector_2<K> v31 = vertex2 - vertex3;
+                CGAL::Vector_2<K> v32 = vertex1 - vertex3;
+
+                double cosine1 = v11 * v12 / CGAL::sqrt(v11*v11) / CGAL::sqrt(v12 * v12);
+                double cosine2 = v21 * v22 / CGAL::sqrt(v21*v21) / CGAL::sqrt(v22 * v22);
+                double cosine3 = v31 * v32 / CGAL::sqrt(v31*v31) / CGAL::sqrt(v32 * v32);
+
+                double angle1 = ( std::acos(cosine1) * 180 ) / constants::PI; // in degrees
+                double angle2 = ( std::acos(cosine2) * 180 ) / constants::PI; // in degrees
+                double angle3 = ( std::acos(cosine3) * 180 ) / constants::PI; // in degrees
+
+                // side is correct
+                CGAL::Vector_2<K> v1(vertex1,vertex2);// = new CGAL::Vector_2(vertex1,vertex2);
+                CGAL::Vector_2<K> v2(vertex2,vertex3);
+                CGAL::Vector_2<K> v3(vertex3,vertex1);
+
+                double side1 = CGAL::sqrt(v1.squared_length());
+                double side2 = CGAL::sqrt(v2.squared_length());
+                double side3 = CGAL::sqrt(v3.squared_length());
+
+                log_file << cell_id << " " << angle1 << " " << angle2 << " " << angle3 << " " << side1 << " " << side2 << " " << side3 << " ";
+
+                double center_x = ( vertex1.x() + vertex2.x() + vertex3.x() ) / 3;
+                double center_y = ( vertex1.y() + vertex2.y() + vertex3.y() ) / 3;
+                CGAL::Point_2<K> center(center_x, center_y);
+
+                for (int i=0; i<3; i++){
+                    if ( faces_iterator->neighbor(i)->info().agent_id == uas_id ){
+                        CGAL::Point_2<K> neighb_vertex1 = l_cdt.triangle(faces_iterator->neighbor(i))[0];
+                        CGAL::Point_2<K> neighb_vertex2 = l_cdt.triangle(faces_iterator->neighbor(i))[1];
+                        CGAL::Point_2<K> neighb_vertex3 = l_cdt.triangle(faces_iterator->neighbor(i))[2];
+
+                        double new_neighb_x = (neighb_vertex1.x() + neighb_vertex2.x() + neighb_vertex3.x() ) / 3;
+                        double new_neighb_y = (neighb_vertex1.y() + neighb_vertex2.y() + neighb_vertex3.y() ) / 3;
+
+                        CGAL::Point_2<K> neighb_center(new_neighb_x, new_neighb_y);
+                        CGAL::Vector_2<K> vector_between_centers(center,neighb_center);
+
+                        double distance = CGAL::sqrt(vector_between_centers.squared_length());
+                        log_file << distance << " ";
+
+                    }
+                }
+                log_file << " " << std::endl;
+            }
+        }
+
+        //TODO LOG and after those, for path: min max angles, total path lenght
+        log_file.close();
+
+    }
+
+
+
 
     void Tnp_update::path_planning_to_goal(int uas, double lat, double lon){
 
@@ -1350,7 +1460,7 @@ namespace qtnp {
 
         int uas_id = uas;
 
-        std::cout << "----Beginning complete coverage for agent : " << uas_id << "----" << std::endl;
+        std::cout << "----Beginning complete coverage for agent : " << uas_id << "---- at: " << currentDateTime() << std::endl;
         CDT &l_cdt = m_sub_cdt_vector[uas_id - 1];
         rviz_objects_ref.clear_path();
         std::vector< std::pair<double, double> > coord_path;
@@ -1516,8 +1626,9 @@ namespace qtnp {
             borders_distance_vector.clear();
         } while (current_depth >= smallest_depth || !mountain_vector.empty());
 
-        // TODO: prepei na to kanoyme na min pidaei...
-        std::cout << "----Finished complete coverage ----" << std::endl;
+        // TODO LOG pare to path -> rviz_objects_ref.get_path() -> gia kathe i pare to i-1 kai to i+1, ipologise tin gwnia anamesa toys. valto sto path min/max angles
+        // Ekei, epeidi einai se seira, mporeis na vreis kai ta min max centroid distances, to total path
+        std::cout << "----Finished complete coverage --- at: " << currentDateTime() << std::endl;
         make_mavros_waypoint_list(uas, coord_path);
     }
 

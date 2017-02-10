@@ -125,8 +125,9 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     QObject::connect(&qnode, SIGNAL(rosShutdown()), this, SLOT(close()));
 
     /*********************
-	** Logging
+    ** Logging
 	**********************/
+
 	ui.view_logging->setModel(qnode.loggingModel());
     QObject::connect(&qnode, SIGNAL(loggingUpdated()), this, SLOT(updateLoggingView()));
 
@@ -403,18 +404,10 @@ void MainWindow::on_actionAbout_triggered() {
 
 void MainWindow::on_actionLog_options_triggered() {
 
-
     Ui::LogSettings settings_dialog(this);
-
-    int result = settings_dialog.exec(); // 0: rejected, 1: accepted
-
+    settings_dialog.exec();
 }
 
-void MainWindow::log_settings() {
-
-    //ui_log_settings.setupUi(this);
-
-}
 
 /*****************************************************************************
 ** Implementation [Configuration]

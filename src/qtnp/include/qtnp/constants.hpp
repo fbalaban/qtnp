@@ -30,6 +30,6 @@ namespace constants
 
     const double PI = 3.1415926;
     const static double r_earth = 6378.137; // in kilometers
-}
 
+}
 #endif /* qtnp_CONSTANTS_HPP_ */
