@@ -236,7 +236,7 @@ namespace qtnp {
 
     void Tnp_update::move_cells(qtnp::Uas_model &toUAS, std::pair<int,int> &from_unassigned, std::vector<int> path){
 
-        std::cout << "Move cells: UAS " << toUAS.get_id() << " assigned cells BEFORE: " << toUAS.get_assigned_cells() << std::endl;
+        //std::cout << "Move cells: UAS " << toUAS.get_id() << " assigned cells BEFORE: " << toUAS.get_assigned_cells() << std::endl;
         if (abs(toUAS.get_remaining_cells()) < abs(from_unassigned.second)){
             //moveAWP(mapA.second, path);
             //moveCOV(toUAS.get_remaining_cells(), path);
@@ -250,7 +250,7 @@ namespace qtnp {
             moveCOV(toUAS, from_unassigned.second, path);
             from_unassigned.second = 0;
         }
-        std::cout << "Move cells: UAS " << toUAS.get_id() << "assigned cells AFTER: " << toUAS.get_assigned_cells() << std::endl;
+        //std::cout << "Move cells: UAS " << toUAS.get_id() << "assigned cells AFTER: " << toUAS.get_assigned_cells() << std::endl;
     }
 
     // sensors version: introducing cdt var for clearing aux
@@ -358,36 +358,36 @@ namespace qtnp {
 
         path = find_path(path[0], path[path.size()-1]);
 
-        std::cout << "----- MoveCOV ----- " << std::endl;
-        std::cout << "Moving " << cells << " cells through path: [ ";
-        for (int i=0; i<path.size(); i++){
-            std::cout << path[i] << " ";
-        }
-        std::cout << "]" << std::endl;
+        //std::cout << "----- MoveCOV ----- " << std::endl;
+        //std::cout << "Moving " << cells << " cells through path: [ ";
+//        for (int i=0; i<path.size(); i++){
+//            std::cout << path[i] << " ";
+//        }
+        //std::cout << "]" << std::endl;
 
         for (int i = 0; i < path.size() - 1; i++){
 
             path = find_path(path[0], path[path.size()-1]);
 
             int adjacent_cells = count_adjacent_cells(path[i], path[i+1]);
-            std::cout << "adjacent cells counted: " << adjacent_cells << " between UAS " << path[i] << " and " << path[i+1] << std::endl;
+            //std::cout << "adjacent cells counted: " << adjacent_cells << " between UAS " << path[i] << " and " << path[i+1] << std::endl;
             if (adjacent_cells >= cells){
                 exchange_agent_on_border_cells(path[i+1], path[i], cells);
                 if(path[i+1] == uas.get_id()) {
                     uas.set_assigned_cells(uas.get_assigned_cells() + cells);
                 }
-                std::cout << "COV: Moved " << cells << " cells from agent " << path[i] << " to agent " << path[i+1] << std::endl;
+                //std::cout << "COV: Moved " << cells << " cells from agent " << path[i] << " to agent " << path[i+1] << std::endl;
             } else {
                 std::vector<int> rest_of_the_path;
                 for (int j = i; j < path.size(); j++) {
                     rest_of_the_path.push_back(path[j]);
                 }
 
-                std::cout << "Recursion " << std::endl;
+                //std::cout << "Recursion " << std::endl;
                 moveCOV(uas, adjacent_cells, rest_of_the_path);
                 cells = cells - adjacent_cells;
-                std::cout << "COV: tried to move " << adjacent_cells << " ADJACENT CELLS from agent " << path[i] << " to agent " << path[i+1] << std::endl;
-                std::cout << "COV: Those: " << cells << " cells remained, going out to: " << std::endl;
+                //std::cout << "COV: tried to move " << adjacent_cells << " ADJACENT CELLS from agent " << path[i] << " to agent " << path[i+1] << std::endl;
+                //std::cout << "COV: Those: " << cells << " cells remained, going out to: " << std::endl;
                 i--;
             }
         }
@@ -398,11 +398,11 @@ namespace qtnp {
     int Tnp_update::moveAWP(int cells, std::vector<int> path){
 
         int cells_remaining = cells;
-        std::cout << "the path: [";
+        //std::cout << "the path: [";
         for (int i=0; i<path.size(); i++){
-            std::cout << path[i] << " ";
+            //std::cout << path[i] << " ";
         }
-        std::cout << "]" << std::endl;
+        //std::cout << "]" << std::endl;
 
         for (int i=0; i<path.size() -1; i++){
 
@@ -463,8 +463,8 @@ namespace qtnp {
 
             clear_aux(m_cdt);
 
-            std::cout << "tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
-            std::cout << cells_remaining << " cells remained somewhere.." << std::endl;
+            //std::cout << "tried to move " << cells << " cells from agent " << path[i+1] << " to agent " << path[i] << std::endl;
+            //std::cout << cells_remaining << " cells remained somewhere.." << std::endl;
             if (cells_remaining > 0) {
                 std::vector<int> remaining_vector;
                 remaining_vector.push_back(path[i]);
@@ -479,7 +479,7 @@ namespace qtnp {
 //                }
 
                 if (cells_remaining > 0){
-                    std::cout << "these cells remain:" << cells_remaining << std::endl;
+                    //std::cout << "these cells remain:" << cells_remaining << std::endl;
 
                       std::vector<int> new_path = find_path(path[i], path[i+1]);
                       cells_remaining = moveAWP(cells_remaining, new_path);
@@ -705,9 +705,9 @@ namespace qtnp {
 
         //  Adding the seeds which define the holes.
         if (!list_of_seeds.empty()){
-            std::cout << "Refining and meshing the domain including seeds defining holes" << std::endl;
+            //std::cout << "Refining and meshing the domain including seeds defining holes" << std::endl;
             CGAL::refine_Delaunay_mesh_2(m_cdt, list_of_seeds.begin(), list_of_seeds.end(), Criteria(angle_cons, edge_cons));
-            std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << m_cdt.number_of_vertices() << std::endl;
+            //std::cout << "Number of vertices after meshing CDT refining and seeding holes: " << m_cdt.number_of_vertices() << std::endl;
         }
 
         int init_base = 0;
@@ -866,7 +866,7 @@ namespace qtnp {
 
     void Tnp_update::replenish(std::vector<qtnp::Uas_model> &uas){
 
-        std::cout << "---- Replenishing ----" << std::endl;
+        //std::cout << "---- Replenishing ----" << std::endl;
         std::vector<int> move_path;
         std::vector<int> dead_end;
 
@@ -932,6 +932,7 @@ namespace qtnp {
 
         std::cout << currentDateTime() << " Partitioning started " << std::endl;
         rviz_objects_ref.clear_triangulation_mesh();
+        m_sub_cdt_vector.clear();
 
         initialize_starting_positions(m_cdt, uas);
         isotropic_initial_partition(m_cdt, uas); // or initial partitioning..
@@ -989,8 +990,6 @@ namespace qtnp {
     }
 
     void Tnp_update::isotropic_cost_attribution(CDT &l_cdt){
-
-        std::cout << "----- Isotropic cost attribution ------" << std::endl;
 
         bool finished(false);
         int hopIterator(1);
@@ -1238,12 +1237,10 @@ namespace qtnp {
 
         std::stringstream log_filename;
         std::string data_path = "/home/fotis/Dev/Data/logs/";
-        log_filename << data_path << currentDateTime() << "_BF_" << "UAV_" << uas_id << ".txt";
+        log_filename << data_path << currentDateTime() << "_BF_" << "UAV_" << uas_id << "_LLOYD_" << lloyd_iterations << " _MNTSENS_" << mountain_sensitivity << ".txt";
         const std::string& tmp = log_filename.str();
         const char* cstr = tmp.c_str();
         std::ofstream log_file(cstr);
-        log_file << "UAV_ID LLOYD MOUNTAIN_SENSITIVITY" << std::endl;
-        log_file << uas_id << " " << lloyd_iterations << " " << mountain_sensitivity << std::endl;
         log_file << "CELL_ID ANGLE_1 ANGLE_2 ANGLE_3 SIDE_1 SIDE_2 SIDE_3 NEIGHB_1_DIST NEIGHB_2_DIST NEIGHB_3_DIST" << std::endl;
 
         for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
@@ -1257,25 +1254,16 @@ namespace qtnp {
                 CGAL::Point_2<K> vertex1 = l_cdt.triangle(faces_iterator)[0];
                 CGAL::Point_2<K> vertex2 = l_cdt.triangle(faces_iterator)[1];
                 CGAL::Point_2<K> vertex3 = l_cdt.triangle(faces_iterator)[2];
-                // angle calculation is wrong
 
-                CGAL::Vector_2<K> v11 = vertex2 - vertex1;
-                CGAL::Vector_2<K> v12 = vertex3 - vertex1;
-                CGAL::Vector_2<K> v21 = vertex1 - vertex2;
-                CGAL::Vector_2<K> v22 = vertex3 - vertex2;
-                CGAL::Vector_2<K> v31 = vertex2 - vertex3;
-                CGAL::Vector_2<K> v32 = vertex1 - vertex3;
+                double a = CGAL::sqrt((vertex2.x() - vertex3.x())*(vertex2.x() - vertex3.x()) + (vertex2.y() - vertex3.y()) * (vertex2.y() - vertex3.y()));
+                double b = CGAL::sqrt((vertex1.x() - vertex3.x())*(vertex1.x() - vertex3.x()) + (vertex1.y() - vertex3.y()) * (vertex1.y() - vertex3.y()));
+                double c = CGAL::sqrt((vertex2.x() - vertex1.x())*(vertex2.x() - vertex1.x()) + (vertex2.y() - vertex1.y()) * (vertex2.y() - vertex1.y()));
 
-                double cosine1 = v11 * v12 / CGAL::sqrt(v11*v11) / CGAL::sqrt(v12 * v12);
-                double cosine2 = v21 * v22 / CGAL::sqrt(v21*v21) / CGAL::sqrt(v22 * v22);
-                double cosine3 = v31 * v32 / CGAL::sqrt(v31*v31) / CGAL::sqrt(v32 * v32);
+                double angle1 = ( (std::acos((b*b+c*c-a*a)/(2*b*c))) * 180 )/constants::PI;
+                double angle2 = ( (std::acos((a*a+c*c-b*b)/(2*a*c))) * 180 )/constants::PI;
+                double angle3 = ( (std::acos((a*a+b*b-c*c)/(2*b*a))) * 180 )/constants::PI;
 
-                double angle1 = ( std::acos(cosine1) * 180 ) / constants::PI; // in degrees
-                double angle2 = ( std::acos(cosine2) * 180 ) / constants::PI; // in degrees
-                double angle3 = ( std::acos(cosine3) * 180 ) / constants::PI; // in degrees
-
-                // side is correct
-                CGAL::Vector_2<K> v1(vertex1,vertex2);// = new CGAL::Vector_2(vertex1,vertex2);
+                CGAL::Vector_2<K> v1(vertex1,vertex2);
                 CGAL::Vector_2<K> v2(vertex2,vertex3);
                 CGAL::Vector_2<K> v3(vertex3,vertex1);
 
@@ -1314,8 +1302,6 @@ namespace qtnp {
         log_file.close();
 
     }
-
-
 
 
     void Tnp_update::path_planning_to_goal(int uas, double lat, double lon){
@@ -1377,7 +1363,7 @@ namespace qtnp {
 
       float previous_distance = utilities::calculate_distance(
                   (utilities::face_to_center(l_cdt, current_face)) , target_face_center);
-      std::cout << "Initial distance from start: " << previous_distance << std::endl;
+      //std::cout << "Initial distance from start: " << previous_distance << std::endl;
       int depth_runs = 1;
       int branch_id = target_face->info().jumps_agent_id;
 
@@ -1414,8 +1400,6 @@ namespace qtnp {
             faces_iterator->info().coverage_depth = 0;
             faces_iterator->info().cover_depth = false;
         }
-
-        std::cout << "---- Coverage cost attribution ----" << std::endl;
 
         // go through all triangles to give border depth to the borders between agents
         for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
@@ -1460,7 +1444,6 @@ namespace qtnp {
 
         int uas_id = uas;
 
-        std::cout << "----Beginning complete coverage for agent : " << uas_id << "---- at: " << currentDateTime() << std::endl;
         CDT &l_cdt = m_sub_cdt_vector[uas_id - 1];
         rviz_objects_ref.clear_path();
         std::vector< std::pair<double, double> > coord_path;
@@ -1525,10 +1508,7 @@ namespace qtnp {
                 current_depth = next_cell->info().coverage_depth + 10 ;
 
                 // removes the cell from the mountain vector
-                std::cout << "Mountain vector BEFORE removal: " << mountain_vector.size() << std::endl;
                 mountain_vector.erase(std::remove(mountain_vector.begin(), mountain_vector.end(), next_cell), mountain_vector.end());
-                std::cout << "Mountain vector AFTER removal: " << mountain_vector.size() << std::endl;
-
 
                 rviz_objects_ref.push_path_point(utilities::build_pose_stamped
                                              (utilities::face_to_center(l_cdt, next_cell)));
@@ -1578,10 +1558,7 @@ namespace qtnp {
                 }
 
                 std::sort(borders_distance_vector.begin(), borders_distance_vector.end(), utilities::distance_comparison);
-                // and this is the closest
-                // edw mpainoun ta mountains
                 CDT::Face_handle first_of_the_border = borders_distance_vector.front().first;
-                //////////////////////////////
 
                 float next_waypoint_distance = borders_distance_vector.front().second;
                 // panw apo 3 fores megaliteri apostasi apo oti apo ton neighbor tou
@@ -1593,7 +1570,6 @@ namespace qtnp {
 
                             // TODO V2 not optimized solution ( O(N^2) ). Look at http://stackoverflow.com/questions/10376065/pushing-unique-data-into-vector=
                             if (std::find(mountain_vector.begin(), mountain_vector.end(), borders_distance_vector.front().first) == mountain_vector.end()) {
-                                std::cout << "Adding cell no " << borders_distance_vector.front().first->info().id << " to mountains list" << std::endl;
                                 mountain_vector.push_back(borders_distance_vector.front().first);
                             }
 
@@ -1628,7 +1604,6 @@ namespace qtnp {
 
         // TODO LOG pare to path -> rviz_objects_ref.get_path() -> gia kathe i pare to i-1 kai to i+1, ipologise tin gwnia anamesa toys. valto sto path min/max angles
         // Ekei, epeidi einai se seira, mporeis na vreis kai ta min max centroid distances, to total path
-        std::cout << "----Finished complete coverage --- at: " << currentDateTime() << std::endl;
         make_mavros_waypoint_list(uas, coord_path);
     }
 
@@ -1643,8 +1618,8 @@ namespace qtnp {
         double initialLatitude = m_uas_vector[uas-1].get_initial_position().get_latitude(); // path.poses[0].position.y;
         double initialLongitude = m_uas_vector[uas-1].get_initial_position().get_longitude(); // of the uas agent according to initial position by ui (or later, current)
 
-        std::cout << "Center list: " << std::endl;
-        std::cout << std::fixed << std::setprecision(8) << "lat: " << initialLatitude << " lon: " << initialLongitude << std::endl;
+//        std::cout << "Center list: " << std::endl;
+//        std::cout << std::fixed << std::setprecision(8) << "lat: " << initialLatitude << " lon: " << initialLongitude << std::endl;
         // this is for first initial position // maybe need to change frame, put it global (0)
         initialWaypoint.frame = 3;
         initialWaypoint.command = 16;
@@ -1699,7 +1674,7 @@ namespace qtnp {
                 waypoint.z_alt = 100; // 100? for takeoff
                 waypoint_list.waypoints.push_back(waypoint);
                 initial = false;
-                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
+//                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
 
                 //--------------------------------//
                 // file generation //
@@ -1722,7 +1697,7 @@ namespace qtnp {
                 waypoint.y_long = round( (it->first)*100000000.0)/100000000.0;
                 waypoint.z_alt = 100; // 100? for takeoff
                 waypoint_list.waypoints.push_back(waypoint);
-                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
+//                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
 
                 //-----------------------------------//
                 // file generation //
@@ -1748,7 +1723,7 @@ namespace qtnp {
         waypoint.y_long = round(initialLongitude*100000000.0)/100000000.0;
         waypoint.z_alt = 580; // 100? for takeoff
         waypoint_list.waypoints.push_back(waypoint);
-        std::cout << std::fixed << std::setprecision(8) << initialLatitude << " " << initialLongitude << std::endl;
+//        std::cout << std::fixed << std::setprecision(8) << initialLatitude << " " << initialLongitude << std::endl;
 
 
         //--------------------------------//
