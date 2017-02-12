@@ -100,7 +100,7 @@
          <item row="4" column="0">
           <widget class="QCheckBox" name="checkbox_path_lenght_expected">
            <property name="text">
-            <string>Total path lenght</string>
+            <string>Path min/max distances</string>
            </property>
           </widget>
          </item>

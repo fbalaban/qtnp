@@ -91,8 +91,9 @@ class Tnp_update {
     void path_to_goal(int uas, int goal_cell_id);
     void complete_path_coverage(int uas, int mountain_sensitivity);
 
-    // TODO V2 seperate log class:
-    void create_log(int uas_id, int lloyd_iterations, int mountain_sensitivity);
+    // TODO V2 seperate log classes:
+    void create_cdt_log(int uas_id, int lloyd_iterations, int mountain_sensitivity);
+    void create_path_log(int uas_id, int lloyd_iterations, int mountain_sensitivity);
 
     void clear_aux(CDT &l_cdt);
     void clear_rviz_objects();

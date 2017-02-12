@@ -727,8 +727,7 @@ namespace qtnp {
             faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
 
             if (faces_iterator->info().agent_id == agent_id){
-                // TODO LOG take this code from vertex handling for side/angle calculation: http://stackoverflow.com/questions/29435384/angles-of-triangles-of-a-3d-mesh-using-cgal
-                // ALSO can be used for vertice min/max sizes
+
                 CGAL::Point_2<K> vertex1 = l_cdt.triangle(faces_iterator)[0];
                 CGAL::Point_2<K> vertex2 = l_cdt.triangle(faces_iterator)[1];
                 CGAL::Point_2<K> vertex3 = l_cdt.triangle(faces_iterator)[2];
@@ -1127,7 +1126,6 @@ namespace qtnp {
             // static version of angle constrain, edge_cons is the fov_size
             double angle_cons(constants::angle_criterion_default);
             perform_cdt(sub_cdt, angle_cons, uas[i].get_fov());
-            // TODO LOG here put sub_cdt min,max angle and side logging
             initialize_cdt_struct(i+1, sub_cdt, ((i+1)*3000) );
             std::vector<Uas_model> single_uas;
             single_uas.push_back(uas[i]);
@@ -1224,20 +1222,21 @@ namespace qtnp {
         complete_path_coverage(uas, mountain_sensitivity);
         std::cout << currentDateTime() << " Complete coverage finished " << std::endl;
         // TODO LOG here is the log, after all operations. The time which the computation finished is now.
-        create_log(uas, get_lloyd_iter(), mountain_sensitivity);
+        create_cdt_log(uas, get_lloyd_iter(), mountain_sensitivity);
+        create_path_log(uas, get_lloyd_iter(), mountain_sensitivity);
         // TODO after mesh coloring, and planning ready, could add function to form to begin the flight, upload the new plan and monitor
         mesh_coloring();
         rviz_objects_ref.set_planning_ready(true) ;
     }
 
-    // TODO V2 seperate log class:
-    void Tnp_update::create_log(int uas_id, int lloyd_iterations, int mountain_sensitivity){
+    // TODO V2 seperate log classes:
+    void Tnp_update::create_cdt_log(int uas_id, int lloyd_iterations, int mountain_sensitivity){
 
         CDT &l_cdt = m_sub_cdt_vector[uas_id - 1];
 
         std::stringstream log_filename;
         std::string data_path = "/home/fotis/Dev/Data/logs/";
-        log_filename << data_path << currentDateTime() << "_BF_" << "UAV_" << uas_id << "_LLOYD_" << lloyd_iterations << " _MNTSENS_" << mountain_sensitivity << ".txt";
+        log_filename << data_path << currentDateTime() << "_BF_CDT_" << "UAV_" << uas_id << "_LLOYD_" << lloyd_iterations << " _MNTSENS_" << mountain_sensitivity << ".txt";
         const std::string& tmp = log_filename.str();
         const char* cstr = tmp.c_str();
         std::ofstream log_file(cstr);
@@ -1250,7 +1249,6 @@ namespace qtnp {
 
                 int cell_id = faces_iterator->info().id;
 
-                // TODO LOG ALSO can be used for vertice min/max sizes
                 CGAL::Point_2<K> vertex1 = l_cdt.triangle(faces_iterator)[0];
                 CGAL::Point_2<K> vertex2 = l_cdt.triangle(faces_iterator)[1];
                 CGAL::Point_2<K> vertex3 = l_cdt.triangle(faces_iterator)[2];
@@ -1298,11 +1296,58 @@ namespace qtnp {
             }
         }
 
-        //TODO LOG and after those, for path: min max angles, total path lenght
         log_file.close();
 
     }
 
+    // TODO V2 unify angle calculation in utilities class
+    void Tnp_update::create_path_log(int uas_id, int lloyd_iterations, int mountain_sensitivity){
+
+        std::stringstream log_path_filename;
+        std::string data_path = "/home/fotis/Dev/Data/logs/";
+        log_path_filename << data_path << currentDateTime() << "_BF_PATH_" << "UAV_" << uas_id << "_LLOYD_" << lloyd_iterations << " _MNTSENS_" << mountain_sensitivity << ".txt";
+        const std::string& tmp = log_path_filename.str();
+        const char* cstr = tmp.c_str();
+        std::ofstream path_log_file(cstr);
+        path_log_file << "WAYPOINT_NO X Y DISTANCE_FROM_PREVIOUS ANGLE_OF_PREVIOUS" << std::endl;
+
+        std::vector<geometry_msgs::PoseStamped> path_list = rviz_objects_ref.get_path().poses;
+
+        int i = 0;
+        double previous_x{0};
+        double previous_y{0};
+        double antepenultimate_x{0}; // heh http://english.stackexchange.com/questions/319003/word-to-describe-the-one-before-the-last-one
+        double antepenultimate_y{0}; // heh http://www.dictionary.com/browse/antepenultimate
+
+        for (std::vector<geometry_msgs::PoseStamped>::iterator it = path_list.begin();
+             it != path_list.end(); ++it){
+
+            geometry_msgs::PoseStamped& waypoint = *it;
+            double distance = std::sqrt(std::pow((previous_x - waypoint.pose.position.x), 2) + std::pow( (previous_y - waypoint.pose.position.y), 2));
+
+            if ( i < 2 ){
+                if (i == 0) distance = 0;
+                path_log_file << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << std::endl;
+            }
+            else {
+
+                double Ppa = sqrt(std::pow( (previous_x - antepenultimate_x) ,2) + std::pow( (previous_y - antepenultimate_y) ,2));
+                double Ppw = distance;
+                double Paw = sqrt(std::pow( (antepenultimate_x - waypoint.pose.position.x) ,2) + std::pow( (antepenultimate_y - waypoint.pose.position.y) ,2));
+                double previous_angle = ((std::acos((Ppa*Ppa + Ppw*Ppw - Paw*Paw) / (2*Ppa*Ppw))) * 180)/constants::PI;
+
+                path_log_file << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << " " << previous_angle << std::endl;
+            }
+
+            antepenultimate_x = previous_x;
+            antepenultimate_y = previous_y;
+            previous_x = waypoint.pose.position.x;
+            previous_y = waypoint.pose.position.y;
+            i++;
+        }
+
+        path_log_file.close();
+    }
 
     void Tnp_update::path_planning_to_goal(int uas, double lat, double lon){
 
@@ -1572,7 +1617,6 @@ namespace qtnp {
                             if (std::find(mountain_vector.begin(), mountain_vector.end(), borders_distance_vector.front().first) == mountain_vector.end()) {
                                 mountain_vector.push_back(borders_distance_vector.front().first);
                             }
-
                             current_depth = current_depth - 10;
                             mountain_found = true;
                             break;
@@ -1602,8 +1646,6 @@ namespace qtnp {
             borders_distance_vector.clear();
         } while (current_depth >= smallest_depth || !mountain_vector.empty());
 
-        // TODO LOG pare to path -> rviz_objects_ref.get_path() -> gia kathe i pare to i-1 kai to i+1, ipologise tin gwnia anamesa toys. valto sto path min/max angles
-        // Ekei, epeidi einai se seira, mporeis na vreis kai ta min max centroid distances, to total path
         make_mavros_waypoint_list(uas, coord_path);
     }
 
