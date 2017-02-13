@@ -687,6 +687,14 @@ namespace qtnp {
                 CDT::Vertex_handle vb = m_cdt.insert(CDT::Point(current_latitude,current_longitude));
                 m_cdt.insert_constraint(va,vb);
 
+// TODO NOW here the conversion: MLAT = max_lat - min_lat, MLON = max_lon - min_lon. biggest = MLAT > MLON ? MLAT : MLON
+// caution! relative calculations. lat and lon do not have the same extreme values (-180,180/-90,90)
+// convert range constants: (constants::rviz_range_min),
+// must change to rviz_lat_range_min rviz_lat_range_max etc.. . the biggest from above will stay the same (with max value whatever (e.g. 500)
+// but the other must be a subset of the biggest, relatively smaller
+// latter on, when FoV is introduced, it will be converted by using the biggest logos from above (if 3000meters are converted in 500 rviz/cgal units
+                // then how much are 50m going to convert to?)
+
                 if (!is_an_obstacle){
                     cdt_polygon_edges.push_back
                             (kernel_Point_2(previous_latitude,previous_longitude));
@@ -909,7 +917,7 @@ namespace qtnp {
         } while (!finished);
     }
 
-    // TODO incorporate that bug into code
+    // TODO V2 incorporate that bug into code
     void Tnp_update::replenish_revisited(CDT &l_cdt, std::vector<qtnp::Uas_model> &uas){
         for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
             faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
@@ -1221,7 +1229,6 @@ namespace qtnp {
         std::cout << currentDateTime() << " Complete coverage started " << std::endl;
         complete_path_coverage(uas, mountain_sensitivity);
         std::cout << currentDateTime() << " Complete coverage finished " << std::endl;
-        // TODO LOG here is the log, after all operations. The time which the computation finished is now.
         create_cdt_log(uas, get_lloyd_iter(), mountain_sensitivity);
         create_path_log(uas, get_lloyd_iter(), mountain_sensitivity);
         // TODO after mesh coloring, and planning ready, could add function to form to begin the flight, upload the new plan and monitor
@@ -1240,7 +1247,7 @@ namespace qtnp {
         const std::string& tmp = log_filename.str();
         const char* cstr = tmp.c_str();
         std::ofstream log_file(cstr);
-        log_file << "CELL_ID ANGLE_1 ANGLE_2 ANGLE_3 SIDE_1 SIDE_2 SIDE_3 NEIGHB_1_DIST NEIGHB_2_DIST NEIGHB_3_DIST" << std::endl;
+        log_file << "LLOYD MTN_SENS CELL_ID ANGLE_1 ANGLE_2 ANGLE_3 SIDE_1 SIDE_2 SIDE_3 NEIGHB_1_DIST NEIGHB_2_DIST NEIGHB_3_DIST" << std::endl;
 
         for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
             faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
@@ -1269,7 +1276,7 @@ namespace qtnp {
                 double side2 = CGAL::sqrt(v2.squared_length());
                 double side3 = CGAL::sqrt(v3.squared_length());
 
-                log_file << cell_id << " " << angle1 << " " << angle2 << " " << angle3 << " " << side1 << " " << side2 << " " << side3 << " ";
+                log_file << lloyd_iterations << mountain_sensitivity << cell_id << " " << angle1 << " " << angle2 << " " << angle3 << " " << side1 << " " << side2 << " " << side3 << " ";
 
                 double center_x = ( vertex1.x() + vertex2.x() + vertex3.x() ) / 3;
                 double center_y = ( vertex1.y() + vertex2.y() + vertex3.y() ) / 3;
@@ -1309,7 +1316,7 @@ namespace qtnp {
         const std::string& tmp = log_path_filename.str();
         const char* cstr = tmp.c_str();
         std::ofstream path_log_file(cstr);
-        path_log_file << "WAYPOINT_NO X Y DISTANCE_FROM_PREVIOUS ANGLE_OF_PREVIOUS" << std::endl;
+        path_log_file << "LLOYD MTN_SENS WAYPOINT_NO X Y DISTANCE_FROM_PREVIOUS ANGLE_OF_PREVIOUS" << std::endl;
 
         std::vector<geometry_msgs::PoseStamped> path_list = rviz_objects_ref.get_path().poses;
 
@@ -1327,7 +1334,7 @@ namespace qtnp {
 
             if ( i < 2 ){
                 if (i == 0) distance = 0;
-                path_log_file << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << std::endl;
+                path_log_file << lloyd_iterations << mountain_sensitivity << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << std::endl;
             }
             else {
 
@@ -1336,7 +1343,7 @@ namespace qtnp {
                 double Paw = sqrt(std::pow( (antepenultimate_x - waypoint.pose.position.x) ,2) + std::pow( (antepenultimate_y - waypoint.pose.position.y) ,2));
                 double previous_angle = ((std::acos((Ppa*Ppa + Ppw*Ppw - Paw*Paw) / (2*Ppa*Ppw))) * 180)/constants::PI;
 
-                path_log_file << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << " " << previous_angle << std::endl;
+                path_log_file << lloyd_iterations << mountain_sensitivity << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << " " << previous_angle << std::endl;
             }
 
             antepenultimate_x = previous_x;
