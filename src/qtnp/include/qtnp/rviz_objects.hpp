@@ -43,6 +43,13 @@ struct Rviz_settings {
   bool borders;
 };
 
+struct Rviz_view {
+
+  double lat_max;
+  double lon_max;
+  double meter_conversion;
+
+};
 
 class Rviz_objects {
 
@@ -104,17 +111,29 @@ public:
     void set_polygon_ready (bool option){ polygon_ready = option; }
     void set_planning_ready (bool option){ planning_ready = option; }
 
+    Rviz_view get_rviz_view(){ return m_rviz_view; }
+    double get_meter_conversion() { return m_meter_conversion; }
+
+    void set_rviz_range(double max_lat, double max_lon, double meter_conversion){
+      m_rviz_view.lat_max = max_lat;
+      m_rviz_view.lon_max = max_lon;
+      m_meter_conversion = meter_conversion;
+    }
+
+
 private:
     bool polygon_ready;
     bool planning_ready;
+    double m_meter_conversion;
 
     Rviz_settings rviz_settings;
     geometry_msgs::Polygon polygon;
     geometry_msgs::PolygonStamped polygonStamped;
     visualization_msgs::Marker edges, center_points, triangulation_mesh;
     nav_msgs::Path path;
-
     std::vector<std::pair<int, geometry_msgs::Point> > center_points_with_cell_id;
+
+    Rviz_view m_rviz_view;
 
 };
 

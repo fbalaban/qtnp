@@ -92,9 +92,9 @@ namespace qtnp {
 
         // TODO: they are upside down. if test file is correct, change lat, lon
         double cdt_lat = utilities::convert_range(this->area_extremes.min_lat,this->area_extremes.max_lat,
-                                    constants::rviz_range_min,constants::rviz_range_max,lon);//here
+                                    constants::rviz_range_min,rviz_objects_ref.get_rviz_view().lat_max,lon);//here
         double cdt_lon = utilities::convert_range(this->area_extremes.min_lon,this->area_extremes.max_lon,
-                                    constants::rviz_range_min,constants::rviz_range_max,lat); // and here
+                                    constants::rviz_range_min,rviz_objects_ref.get_rviz_view().lon_max,lat); // and here
 
         kernel_Point_2 initial_position(cdt_lat, cdt_lon);
 
@@ -513,11 +513,9 @@ namespace qtnp {
 
         std::cout << currentDateTime() << " Started CDT perform" << std::endl;
 
-        // FIXME: edge constrain is in cgal points that doesn't correspond to meters.
-        // depending on max values, transform given value
-        // TODO Remove verbose
+        // INFO: edge constrain is converted before function to a CGAL/RVIZ metric. meters->cgal/rviz points
         double crAngle = angle_cons;// 0.125; -- the default angle criteria
-        double crEdge = edge_cons; // 25.0; -- the default edge criteria(50m footprint) (it's the number given/500 (the max rviz range))
+        double crEdge = edge_cons;
         //std::cout << "Number of vertices before meshing and refining: " << l_cdt.number_of_vertices() << std::endl;
         Mesher mesher(l_cdt);
         //mesher.refine_mesh();
@@ -536,7 +534,6 @@ namespace qtnp {
 
     }
 
-    // initialization functions on a CDT
     void Tnp_update::initialize_cdt_struct(int agent_id, CDT &l_cdt, int initialize_base){
 
         for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
@@ -544,25 +541,17 @@ namespace qtnp {
 
           if (faces_iterator->is_in_domain()){
 
-            // initialize face, along with it's id.
             faces_iterator->info().initialize(agent_id, initialize_base);
 
-            // create a point for each of the edges of the face.
             CDT::Point point1 = l_cdt.triangle(faces_iterator)[0];
             CDT::Point point2 = l_cdt.triangle(faces_iterator)[1];
             CDT::Point point3 = l_cdt.triangle(faces_iterator)[2];
             geometry_msgs::Point center = utilities::face_points_to_center(point1, point2, point3);
-            // adding it's respective lat and lon to its struct
-            // TODO rviz_range_min and max should not be constants e.g. 500x500 because in conversion,
-            // if area is not square like it will create a distortion in visualization. They should be proportional (good luck)
-            faces_iterator->info().center_lat = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
+            faces_iterator->info().center_lat = utilities::convert_range(constants::rviz_range_min,rviz_objects_ref.get_rviz_view().lat_max,
                                                                          area_extremes.min_lat,area_extremes.max_lat,center.x);
-            faces_iterator->info().center_lon = utilities::convert_range(constants::rviz_range_min,constants::rviz_range_max,
+            faces_iterator->info().center_lon = utilities::convert_range(constants::rviz_range_min,rviz_objects_ref.get_rviz_view().lon_max,
                                                                          area_extremes.min_lon,area_extremes.max_lon,center.y);
-            // adding the center of every triangle to rviz
             rviz_objects_ref.push_center_point(center);
-
-            // adding it also to the center-id vector
             rviz_objects_ref.push_center_point_with_cell_id(initialize_base,center);
 
             initialize_base++;
@@ -646,6 +635,51 @@ namespace qtnp {
                 }
             }
         }
+
+        double max_lat_rad = (area_extremes.max_lat * constants::PI) / 180.0;
+        double max_lon_rad = (area_extremes.max_lon * constants::PI) / 180.0;
+        double min_lat_rad = (area_extremes.min_lat * constants::PI) / 180.0;
+        double min_lon_rad = (area_extremes.min_lon * constants::PI) / 180.0;
+
+        // points: 1:max_lat/max_lon, 2:min_lat/min_lon, 3:max_lat/min_lon
+        // distance between points 2-3 and 1-3
+        double distance_x_lat_23 = max_lat_rad - min_lat_rad;
+        double distance_y_lon_23 = min_lon_rad - min_lon_rad;
+
+        double distance_x_lat_13 = max_lat_rad - max_lat_rad;
+        double distance_y_lon_13 = min_lon_rad - max_lon_rad;
+
+        double angular_a_23 = (std::pow((sin(distance_x_lat_23/2)),2)) + cos(min_lat_rad) * cos(max_lat_rad) * std::pow((sin(distance_y_lon_23/2)),2);
+        double angular_a_13 = (std::pow((sin(distance_x_lat_13/2)),2)) + cos(max_lat_rad) * cos(max_lat_rad) * std::pow((sin(distance_y_lon_13/2)),2);
+
+        double angular_c_23 = 2*std::atan2(std::sqrt(angular_a_23), std::sqrt(1-angular_a_23));
+        double angular_c_13 = 2*std::atan2(std::sqrt(angular_a_13), std::sqrt(1-angular_a_13));
+
+        double distance_23 = constants::r_earth_m * angular_c_23;
+        double distance_13 = constants::r_earth_m * angular_c_13;
+
+        // TODO LOGOS CHECK IF MAKES SENSE
+        double logos = distance_23 > distance_13 ? distance_13/distance_23 : distance_23/distance_13;
+        // multiply FoV with meter conversion to find CDT constrain
+        double meter_conversion = distance_23 > distance_13 ? constants::rviz_range_max / distance_23 : constants::rviz_range_max / distance_13;
+
+        if (distance_23 > distance_13){
+            rviz_objects_ref.set_rviz_range(constants::rviz_range_max,constants::rviz_range_max * logos, meter_conversion);
+        }
+        else {
+            rviz_objects_ref.set_rviz_range(constants::rviz_range_max * logos,constants::rviz_range_max, meter_conversion);
+        }
+
+//        if (distance_23 > distance_13){
+//            double top_range = (constants::rviz_range_max * distance_13) / distance_23;
+//            rviz_objects_ref.set_rviz_range(constants::rviz_range_max,top_range);
+//        }
+//        else {
+//            double top_range = (constants::rviz_range_max * distance_23) / distance_13;
+//            rviz_objects_ref.set_rviz_range(top_range,constants::rviz_range_max);
+//        }
+
+
     // TODO NOW: add list of seeds in global class or somewhere in order for the sub cdts to inherit the holes
         std::list<CDT::Point> list_of_seeds;
         for (std::vector<qtnp::Coordinates>::iterator it = placemarks_array.begin(); it<placemarks_array.end(); it++){
@@ -654,12 +688,11 @@ namespace qtnp {
             std::vector<double> longitude_array(size);
             std::vector<double> latitude_array(size);
             bool is_an_obstacle = (it->placemark_type == "hole") ? true :false;
-
             if (is_an_obstacle) list_of_seeds.push_back(CDT::Point(
                         utilities::convert_range(area_extremes.min_lat,area_extremes.max_lat,
-                                    constants::rviz_range_min,constants::rviz_range_max,it->seed_latitude),
+                                    constants::rviz_range_min,rviz_objects_ref.get_rviz_view().lat_max,it->seed_latitude),
                         utilities::convert_range(area_extremes.min_lon,area_extremes.max_lon,
-                                    constants::rviz_range_min,constants::rviz_range_max,it->seed_longitude)));
+                                    constants::rviz_range_min,rviz_objects_ref.get_rviz_view().lon_max,it->seed_longitude)));
 
             longitude_array = it->longitude;
             latitude_array  = it->latitude;
@@ -669,31 +702,23 @@ namespace qtnp {
                 double previous_latitude = utilities::convert_range(area_extremes.min_lat,
                                                                     area_extremes.max_lat,
                                                                     constants::rviz_range_min,
-                                                                    constants::rviz_range_max,latitude_array[i-1]);
+                                                                    rviz_objects_ref.get_rviz_view().lat_max,latitude_array[i-1]);
                 double previous_longitude = utilities::convert_range(area_extremes.min_lon,
                                                                      area_extremes.max_lon,
                                                                      constants::rviz_range_min,
-                                                                     constants::rviz_range_max,longitude_array[i-1]);
+                                                                     rviz_objects_ref.get_rviz_view().lon_max,longitude_array[i-1]);
                 double current_latitude = utilities::convert_range(area_extremes.min_lat,
                                                                    area_extremes.max_lat,
                                                                    constants::rviz_range_min,
-                                                                   constants::rviz_range_max,latitude_array[i]);
+                                                                   rviz_objects_ref.get_rviz_view().lat_max,latitude_array[i]);
                 double current_longitude = utilities::convert_range(area_extremes.min_lon,
                                                                     area_extremes.max_lon,
                                                                     constants::rviz_range_min,
-                                                                    constants::rviz_range_max,longitude_array[i]);
+                                                                    rviz_objects_ref.get_rviz_view().lon_max,longitude_array[i]);
 
                 CDT::Vertex_handle va = m_cdt.insert(CDT::Point(previous_latitude,previous_longitude));
                 CDT::Vertex_handle vb = m_cdt.insert(CDT::Point(current_latitude,current_longitude));
                 m_cdt.insert_constraint(va,vb);
-
-// TODO NOW here the conversion: MLAT = max_lat - min_lat, MLON = max_lon - min_lon. biggest = MLAT > MLON ? MLAT : MLON
-// caution! relative calculations. lat and lon do not have the same extreme values (-180,180/-90,90)
-// convert range constants: (constants::rviz_range_min),
-// must change to rviz_lat_range_min rviz_lat_range_max etc.. . the biggest from above will stay the same (with max value whatever (e.g. 500)
-// but the other must be a subset of the biggest, relatively smaller
-// latter on, when FoV is introduced, it will be converted by using the biggest logos from above (if 3000meters are converted in 500 rviz/cgal units
-                // then how much are 50m going to convert to?)
 
                 if (!is_an_obstacle){
                     cdt_polygon_edges.push_back
@@ -708,6 +733,10 @@ namespace qtnp {
                 }
             }
         }
+        std::cout << "The edge input was: " << edge_cons << " meters";
+        edge_cons = edge_cons * rviz_objects_ref.get_meter_conversion();
+        std::cout << " and has been converted to " << edge_cons << " CGAL/RVIZ units (maximum 500)" << std::endl;
+
         // NOTE: gets the greatest FoV out of the collection of UASs in the UI table
         perform_cdt(m_cdt, angle_cons, edge_cons);
 
@@ -1131,9 +1160,10 @@ namespace qtnp {
         for (int i=0; i < uas.size(); i++){
 
             CDT sub_cdt = find_new_cdt_constrains(l_cdt, i+1);
-            // static version of angle constrain, edge_cons is the fov_size
+            // INFO: static version of angle constrain, edge_cons is the fov_size
             double angle_cons(constants::angle_criterion_default);
-            perform_cdt(sub_cdt, angle_cons, uas[i].get_fov());
+            double edge_cons = uas[i].get_fov() * rviz_objects_ref.get_meter_conversion();
+            perform_cdt(sub_cdt, angle_cons, edge_cons);
             initialize_cdt_struct(i+1, sub_cdt, ((i+1)*3000) );
             std::vector<Uas_model> single_uas;
             single_uas.push_back(uas[i]);
