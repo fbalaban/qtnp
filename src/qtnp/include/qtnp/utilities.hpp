@@ -43,6 +43,16 @@ inline double convert_range(double start_original, double end_original, double s
     return (double)(start_new + ((value - start_original) * scale));
 }
 
+//inline double convert_range_for_lat(double lat_min, double lat_max, double to_new_min, double to_new_max, double angle){
+//    double scale = (double) (to_new_max - to_new_min) / (lat_max - lat_min);
+//    return (double)(start_new + ((value - start_original) * scale));
+//}
+
+//inline double convert_range_for_lon(double start_original, double end_original, double start_new, double end_new, double value){
+//    double scale = (double) (end_new - start_new) / (end_original - start_original);
+//    return (double)(start_new + ((value - start_original) * scale));
+//}
+
 inline double smallest_distance(CDT::Point cgal_point1, CDT::Point cgal_point2, CDT::Point cgal_point3)
 {
   double pleyraX = abs(cgal_point1.x() - cgal_point2.x());

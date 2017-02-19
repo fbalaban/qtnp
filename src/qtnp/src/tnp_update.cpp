@@ -604,10 +604,7 @@ namespace qtnp {
     }
 
     // THIS IS THE INITIAL polygon definition has to do with kml and rviz so using member cdt
-    void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_array,
-                                                double angle_cons,
-                                                double edge_cons,
-                                                int lloyd_iterations){
+    void Tnp_update::perform_polygon_definition(std::vector<Coordinates> placemarks_array, double angle_cons, double edge_cons, int lloyd_iterations){
 
         ROS_INFO_STREAM("Got a new polygon definition");
 
@@ -644,13 +641,13 @@ namespace qtnp {
         // points: 1:max_lat/max_lon, 2:min_lat/min_lon, 3:max_lat/min_lon
         // distance between points 2-3 and 1-3
         double distance_x_lat_23 = max_lat_rad - min_lat_rad;
-        double distance_y_lon_23 = min_lon_rad - min_lon_rad;
+        double distance_y_lon_23 = 0.0;
 
-        double distance_x_lat_13 = max_lat_rad - max_lat_rad;
+        double distance_x_lat_13 = 0.0;
         double distance_y_lon_13 = min_lon_rad - max_lon_rad;
 
-        double angular_a_23 = (std::pow((sin(distance_x_lat_23/2)),2)) + cos(min_lat_rad) * cos(max_lat_rad) * std::pow((sin(distance_y_lon_23/2)),2);
-        double angular_a_13 = (std::pow((sin(distance_x_lat_13/2)),2)) + cos(max_lat_rad) * cos(max_lat_rad) * std::pow((sin(distance_y_lon_13/2)),2);
+        double angular_a_23 = (std::pow(std::sin(distance_x_lat_23/2),2)) + std::cos(min_lat_rad) * std::cos(max_lat_rad) * std::pow(std::sin(distance_y_lon_23/2),2);
+        double angular_a_13 = (std::pow(std::sin(distance_x_lat_13/2),2)) + std::cos(max_lat_rad) * std::cos(max_lat_rad) * std::pow(std::sin(distance_y_lon_13/2),2);
 
         double angular_c_23 = 2*std::atan2(std::sqrt(angular_a_23), std::sqrt(1-angular_a_23));
         double angular_c_13 = 2*std::atan2(std::sqrt(angular_a_13), std::sqrt(1-angular_a_13));
@@ -663,20 +660,22 @@ namespace qtnp {
         // multiply FoV with meter conversion to find CDT constrain
         double meter_conversion = distance_23 > distance_13 ? constants::rviz_range_max / distance_23 : constants::rviz_range_max / distance_13;
 
-        if (distance_23 > distance_13){
-            rviz_objects_ref.set_rviz_range(constants::rviz_range_max,constants::rviz_range_max * logos, meter_conversion);
-        }
-        else {
-            rviz_objects_ref.set_rviz_range(constants::rviz_range_max * logos,constants::rviz_range_max, meter_conversion);
-        }
-
 //        if (distance_23 > distance_13){
-//            double top_range = (constants::rviz_range_max * distance_13) / distance_23;
-//            rviz_objects_ref.set_rviz_range(constants::rviz_range_max,top_range);
+//            rviz_objects_ref.set_rviz_range(constants::rviz_range_max,constants::rviz_range_max * logos, meter_conversion);
 //        }
 //        else {
-//            double top_range = (constants::rviz_range_max * distance_23) / distance_13;
-//            rviz_objects_ref.set_rviz_range(top_range,constants::rviz_range_max);
+//            rviz_objects_ref.set_rviz_range(constants::rviz_range_max * logos,constants::rviz_range_max, meter_conversion);
+//        }
+
+            rviz_objects_ref.set_rviz_range(constants::rviz_range_max,constants::rviz_range_max, meter_conversion);
+
+            //        if (std::abs( distance_23 ) > std::abs(distance_13) ){
+//            double top_lon_range = (constants::rviz_range_max * distance_13) / distance_23;
+//            rviz_objects_ref.set_rviz_range(constants::rviz_range_max, top_lon_range, meter_conversion);
+//        }
+//        else {
+//            double top_lat_range = (constants::rviz_range_max * distance_23) / distance_13;
+//            rviz_objects_ref.set_rviz_range(top_lat_range,constants::rviz_range_max, meter_conversion);
 //        }
 
 
@@ -1306,7 +1305,7 @@ namespace qtnp {
                 double side2 = CGAL::sqrt(v2.squared_length());
                 double side3 = CGAL::sqrt(v3.squared_length());
 
-                log_file << lloyd_iterations << mountain_sensitivity << cell_id << " " << angle1 << " " << angle2 << " " << angle3 << " " << side1 << " " << side2 << " " << side3 << " ";
+                log_file << lloyd_iterations << " " << mountain_sensitivity << " " << cell_id << " " << angle1 << " " << angle2 << " " << angle3 << " " << side1 << " " << side2 << " " << side3 << " ";
 
                 double center_x = ( vertex1.x() + vertex2.x() + vertex3.x() ) / 3;
                 double center_y = ( vertex1.y() + vertex2.y() + vertex3.y() ) / 3;
@@ -1364,7 +1363,7 @@ namespace qtnp {
 
             if ( i < 2 ){
                 if (i == 0) distance = 0;
-                path_log_file << lloyd_iterations << mountain_sensitivity << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << std::endl;
+                path_log_file << lloyd_iterations << " " << mountain_sensitivity << " " << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << std::endl;
             }
             else {
 
@@ -1373,7 +1372,7 @@ namespace qtnp {
                 double Paw = sqrt(std::pow( (antepenultimate_x - waypoint.pose.position.x) ,2) + std::pow( (antepenultimate_y - waypoint.pose.position.y) ,2));
                 double previous_angle = ((std::acos((Ppa*Ppa + Ppw*Ppw - Paw*Paw) / (2*Ppa*Ppw))) * 180)/constants::PI;
 
-                path_log_file << lloyd_iterations << mountain_sensitivity << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << " " << previous_angle << std::endl;
+                path_log_file << lloyd_iterations << " " << mountain_sensitivity << " " << i << " " << waypoint.pose.position.x << " " << waypoint.pose.position.y << " " << distance << " " << previous_angle << std::endl;
             }
 
             antepenultimate_x = previous_x;
