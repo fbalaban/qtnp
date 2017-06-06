@@ -19,6 +19,9 @@
 #include "../include/qtnp/tnp_update.hpp"
 #include "../include/qtnp/utilities.hpp"
 
+#include <std_msgs/String.h>
+#include "../include/qtnp/qnode.hpp"
+
 #include "qtnp/InitialCoordinates.h"
 #include "qtnp/Coordinates.h"
 #include "qtnp/Placemarks.h"
@@ -44,7 +47,7 @@ inline double round( double val )
     return floor(val + 0.5);
 }
 
-// Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+// Get current date/time, format is YYYY-MM-DD_HH:mm:ss
 const std::string currentDateTime() {
     time_t     now = time(0);
     struct tm  tstruct;
@@ -52,7 +55,7 @@ const std::string currentDateTime() {
     tstruct = *localtime(&now);
     // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
     // for more information about date/time format
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+    strftime(buf, sizeof(buf), "%Y-%m-%d_%H_%M_%S", &tstruct);
 
     return buf;
 }
@@ -79,13 +82,41 @@ std::pair<int,int>& get_agent_pair_by_id(int id, std::vector<std::pair<int,int> 
     if (it != map.end()) return *it;
 }
 
+
 namespace qtnp {
+
+
+
+    void Tnp_update::print_cdt_cells(const CDT &l_cdt){
+
+        std::vector<int> cells;
+        for (int i=0; i<9;i++){
+            cells.push_back(0);
+        }
+
+        for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
+                      faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
+            if( (faces_iterator->is_in_domain()) && (faces_iterator->info().agent_id > 0)){
+                //if cells[faces_iterator->info().agent_id] == 0;
+
+                cells[faces_iterator->info().agent_id] += 1;
+
+            }
+        }
+        for (int i=0; i<cells.size(); i++){
+            std::stringstream ss;
+            ss << "Agent " << i << " has: " << cells[i];
+            ROS_INFO_STREAM(ss.str());
+        }
+    }
 
 /*****************************************************************************
 ** Implementation
 *****************************************************************************/
 
-    // TODO for every cdt because other cdts have not calculated their centers
+    // TODO V3 center points with cell ids var is a single var which contains ids and lat lon without any reference to which CDT belongs to
+    // Change it so it constructs a center list based on CDT input because currently the list has up to 5000 ids for the cells
+
     int Tnp_update::coordinates_to_cdt_cell_id(double lat, double lon){
 
         std::vector<std::pair<int, geometry_msgs::Point> > id_center_list(this->rviz_objects_ref.get_center_points_with_cell_id());
@@ -146,8 +177,22 @@ namespace qtnp {
         bool found(false);
         path.push_back(a);
 
+        int how_many_ones{0};
+        int how_many_real{0};
+        // TODO HERE INFINITE LOOP CANNOT FIND PATH, BLOCKED IF FULL --- ADDED CHECK FOR NOT PASSING THROUGH -1 (DONT KNOW IF MAKES SENSE)
         do {
             found = false;
+            // TODO REMOVE THIS
+            for(CDT::Finite_faces_iterator faces_iterator = m_cdt.finite_faces_begin();
+              faces_iterator != m_cdt.finite_faces_end(); ++faces_iterator){
+                if (faces_iterator->info().agent_id == -1){
+                    how_many_ones++;
+                }
+                if ( (faces_iterator->info().agent_id > 0)  && (faces_iterator->info().agent_id < 10) ){
+                    how_many_real++;
+                }
+            }
+
             for(CDT::Finite_faces_iterator faces_iterator = m_cdt.finite_faces_begin();
               faces_iterator != m_cdt.finite_faces_end(); ++faces_iterator){
                 if (faces_iterator->info().agent_id == path[path.size()-1]){
@@ -157,6 +202,7 @@ namespace qtnp {
                             return path;
                         } else if ( (faces_iterator->neighbor(i)->is_in_domain()) &&
                                 !(std::find(path.begin(), path.end(), faces_iterator->neighbor(i)->info().agent_id) != path.end()) &&
+                                (faces_iterator->neighbor(i)->info().agent_id != -1) &&
                                 !(std::find(blocked_path.begin(), blocked_path.end(), faces_iterator->neighbor(i)->info().agent_id) != blocked_path.end() ) ){
                             path.push_back(faces_iterator->neighbor(i)->info().agent_id);
                             found = true;
@@ -166,10 +212,15 @@ namespace qtnp {
                 }
                 if (found) break;
             }
-            if (!found){
+            how_many_ones = 0;
+            how_many_real = 0;
+            if ( (!found) && (path[path.size()-1] != a) ){
                 blocked_path.push_back(path[path.size()-1]);
                 path.erase(std::remove(path.begin(), path.end(), path[path.size()-1]), path.end());
             }
+
+            mesh_coloring();
+            rviz_objects_ref.set_polygon_ready(true);
         } while (true);
     }
 
@@ -234,23 +285,19 @@ namespace qtnp {
         return -1;
     }
 
-    void Tnp_update::move_cells(qtnp::Uas_model &toUAS, std::pair<int,int> &from_unassigned, std::vector<int> path){
+    void Tnp_update::move_cells(qtnp::Uas_model &toUAS, std::pair<int,int> &from_unassigned){//, std::vector<int> path){
 
-        //std::cout << "Move cells: UAS " << toUAS.get_id() << " assigned cells BEFORE: " << toUAS.get_assigned_cells() << std::endl;
-        if (abs(toUAS.get_remaining_cells()) < abs(from_unassigned.second)){
-            //moveAWP(mapA.second, path);
-            //moveCOV(toUAS.get_remaining_cells(), path);
-            std::reverse(path.begin(), path.end());
+        std::vector<int> path = find_path(toUAS.get_id(), -1);
+        // why reversed?
+        std::reverse(path.begin(), path.end());
+
+        try {
+            //std::cout << "Move cells: UAS " << toUAS.get_id() << " assigned cells BEFORE: " << toUAS.get_assigned_cells() << std::endl;
             moveCOV(toUAS, toUAS.get_remaining_cells(), path);
-            from_unassigned.second = from_unassigned.second - abs(toUAS.get_remaining_cells());
-        } else {
-            //moveAWP(mapB.second, path);
-            //moveCOV(from_unassigned.second, path);
-            std::reverse(path.begin(), path.end());
-            moveCOV(toUAS, from_unassigned.second, path);
-            from_unassigned.second = 0;
+            //std::cout << "Move cells: UAS " << toUAS.get_id() << "assigned cells AFTER: " << toUAS.get_assigned_cells() << std::endl;
+        } catch (const std::runtime_error& e) {
+             std::cout << e.what();
         }
-        //std::cout << "Move cells: UAS " << toUAS.get_id() << "assigned cells AFTER: " << toUAS.get_assigned_cells() << std::endl;
     }
 
     // sensors version: introducing cdt var for clearing aux
@@ -360,9 +407,9 @@ namespace qtnp {
 
         //std::cout << "----- MoveCOV ----- " << std::endl;
         //std::cout << "Moving " << cells << " cells through path: [ ";
-//        for (int i=0; i<path.size(); i++){
-//            std::cout << path[i] << " ";
-//        }
+        //for (int i=0; i<path.size(); i++){
+        //  std::cout << path[i] << " ";
+        //}
         //std::cout << "]" << std::endl;
 
         for (int i = 0; i < path.size() - 1; i++){
@@ -508,6 +555,7 @@ namespace qtnp {
         area_extremes.min_lon = -constants::min_lon;
     }
 
+
     // angle constrain is static in this version
     void Tnp_update::perform_cdt(CDT &l_cdt, double angle_cons, double edge_cons){
 
@@ -516,7 +564,7 @@ namespace qtnp {
         // INFO: edge constrain is converted before function to a CGAL/RVIZ metric. meters->cgal/rviz points
         double crAngle = angle_cons;// 0.125; -- the default angle criteria
         double crEdge = edge_cons;
-        //std::cout << "Number of vertices before meshing and refining: " << l_cdt.number_of_vertices() << std::endl;
+        std::cout << "Number of vertices before meshing and refining: " << l_cdt.number_of_vertices() << " angle:" << crAngle << " edge: " << crEdge << " " << std::endl;
         Mesher mesher(l_cdt);
         //mesher.refine_mesh();
         //std::cout << "Number of vertices after creating mesher: " << l_cdt.number_of_vertices() << std::endl;
@@ -524,7 +572,7 @@ namespace qtnp {
 
         mesher.set_criteria(Criteria(crAngle, crEdge));
         mesher.refine_mesh();
-        //std::cout << "Number of vertices after meshing and refining with new criteria: " << l_cdt.number_of_vertices() << std::endl;
+        std::cout << "Number of vertices after meshing and refining with new criteria: " << l_cdt.number_of_vertices() << std::endl;
 
         CGAL::lloyd_optimize_mesh_2(l_cdt,
                                     CGAL::parameters::max_iteration_number = get_lloyd_iter());
@@ -557,6 +605,18 @@ namespace qtnp {
             initialize_base++;
           }
         }
+        // this is great
+        geometry_msgs::Point grid_point1; grid_point1.x = 15; grid_point1.y = 15; grid_point1.z = 0;
+        rviz_objects_ref.push_grid_point(grid_point1);
+
+        for (int i= 0; i<17; i++){
+            for (int j= 0; j<17; j++){
+                grid_point1.x = grid_point1.x + 30;
+                rviz_objects_ref.push_grid_point(grid_point1);
+            }
+            grid_point1.y = grid_point1.y + 30;
+            grid_point1.x = -15;
+        }
     }
 
     void Tnp_update::initialize_starting_positions(CDT &l_cdt, std::vector<qtnp::Uas_model> &uas){
@@ -574,7 +634,9 @@ namespace qtnp {
                 int total_cells(0);
                 for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
                     faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
-                    total_cells++;
+                    if (faces_iterator->is_in_domain()){
+                        total_cells++;
+                    }
                 }
                 uas[i].set_capability_cells(total_cells);
                 uas[i].set_assigned_cells(0);
@@ -582,7 +644,8 @@ namespace qtnp {
                 uas[i].set_capability_cells( ( (uas[i].get_autonomy() *
                                                 rviz_objects_ref.count_cells()) /
                                                 100.0) +
-                                                0.5 );
+                                                0.3 );
+                uas[i].set_assigned_cells(0);
             }
             for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
                 faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
@@ -591,6 +654,7 @@ namespace qtnp {
                   faces_iterator->info().depth = 1;
                   faces_iterator->info().agent_id = uas[i].get_id();
                   uas[i].increase_assigned_cells();
+
                   for (int j=0; j<3; j++){
                       faces_iterator->neighbor(j)->info().jumps_agent_id = jumps_ad;
                       jumps_ad++;
@@ -633,6 +697,7 @@ namespace qtnp {
             }
         }
 
+         // -------------- TODO DELETE AFTER NORMALIZE --------------------------------//
         double max_lat_rad = (area_extremes.max_lat * constants::PI) / 180.0;
         double max_lon_rad = (area_extremes.max_lon * constants::PI) / 180.0;
         double min_lat_rad = (area_extremes.min_lat * constants::PI) / 180.0;
@@ -658,7 +723,7 @@ namespace qtnp {
         // TODO LOGOS CHECK IF MAKES SENSE
         double logos = distance_23 > distance_13 ? distance_13/distance_23 : distance_23/distance_13;
         // multiply FoV with meter conversion to find CDT constrain
-        double meter_conversion = distance_23 > distance_13 ? constants::rviz_range_max / distance_23 : constants::rviz_range_max / distance_13;
+        double meter_conversion = distance_23 > distance_13 ? constants::rviz_range_max * logos : constants::rviz_range_max * logos;
 
 //        if (distance_23 > distance_13){
 //            rviz_objects_ref.set_rviz_range(constants::rviz_range_max,constants::rviz_range_max * logos, meter_conversion);
@@ -677,9 +742,22 @@ namespace qtnp {
 //            double top_lat_range = (constants::rviz_range_max * distance_23) / distance_13;
 //            rviz_objects_ref.set_rviz_range(top_lat_range,constants::rviz_range_max, meter_conversion);
 //        }
+        // -----------------------------------------------------------------------------------//
+
+        // TODO PROBABLY IN NORMALIZATION
+//            // normalizing area extremes to -1 1
+//            double normalized_lat = utilities::normalize_latitude(area_extremes.max_lat, area_extremes.max_lon);
+//            double normalized_lon = utilities::normalize_longitude(area_extremes.max_lat, area_extremes.max_lon);
+//            area_extremes.max_lat = normalized_lat;
+//            area_extremes.max_lon = normalized_lon;
+
+//            normalized_lat = utilities::normalize_latitude(area_extremes.min_lat, area_extremes.min_lon);
+//            normalized_lon = utilities::normalize_longitude(area_extremes.min_lat, area_extremes.min_lon);
+//            area_extremes.min_lat = normalized_lat;
+//            area_extremes.min_lon = normalized_lon;
 
 
-    // TODO NOW: add list of seeds in global class or somewhere in order for the sub cdts to inherit the holes
+        // TODO NOW: add list of seeds in global class or somewhere in order for the sub cdts to inherit the holes
         std::list<CDT::Point> list_of_seeds;
         for (std::vector<qtnp::Coordinates>::iterator it = placemarks_array.begin(); it<placemarks_array.end(); it++){
 
@@ -687,6 +765,7 @@ namespace qtnp {
             std::vector<double> longitude_array(size);
             std::vector<double> latitude_array(size);
             bool is_an_obstacle = (it->placemark_type == "hole") ? true :false;
+            //
             if (is_an_obstacle) list_of_seeds.push_back(CDT::Point(
                         utilities::convert_range(area_extremes.min_lat,area_extremes.max_lat,
                                     constants::rviz_range_min,rviz_objects_ref.get_rviz_view().lat_max,it->seed_latitude),
@@ -733,7 +812,7 @@ namespace qtnp {
             }
         }
         std::cout << "The edge input was: " << edge_cons << " meters";
-        edge_cons = edge_cons * rviz_objects_ref.get_meter_conversion();
+        edge_cons = edge_cons;// TODO: correct! * rviz_objects_ref.get_meter_conversion();
         std::cout << " and has been converted to " << edge_cons << " CGAL/RVIZ units (maximum 500)" << std::endl;
 
         // NOTE: gets the greatest FoV out of the collection of UASs in the UI table
@@ -901,42 +980,20 @@ namespace qtnp {
 
     void Tnp_update::replenish(std::vector<qtnp::Uas_model> &uas){
 
-        //std::cout << "---- Replenishing ----" << std::endl;
-        std::vector<int> move_path;
-        std::vector<int> dead_end;
+        std::cout << "---- Replenishing ----" << std::endl;
 
         bool finished(false);
 
         do {
-            int not_allocated_cells(0);
             for (int i=0; i < uas.size(); i++){
-
+                int not_allocated_cells(0);
                 for (int j=0; j < uas.size(); j++){
                     not_allocated_cells += uas[j].get_remaining_cells();
                 }
-
                 if (not_allocated_cells > 0){
                     if (uas[i].get_remaining_cells() > 0) {
-                        int agent_missing = uas[i].get_id();
                         std::pair<int,int> from_unassigned(-1, not_allocated_cells);
-
-                        if (move_path.empty()) move_path.push_back(agent_missing);
-                        // this find_neighbor, checks if neighbor is already in move_path or dead_end
-                        int current_neighbor_id = find_neighbor(move_path, dead_end);
-                        if (current_neighbor_id == -1) {
-                            move_path.push_back(current_neighbor_id);
-                            move_cells(uas[i], from_unassigned, move_path); // (found = true) ?
-                            move_path.clear();
-                            dead_end.clear();
-                        } else if ( (current_neighbor_id != -1) &&
-                                    !(std::find(move_path.begin(), move_path.end(), current_neighbor_id) != move_path.end()) &&
-                                    !(std::find(dead_end.begin(), dead_end.end(), current_neighbor_id) != dead_end.end()) ){
-                            move_path.push_back(current_neighbor_id); // found = true ?
-                        } else {
-                            dead_end.push_back(current_neighbor_id);
-                            move_path.erase(std::remove(move_path.begin(), move_path.end(), current_neighbor_id), move_path.end());
-                            current_neighbor_id = move_path[move_path.size() -1];
-                        }
+                        move_cells(uas[i], from_unassigned);
                     }
                 } else {
                     finished = true;
@@ -956,7 +1013,6 @@ namespace qtnp {
                         faces_iterator->info().agent_id = faces_iterator->neighbor(i)->info().agent_id;
                         uas[faces_iterator->neighbor(i)->info().agent_id-1].increase_assigned_cells();
                         break;
-
                     }
                 }
             }
@@ -971,11 +1027,15 @@ namespace qtnp {
 
         initialize_starting_positions(m_cdt, uas);
         isotropic_initial_partition(m_cdt, uas); // or initial partitioning..
-        //TODO remove: report_initial_partitioning(m_cdt, uas);
+
+        //TODO remove:
+        report_initial_partitioning(m_cdt, uas);
         coverage_cost_attribution(m_cdt);
+
         replenish(uas);
         replenish_revisited(m_cdt, uas);
 
+        std::cout << "After replenish AND revisited" << std::endl;
         int agent_minus_one(0);
         // initializing again depth and number var to perform isotropic cost attribution
         for(CDT::Finite_faces_iterator faces_iterator = m_cdt.finite_faces_begin();
@@ -993,12 +1053,15 @@ namespace qtnp {
         isotropic_cost_attribution(m_cdt);
         coverage_cost_attribution(m_cdt);
 
-//TODO Remove
-        //        for (int i=0; i< uas.size(); i++){
-//            std::cout << "UAS " << i+1 << " has " << uas[i].get_assigned_cells() << " cells. (" <<
-//                         uas[i].get_capability_cells() << ")" << std::endl;
-//        }
-//        std::cout << "Agent -1 has " << agent_minus_one << " cells" << std::endl;
+        report_initial_partitioning(m_cdt, uas);
+        report_distances_from_center(m_cdt, uas);
+
+        //TODO Remove
+                //        for (int i=0; i< uas.size(); i++){
+        //            std::cout << "UAS " << i+1 << " has " << uas[i].get_assigned_cells() << " cells. (" <<
+        //                         uas[i].get_capability_cells() << ")" << std::endl;
+        //        }
+                std::cout << "Agent -1 has " << agent_minus_one << " cells" << std::endl;
 
         std::cout << currentDateTime() << " Beginning CDT separation for " << uas.size() << " UAS." <<std::endl;
         if (uas.size() > 1){
@@ -1006,6 +1069,7 @@ namespace qtnp {
         } else {
             m_sub_cdt_vector.push_back(m_cdt);
         }
+
 
         // TODO V2 remove that, make either connected UAS class or member vector through code.
         set_instance_uas_vector(uas);
@@ -1099,6 +1163,40 @@ namespace qtnp {
         } while (neverInside == false);
     }
 
+    void Tnp_update::report_distances_from_center(CDT& l_cdt, std::vector<qtnp::Uas_model> &uas){
+
+        geometry_msgs::Point center_point_initial;
+        double distance;
+        double total_distance{0};
+
+        for(int i=0; i < uas.size(); i++){
+
+            distance = 0;
+            for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
+                faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
+                if( (faces_iterator->info().agent_id == i+1) && (faces_iterator->info().depth == 1) ){
+                    center_point_initial = utilities::face_to_center(l_cdt, faces_iterator);
+                    break;
+                }
+            }
+
+            for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
+                faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
+
+                if( (faces_iterator->info().agent_id == i+1) && (faces_iterator->info().depth != 1) ){
+
+                geometry_msgs::Point center_point_next = utilities::face_to_center(l_cdt, faces_iterator);
+                distance += utilities::calculate_distance(center_point_initial, center_point_next);
+                }
+            }
+            total_distance += distance;
+
+            std::cout << "---- Total distance from initial point for UAV " << i+1 << " is: " << distance << "  rviz units----" << std::endl;
+        }
+
+
+    }
+
     void Tnp_update::report_initial_partitioning(CDT &l_cdt, std::vector<qtnp::Uas_model> &uas){
 
         std::vector<std::pair<int,int> > number_of_assigned_cells(uas.size());
@@ -1131,9 +1229,10 @@ namespace qtnp {
         std::cout << "---- CDT Count ----" << std::endl;
         std::cout << "Total cells: " << total_cells << std::endl;
         std::cout << "Remaining cells: " << total_cells - assigned_cells << std::endl;
+
         std::cout << "Assigned cells: " << std::endl;
         for (int i=0; i < number_of_assigned_cells.size(); i++){
-            std::cout << "agent " << i+1 << ": " << number_of_assigned_cells[i].second << std::endl;
+            std::cout << "agent " << i+1 << ": " << number_of_assigned_cells[i].second << " = " <<  (number_of_assigned_cells[i].second * 100.0)/total_cells << "% " << std::endl;
         }
         std::cout << "Free cells: " << free_cells << std::endl;
 
@@ -1142,7 +1241,7 @@ namespace qtnp {
             std::cout << "Total UAS assignment: " << assigned_uas_cells << std::endl;
         for(int i=0; i< uas.size(); i++){
             std::cout << "Agent " << i+1 << " Capability: " << uas[i].get_capability_cells() <<
-                         " Assigned: " << uas[i].get_assigned_cells() << std::endl;
+                         " Assigned: " << uas[i].get_assigned_cells() << " = " <<  (uas[i].get_assigned_cells() * 100.0)/total_uas_cells << "% " << std::endl;
         }
 
         std::cout << "---- CDT - UAS Difference ----" << std::endl;
@@ -1161,9 +1260,10 @@ namespace qtnp {
             CDT sub_cdt = find_new_cdt_constrains(l_cdt, i+1);
             // INFO: static version of angle constrain, edge_cons is the fov_size
             double angle_cons(constants::angle_criterion_default);
-            double edge_cons = uas[i].get_fov() * rviz_objects_ref.get_meter_conversion();
+            // TODO ALSO HERE EDGE!
+            double edge_cons = uas[i].get_fov();// * rviz_objects_ref.get_meter_conversion();
             perform_cdt(sub_cdt, angle_cons, edge_cons);
-            initialize_cdt_struct(i+1, sub_cdt, ((i+1)*3000) );
+            initialize_cdt_struct(i+1, sub_cdt, ((i+1)*5000) );
             std::vector<Uas_model> single_uas;
             single_uas.push_back(uas[i]);
             initialize_starting_positions(sub_cdt, single_uas);
@@ -1180,6 +1280,8 @@ namespace qtnp {
 
         for (std::vector<CDT>::iterator that_cdt = m_sub_cdt_vector.begin();
              that_cdt != m_sub_cdt_vector.end(); ++that_cdt) {
+
+
             int color_iterator = 0;
 
             for(CDT::Finite_faces_iterator faces_iterator = that_cdt->finite_faces_begin();
@@ -1210,7 +1312,7 @@ namespace qtnp {
 
                 // agent coloring for partition viz
                 if (rviz_objects_ref.get_settings().partition){
-                    double agent_color = face->info().agent_id * 30;
+                    double agent_color = face->info().agent_id * 5;
                     triangle_color.r = 50 + agent_color;
                     triangle_color.b = 50 + agent_color;
                     triangle_color.g = 50 + agent_color;
@@ -1242,9 +1344,9 @@ namespace qtnp {
 
                 // initial positions are white
                 if (face->info().depth == 1){ // also include target coloring?
-                  triangle_color.r = 0.0f;
-                  triangle_color.g = 0.0f;
-                  triangle_color.b = 0.0f;
+                  triangle_color.r = 1.0f;
+                  triangle_color.g = 1.0f;
+                  triangle_color.b = 1.0f;
                 }
                 rviz_objects_ref.push_mesh_cell_color(triangle_color);
               }
@@ -1394,18 +1496,18 @@ namespace qtnp {
 
     }
 
-    // TODO V2 path to goal to be implemented in version 2.
+    // TODO V3 path to goal to be implemented in version 3.
     void Tnp_update::path_to_goal(int uas, int goal_cell_id){
 
         CDT::Face_handle current_face;
-        // TODO V2 which is the correct list-uas index?
+        // TODO V3 which is the correct list-uas index?
         CDT &l_cdt = m_sub_cdt_vector[uas];
         for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
             faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
-            // TODO V2 make uas_model class. make current_cell_id member var inside and take it in situations like this
+            // TODO V3 make uas_model class. make current_cell_id member var inside and take it in situations like this
             if( (faces_iterator->info().agent_id == uas) && (faces_iterator->info().depth == 1) ){
                 current_face = faces_iterator;
-                // TODO V2 the face_to_center is not going to work since we haven't constructed the face-center list
+                // TODO V3 the face_to_center is not going to work since we haven't constructed the face-center list
                 rviz_objects_ref.push_path_point(utilities::build_pose_stamped(utilities::face_to_center(l_cdt, current_face)));
                 break;
             }
@@ -1486,11 +1588,13 @@ namespace qtnp {
         for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
                 faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
             // initialize again the path visited attribute
-            for (int i=0;i<3;i++){
-                if ( (faces_iterator->neighbor(i)->info().agent_id != faces_iterator->info().agent_id) ||
-                     !(faces_iterator->neighbor(i)->is_in_domain()) ){
-                    faces_iterator->info().coverage_depth = constants::coverage_depth_max;
-                    faces_iterator->info().cover_depth = true;
+            if (faces_iterator->is_in_domain()) {
+                for (int i=0;i<3;i++){
+                    if ( (faces_iterator->neighbor(i)->info().agent_id != faces_iterator->info().agent_id) ||
+                         !(faces_iterator->neighbor(i)->is_in_domain()) ){
+                        faces_iterator->info().coverage_depth = constants::coverage_depth_max;
+                        faces_iterator->info().cover_depth = true;
+                    }
                 }
             }
         }
@@ -1504,19 +1608,19 @@ namespace qtnp {
             never_ever_again = true;
             for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
                 faces_iterator != l_cdt.finite_faces_end(); ++faces_iterator){
-
-                if((faces_iterator->info().has_coverage_depth()) &&
-                        (faces_iterator->info().coverage_depth > da_coverage_depth) ){
-                    for (int i=0;i<3;i++){
-                        if (!faces_iterator->neighbor(i)->info().has_coverage_depth()){
-                            faces_iterator->neighbor(i)->info().coverage_depth = da_coverage_depth;
-                            faces_iterator->neighbor(i)->info().cover_depth = true;
-                            never_ever_again = false;
-                            so_many++;
+                if (faces_iterator->is_in_domain()) {
+                    if((faces_iterator->info().has_coverage_depth()) &&
+                            (faces_iterator->info().coverage_depth > da_coverage_depth) ){
+                        for (int i=0;i<3;i++){
+                            if (!faces_iterator->neighbor(i)->info().has_coverage_depth()){
+                                faces_iterator->neighbor(i)->info().coverage_depth = da_coverage_depth;
+                                faces_iterator->neighbor(i)->info().cover_depth = true;
+                                never_ever_again = false;
+                                so_many++;
+                            }
                         }
                     }
                 }
-
             }
         } while (!never_ever_again);
     }
@@ -1571,39 +1675,39 @@ namespace qtnp {
             mountain_cross = false;
 
             // a mountain is found
-            if (current_depth < smallest_depth){
+            if (current_depth < smallest_depth){//
 
                 // the closest one to the current, from the list of mountains
                 // calculate the distance from all borders to the starter cell in order to choose the first border cell to visit
-                for (std::vector<CDT::Face_handle>::iterator it = mountain_vector.begin(); it != mountain_vector.end(); it++){
-                    float this_distance = utilities::calculate_distance(utilities::face_to_center(l_cdt, *it),
-                                             utilities::face_to_center(l_cdt, starter_cell));
-                    Distance_Entry this_entry = std::make_pair(*it, this_distance);
-                    mountain_distance_vector.push_back(this_entry);
-                }
+                for (std::vector<CDT::Face_handle>::iterator it = mountain_vector.begin(); it != mountain_vector.end(); it++){//
+                    float this_distance = utilities::calculate_distance(utilities::face_to_center(l_cdt, *it),//
+                                             utilities::face_to_center(l_cdt, starter_cell));//
+                    Distance_Entry this_entry = std::make_pair(*it, this_distance);//
+                    mountain_distance_vector.push_back(this_entry);//
+                }//
 
-                not_finished = false;
-                std::sort(mountain_distance_vector.begin(), mountain_distance_vector.end(), utilities::distance_comparison);
-                CDT::Face_handle next_cell = mountain_distance_vector.front().first;
+                not_finished = false;//
+                std::sort(mountain_distance_vector.begin(), mountain_distance_vector.end(), utilities::distance_comparison);//
+                CDT::Face_handle next_cell = mountain_distance_vector.front().first;//
                 // giati tha meiwthei meta
-                current_depth = next_cell->info().coverage_depth + 10 ;
+                current_depth = next_cell->info().coverage_depth + 10 ;//
 
                 // removes the cell from the mountain vector
-                mountain_vector.erase(std::remove(mountain_vector.begin(), mountain_vector.end(), next_cell), mountain_vector.end());
+                mountain_vector.erase(std::remove(mountain_vector.begin(), mountain_vector.end(), next_cell), mountain_vector.end());//
 
-                rviz_objects_ref.push_path_point(utilities::build_pose_stamped
-                                             (utilities::face_to_center(l_cdt, next_cell)));
-                next_cell->info().path_visited = true;
-                coord_path.push_back(std::pair<double, double>(next_cell->info().center_lat, next_cell->info().center_lon));
-                starter_cell = next_cell;
+                rviz_objects_ref.push_path_point(utilities::build_pose_stamped//
+                                             (utilities::face_to_center(l_cdt, next_cell)));//
+                next_cell->info().path_visited = true;//
+                coord_path.push_back(std::pair<double, double>(next_cell->info().center_lat, next_cell->info().center_lon));//
+                starter_cell = next_cell;//
 
-                mountain_distance_vector.clear();
+                mountain_distance_vector.clear();//
 
-                mesh_coloring();
-                rviz_objects_ref.set_planning_ready(true) ;
+                mesh_coloring();//
+                rviz_objects_ref.set_planning_ready(true) ;//
 
 
-            } else {
+            } else {//
 
                 // go through all triangles, get the starter cell and the borders vector
                 for(CDT::Finite_faces_iterator faces_iterator = l_cdt.finite_faces_begin();
@@ -1624,7 +1728,7 @@ namespace qtnp {
                         }
                     }
                 }
-            }
+            }//
 
             if (!not_finished){ // or mountain == true
                 current_depth = current_depth - 10;
@@ -1643,44 +1747,48 @@ namespace qtnp {
 
                 float next_waypoint_distance = borders_distance_vector.front().second;
                 // panw apo 3 fores megaliteri apostasi apo oti apo ton neighbor tou
-                for (int i=0; i<3; i++){
-                    if (!initial && (starter_cell->neighbor(i)->is_in_domain()) ){
-                        if ( (utilities::calculate_distance(
-                                utilities::face_to_center(l_cdt, starter_cell),
-                                utilities::face_to_center(l_cdt, starter_cell->neighbor(i))) * mountain_sensitivity) < next_waypoint_distance){
+// REMOVE NEXT COMMENT FOR MOUNTAIN
+                                for (int i=0; i<3; i++){//
+                    if (!initial && (starter_cell->neighbor(i)->is_in_domain()) ){//
+                        if ( (utilities::calculate_distance(//
+                                utilities::face_to_center(l_cdt, starter_cell),//
+                                utilities::face_to_center(l_cdt, starter_cell->neighbor(i))) * mountain_sensitivity) < next_waypoint_distance){//
 
                             // TODO V2 not optimized solution ( O(N^2) ). Look at http://stackoverflow.com/questions/10376065/pushing-unique-data-into-vector=
-                            if (std::find(mountain_vector.begin(), mountain_vector.end(), borders_distance_vector.front().first) == mountain_vector.end()) {
-                                mountain_vector.push_back(borders_distance_vector.front().first);
-                            }
-                            current_depth = current_depth - 10;
-                            mountain_found = true;
-                            break;
-                        }
-                    }
-                }
+                            if (std::find(mountain_vector.begin(), mountain_vector.end(), borders_distance_vector.front().first) == mountain_vector.end()) {//
+                                mountain_vector.push_back(borders_distance_vector.front().first);//
+                            }//
+                            current_depth = current_depth - 10;//
+                            mountain_found = true;//
+                            break;//
+                        }//
+                    }//
+                }//
+//00000000000000000000000000000000000000000000000000000000000
 
                 // an o geitonas tou starter_cell, diladi toy proigoymenoy vimatos, pou einai pio konta
                 // ston first of the border, den exei ton firstOfTHeBor ws geitona,
                 // tote vale ayton ton geitona sto path, kanton visited an den einai,
                 // valton ws starter cell kai epanelave
-                if (!mountain_found){
+
+                // REMOVE COMMENT FOR MOUNTAIN, last line too
+                if (!mountain_found){//
 
                     current_depth = first_of_the_border->info().coverage_depth;
-                    mountain_vector.erase(std::remove(mountain_vector.begin(), mountain_vector.end(), first_of_the_border), mountain_vector.end());
+                    mountain_vector.erase(std::remove(mountain_vector.begin(), mountain_vector.end(), first_of_the_border), mountain_vector.end());//
                     rviz_objects_ref.push_path_point(utilities::build_pose_stamped
                                                  (utilities::face_to_center(l_cdt, first_of_the_border)));
                     first_of_the_border->info().path_visited = true;
                     coord_path.push_back(std::pair<double, double>(first_of_the_border->info().center_lat,
                                                                first_of_the_border->info().center_lon));
                     starter_cell = first_of_the_border;
-                }
+                }//
             }
 
             initial = false;
             borders_vector.clear();
             borders_distance_vector.clear();
-        } while (current_depth >= smallest_depth || !mountain_vector.empty());
+        } while (current_depth >= smallest_depth || !mountain_vector.empty());//
 
         make_mavros_waypoint_list(uas, coord_path);
     }

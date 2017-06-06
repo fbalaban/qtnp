@@ -43,6 +43,23 @@ inline double convert_range(double start_original, double end_original, double s
     return (double)(start_new + ((value - start_original) * scale));
 }
 
+//http://paulbourke.net/geometry/transformationprojection/ - Hammer-Aitoff coordinates
+inline double normalize_latitude(double latitude, double longitude){
+
+  double z = std::sqrt(1 + std::cos(latitude)*std::cos(longitude/2));
+
+  return (std::cos(latitude)*std::sin(longitude/2)) / z;
+
+}
+//http://paulbourke.net/geometry/transformationprojection/ - Hammer-Aitoff coordinates
+inline double normalize_longitude(double latitude, double longitude){
+
+  double z = std::sqrt(1 + std::cos(latitude)*std::cos(longitude/2));
+  double x = (std::cos(latitude)*std::sin(longitude/2)) / z;
+
+  return (std::sin(latitude) / z);
+}
+
 //inline double convert_range_for_lat(double lat_min, double lat_max, double to_new_min, double to_new_max, double angle){
 //    double scale = (double) (to_new_max - to_new_min) / (lat_max - lat_min);
 //    return (double)(start_new + ((value - start_original) * scale));

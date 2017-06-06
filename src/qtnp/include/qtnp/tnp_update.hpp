@@ -67,6 +67,8 @@ class Tnp_update {
     void initialize_cdt_struct(int agent_id, CDT &l_cdt, int initialize_base);
     void initialize_starting_positions(CDT &l_cdt, std::vector<qtnp::Uas_model> &uas);
     void report_initial_partitioning(CDT &l_cdt, std::vector<qtnp::Uas_model> &uas);
+    void report_distances_from_center(CDT& l_cdt, std::vector<qtnp::Uas_model> &uas);
+
 
     void set_instance_uas_vector(std::vector<qtnp::Uas_model> &uas);
 
@@ -109,7 +111,8 @@ class Tnp_update {
     bool are_neighbors (int a, int b);
     std::vector<int> find_path(int a, int b);
     int find_neighbor(std::vector<int> &move_path, std::vector<int> &dead_end);
-    void move_cells(qtnp::Uas_model &toUAS, std::pair<int,int> &from_unassigned, std::vector<int> path);
+
+    void move_cells(qtnp::Uas_model &toUAS, std::pair<int,int> &from_unassigned);
     int moveAWP(int cells, std::vector<int> path);
     void moveCOV(Uas_model &Uas, int cells, std::vector<int> path);
 
@@ -121,6 +124,8 @@ class Tnp_update {
 
     void set_lloyd_iter(int iterations){ lloyd_iter = iterations;}
     int get_lloyd_iter(){ return lloyd_iter; }
+
+    void print_cdt_cells(const CDT& l_cdt);
 
   private:
 

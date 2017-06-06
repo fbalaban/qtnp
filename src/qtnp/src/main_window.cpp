@@ -279,35 +279,47 @@ void MainWindow::on_button_remove_clicked(bool check ) {
 
 void MainWindow::on_button_partition_clicked(bool check ) {
 
-    // Visualization options setup
-    int button_checked = ui.button_group_color_coding->checkedId();
-    std::cout << "button id: " << button_checked << std::endl;
-    qnode.get_rviz_objects_pointer()->set_settings(
-                  (button_checked == -2 ? true :false ),
-                  (button_checked == -3 ? true :false ),
-                  (button_checked == -4 ? true :false ),
-                  ui.check_box_borders->isChecked(),
-                  ui.check_box_waypoints->isChecked());
-
-    // Partitioning setup.
+    int auto_check{0};
     int uas_count = ui.table_view_uas->model()->rowCount();
-    std::vector<qtnp::Uas_model> uas;
 
     for (int i=0; i < uas_count; i++){
-
-        double latitude = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 4))).toDouble();
-        double longitude = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 5))).toDouble();
-        Position position(latitude, longitude);
-        double fov = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 1))).toDouble();
-        int autonomy_percentage = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i,2))).toInt();
-
-        qtnp::Uas_model uas_i( (i+1), position, fov, autonomy_percentage);
-
-        uas.push_back(uas_i);
-
+        auto_check += ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i,2))).toInt();
     }
 
-    qnode.get_tnp_update_pointer()->partition(uas);
+    if (auto_check !=100){
+        showGenericMessage("Autonomy percentages must sum up to 100%");
+    } else
+
+    {
+        // Visualization options setup
+        int button_checked = ui.button_group_color_coding->checkedId();
+        std::cout << "button id: " << button_checked << std::endl;
+        qnode.get_rviz_objects_pointer()->set_settings(
+                      (button_checked == -2 ? true :false ),
+                      (button_checked == -3 ? true :false ),
+                      (button_checked == -4 ? true :false ),
+                      ui.check_box_borders->isChecked(),
+                      ui.check_box_waypoints->isChecked());
+
+        // Partitioning setup.
+        std::vector<qtnp::Uas_model> uas;
+
+        for (int i=0; i < uas_count; i++){
+
+            double latitude = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 4))).toDouble();
+            double longitude = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 5))).toDouble();
+            Position position(latitude, longitude);
+            double fov = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i, 1))).toDouble();
+            int autonomy_percentage = ui.table_view_uas->model()->data(QModelIndex(ui.table_view_uas->model()->index(i,2))).toInt();
+
+            qtnp::Uas_model uas_i( (i+1), position, fov, autonomy_percentage);
+
+            uas.push_back(uas_i);
+
+        }
+
+        qnode.get_tnp_update_pointer()->partition(uas);
+    }
 }
 
 // TODO: validate with introduced changes (uas_model)

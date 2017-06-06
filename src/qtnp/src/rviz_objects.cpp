@@ -30,24 +30,25 @@ void Rviz_objects::init(){
   rviz_settings.waypoints = rviz_settings.task_cost = true;
 
   // TODO: replace with constant or UI selection
-  edges.header.frame_id = polygonStamped.header.frame_id = center_points.header.frame_id =
+  edges.header.frame_id = polygonStamped.header.frame_id = center_points.header.frame_id = grid_points.header.frame_id =
           triangulation_mesh.header.frame_id = path.header.frame_id = "/my_frame";
 
-  edges.header.stamp = polygonStamped.header.stamp = center_points.header.stamp =
+  edges.header.stamp = polygonStamped.header.stamp = center_points.header.stamp = grid_points.header.stamp =
           triangulation_mesh.header.stamp = path.header.stamp = ros::Time::now();
 
   // TODO: replace with constant or UI selection
-  edges.ns = center_points.ns = triangulation_mesh.ns = "cgal_rviz_namespace";
+  edges.ns = center_points.ns = triangulation_mesh.ns = grid_points.ns = "cgal_rviz_namespace";
 
-  edges.action = center_points.action = triangulation_mesh.action = visualization_msgs::Marker::ADD;
+  edges.action = center_points.action = triangulation_mesh.action = grid_points.action = visualization_msgs::Marker::ADD;
 
-  edges.pose.orientation.w = center_points.pose.orientation.w = triangulation_mesh.pose.orientation.w = 1.0;
+  edges.pose.orientation.w = center_points.pose.orientation.w = grid_points.pose.orientation.w = triangulation_mesh.pose.orientation.w = 1.0;
 
   edges.id = 0;
   center_points.id = 1; // TODO: different for different agent?
   triangulation_mesh.id = 2;
+  grid_points.id = 1;
 
-  edges.type = center_points.type = visualization_msgs::Marker::POINTS;
+  edges.type = center_points.type = grid_points.type = visualization_msgs::Marker::POINTS;
   triangulation_mesh.type = visualization_msgs::Marker::TRIANGLE_LIST;
 
   // POINTS markers use x and y scale for width/height respectively (how big the point is)
@@ -66,9 +67,16 @@ void Rviz_objects::init(){
   center_points.color.g = 0.0f;
   center_points.color.b = 0.0f;
 
-  edges.color.r = center_points.color.g = 0.25f;
+  grid_points.scale.x = 3; // TODO: replace with constant or UI selection
+  grid_points.scale.y = 3; // TODO: replace with constant or UI selection
+
+  grid_points.color.r = 0.0f;
+  grid_points.color.g = 0.0f;
+  grid_points.color.b = 0.0f;
+
+  edges.color.r = center_points.color.g = grid_points.color.g = 0.25f;
   edges.color.g =  0.75f; // TODO: replace with constant or UI selection
-  edges.color.a = center_points.color.a = 1.0f; // TODO: replace with constant or UI selection
+  edges.color.a = center_points.color.a = grid_points.color.a = 1.0f; // TODO: replace with constant or UI selection
 
   triangulation_mesh.color.b = 1.0f; // TODO: replace with constant or UI selection
   triangulation_mesh.color.a = 1.0f; // TODO: replace with constant or UI selection
@@ -89,6 +97,12 @@ void Rviz_objects::push_polygon_point(geometry_msgs::Point32 point){
 void Rviz_objects::push_center_point(geometry_msgs::Point point){
 
     this->center_points.points.push_back(point);
+
+}
+
+void Rviz_objects::push_grid_point(geometry_msgs::Point grid_point){
+
+    this->grid_points.points.push_back(grid_point);
 
 }
 

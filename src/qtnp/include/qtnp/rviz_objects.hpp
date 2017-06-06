@@ -77,6 +77,8 @@ public:
     }
     visualization_msgs::Marker get_edges(){ return edges; }
     visualization_msgs::Marker get_center_points(){ return center_points; }
+    visualization_msgs::Marker get_grid_points(){ return grid_points; }
+
     visualization_msgs::Marker get_triangulation_mesh(){ return triangulation_mesh; }
     nav_msgs::Path get_path(){ return path; }
 
@@ -95,6 +97,8 @@ public:
     void push_mesh_cell_color(std_msgs::ColorRGBA color);
     void push_path_point(geometry_msgs::PoseStamped point);
     void push_center_point_with_cell_id(int id, geometry_msgs::Point center_point);
+
+    void push_grid_point(geometry_msgs::Point grid_point);
 
     void clear_path();
     void clear_edges();
@@ -129,7 +133,7 @@ private:
     Rviz_settings rviz_settings;
     geometry_msgs::Polygon polygon;
     geometry_msgs::PolygonStamped polygonStamped;
-    visualization_msgs::Marker edges, center_points, triangulation_mesh;
+    visualization_msgs::Marker edges, center_points, triangulation_mesh, grid_points;
     nav_msgs::Path path;
     std::vector<std::pair<int, geometry_msgs::Point> > center_points_with_cell_id;
 

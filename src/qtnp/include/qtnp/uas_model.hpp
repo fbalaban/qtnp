@@ -45,19 +45,19 @@ class Uas_model{
 
     }
 
-    void set_capability_cells (int cells) { m_capability_cells = cells; }
+    void set_capability_cells (int cells) { this->m_capability_cells = cells; }
 
-    void increase_assigned_cells(){ m_assigned_cells += 1; }
-    void set_assigned_cells (int cells) { m_assigned_cells = cells; }
+    void increase_assigned_cells(){ this->m_assigned_cells += 1; }
+    void set_assigned_cells (int cells) { this->m_assigned_cells = cells; }
 
-    int get_id() { return m_id; }
-    qtnp::Position get_initial_position() { return m_position_initial; }
-    int get_autonomy() { return m_autonomy; }
+    int get_id() { return this->m_id; }
+    qtnp::Position get_initial_position() { return this->m_position_initial; }
+    int get_autonomy() { return this->m_autonomy; }
 
-    double get_fov() { return m_fov; }
-    int get_capability_cells() { return m_capability_cells; }
-    int get_assigned_cells() { return m_assigned_cells; }
-    int get_remaining_cells() { return m_capability_cells - m_assigned_cells; }
+    double get_fov() { return this->m_fov; }
+    int get_capability_cells() { return this->m_capability_cells; }
+    int get_assigned_cells() { return this->m_assigned_cells; }
+    int get_remaining_cells() { return this->m_capability_cells - this->m_assigned_cells; }
 
   private:
 

@@ -106,6 +106,8 @@ void QNode::run() {
           edges_pub.publish(rviz_objects.get_edges());
           center_pub.publish(rviz_objects.get_center_points());
 
+          grid_marker_pub.publish(rviz_objects.get_grid_points());
+
           triangulation_mesh_pub.publish(rviz_objects.get_triangulation_mesh());
           rviz_objects.set_polygon_ready(false);
         }
@@ -188,13 +190,15 @@ void QNode::init_publishers(ros::NodeHandle n){
     // this is just a string chatter
     chatter_publisher = n.advertise<std_msgs::String>("chatter", 1000);
     // publishing the edges of the initial area
-    edges_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
+    edges_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 100);
     // publishing the vertices of the initial area
-    polygon_pub = n.advertise<geometry_msgs::PolygonStamped>("visualization_polygon", 10);
+    polygon_pub = n.advertise<geometry_msgs::PolygonStamped>("visualization_polygon", 100);
     // publishing the mesh
-    triangulation_mesh_pub = n.advertise<visualization_msgs::Marker>("triangulation_mesh", 300);
+    triangulation_mesh_pub = n.advertise<visualization_msgs::Marker>("triangulation_mesh", 30000);
     // publishing the centers of each cell of the triangulation (waypoints)
-    center_pub = n.advertise<visualization_msgs::Marker>("center_points", 450);
+    center_pub = n.advertise<visualization_msgs::Marker>("center_points", 4500);
+    // a dummy marker for grid visulizations
+    grid_marker_pub = n.advertise<visualization_msgs::Marker>("dummy_grid_marker", 1000);
     // publishing the produced path(s)(?)
     path_pub = n.advertise<nav_msgs::Path>("path_planning", 150);
     // publishing waypoint lists in mavros nodes
