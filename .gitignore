@@ -4,7 +4,7 @@ bin/
 lib/
 msg_gen/
 srv_gen/
-/qtnp_uav
+src/qtnp_uav
 /qtnp/CMakeLists.txt
 /qtnp/package.xml
 
