@@ -92,6 +92,7 @@ qtnp::Placemarks kml_parsing(const QString &filename) {
     return placemarks_msg;
 }
 
+
 /*****************************************************************************
 ** Implementation [MainWindow]
 *****************************************************************************/
@@ -223,6 +224,12 @@ void MainWindow::on_button_browse_clicked(bool check ) {
     ui.line_edit_kml_file->setReadOnly(true);
 
     set_kml_filename(filename);
+
+}
+
+void MainWindow::on_button_broadcast_clicked(bool check ) {
+
+    // TODO: The partitioned and ready CDTs are boradcasted by publishing to topic "global_constraints"
 
 }
 
@@ -407,9 +414,9 @@ void MainWindow::updateLoggingView() {
 *****************************************************************************/
 
 void MainWindow::on_actionAbout_triggered() {
-    QMessageBox::about(this, tr("About ..."),tr("<h2>qTnP 0.10</h2><p>Copyright by Fotis Balampanis</p><p>This program performs a "
+    QMessageBox::about(this, tr("About ..."),tr("<h2>qTnP 0.10</h2><p>Copyright (C) 2016 Fotis Balampanis under the GNU GPL v3 license</p><p>This program performs a "
                                                 "Constrained Delaunay Triangulation on a given area, creating regions of interest "
-                                                "for a number of RPAS based on their autonomy capabilities. It also produces coverage"
+                                                "for a number of UAVs based on their autonomy capabilities. It also produces coverage"
                                                 " and go-to-goal task waypoint lists.</p>"));
 }
 

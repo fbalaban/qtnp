@@ -85,8 +85,6 @@ std::pair<int,int>& get_agent_pair_by_id(int id, std::vector<std::pair<int,int> 
 
 namespace qtnp {
 
-
-
     void Tnp_update::print_cdt_cells(const CDT &l_cdt){
 
         std::vector<int> cells;
@@ -830,6 +828,13 @@ namespace qtnp {
         rviz_objects_ref.set_polygon_ready(true);
     }
 
+    // TODO qtnp_uav put the final contrainTs list to a global or not vector
+    // which is converted to a ROS type message along with the UAVid.
+    // After the partition, each UAV will CDT its own list (not on the initial
+    // communication/mission start). If the list (global constraints list/CDT)
+    // is updated by some change or if one UAV is down, someone (the gcs maybe?)
+    // is responsible for recalculating the constrainTs list vector. If the change is
+    // in the local plan, the UAV should also re-CDT the area.
     CDT Tnp_update::find_new_cdt_constrains(CDT &l_cdt, int agent_id){
 
         std::cout << currentDateTime() << " Started Finding new CDT for UAV: " << agent_id << std::endl;
@@ -1836,7 +1841,7 @@ namespace qtnp {
                     << std::fixed <<  std::setprecision(7) << initialWaypoint.y_long << "\t585\t1" << std::endl;
         // -------------------------------------------------//
 
-
+        // TODO integrate fixed and precision once for all the file
         bool initial = true;
 
         // begin() +1 ?
@@ -1857,7 +1862,7 @@ namespace qtnp {
                 waypoint.param4 = 0;
                 waypoint.x_lat = round( (it->second) *100000000.0)/100000000.0;
                 waypoint.y_long = round( (it->first)*100000000.0)/100000000.0;
-                waypoint.z_alt = 100; // 100? for takeoff
+                waypoint.z_alt = 50; // 100? for takeoff
                 waypoint_list.waypoints.push_back(waypoint);
                 initial = false;
 //                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
@@ -1865,7 +1870,7 @@ namespace qtnp {
                 //--------------------------------//
                 // file generation //
                 mavlink_fWPPlan << "1\t0\t3\t22\t15\t0\t0\t0\t" << std::fixed << std::setprecision(7) << waypoint.x_lat << "\t"
-                        << std::fixed << std::setprecision(7) << waypoint.y_long << "\t100\t1" << std::endl;
+                        << std::fixed << std::setprecision(7) << waypoint.y_long << "\t50\t1" << std::endl;
                 //--------------------------------//
 
             } else {
@@ -1881,14 +1886,14 @@ namespace qtnp {
                 waypoint.param4 = 0;
                 waypoint.x_lat = round( (it->second) *100000000.0)/100000000.0;
                 waypoint.y_long = round( (it->first)*100000000.0)/100000000.0;
-                waypoint.z_alt = 100; // 100? for takeoff
+                waypoint.z_alt = 50; // 100? for takeoff
                 waypoint_list.waypoints.push_back(waypoint);
 //                std::cout << std::fixed << std::setprecision(8) << " lat: " << it->second << " lon: " << it->first << std::endl;
 
                 //-----------------------------------//
                 // file generation //
                 mavlink_fWPPlan << sequence << "\t0\t3\t16\t0\t0\t0\t0\t" << std::fixed << std::setprecision(7) << waypoint.x_lat << "\t"
-                        << std::fixed << std::setprecision(7) << waypoint.y_long << "\t100\t1" << std::endl;
+                        << std::fixed << std::setprecision(7) << waypoint.y_long << "\t50\t1" << std::endl;
                 sequence++;
                 //-----------------------------------//
 

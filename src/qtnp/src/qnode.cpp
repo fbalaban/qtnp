@@ -186,13 +186,12 @@ void QNode::log( const LogLevel &level, const std::string &msg) {
 
 void QNode::init_publishers(ros::NodeHandle n){
 
-    // Add your ros communications here.
-    // this is just a string chatter
+    // ROS communications
     chatter_publisher = n.advertise<std_msgs::String>("chatter", 1000);
     // publishing the edges of the initial area
-    edges_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 100);
+    edges_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
     // publishing the vertices of the initial area
-    polygon_pub = n.advertise<geometry_msgs::PolygonStamped>("visualization_polygon", 100);
+    polygon_pub = n.advertise<geometry_msgs::PolygonStamped>("visualization_polygon", 1000);
     // publishing the mesh
     triangulation_mesh_pub = n.advertise<visualization_msgs::Marker>("triangulation_mesh", 30000);
     // publishing the centers of each cell of the triangulation (waypoints)
@@ -200,7 +199,7 @@ void QNode::init_publishers(ros::NodeHandle n){
     // a dummy marker for grid visulizations
     grid_marker_pub = n.advertise<visualization_msgs::Marker>("dummy_grid_marker", 1000);
     // publishing the produced path(s)(?)
-    path_pub = n.advertise<nav_msgs::Path>("path_planning", 150);
+    path_pub = n.advertise<nav_msgs::Path>("path_planning", 1500);
     // publishing waypoint lists in mavros nodes
     // waypoints_pub = n.advertise<mavros_msgs::WaypointList>("mavros/mission/waypoints", 150);
     // waypoints_s_client = n.serviceClient<mavros_msgs::WaypointPush>("/mavros/mission/push");

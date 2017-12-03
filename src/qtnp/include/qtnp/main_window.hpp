@@ -64,6 +64,7 @@ public Q_SLOTS:
 
     // extra - fb
     void on_button_browse_clicked(bool check );
+    void on_button_broadcast_clicked(bool check );
     void on_button_validate_kml_clicked(bool check );
     void on_button_perform_cdt_clicked(bool check );
     void on_button_add_clicked(bool check);

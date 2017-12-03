@@ -224,13 +224,13 @@
               </sizepolicy>
              </property>
              <property name="title">
-              <string>Gazebo</string>
+              <string>Broadcast</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
-               <widget class="QCheckBox" name="checkBox_3">
+               <widget class="QPushButton" name="button_broadcast">
                 <property name="text">
-                 <string>Enable</string>
+                 <string>!Broadcast!</string>
                 </property>
                </widget>
               </item>
@@ -320,6 +320,13 @@
                 </property>
                 <property name="text">
                  <string>Show Waypoints</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_3">
+                <property name="text">
+                 <string>Gazebo</string>
                 </property>
                </widget>
               </item>
