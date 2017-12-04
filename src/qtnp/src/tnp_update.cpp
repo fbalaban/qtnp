@@ -829,6 +829,12 @@ namespace qtnp {
     // in the local plan, the UAV should also re-CDT the area.
     CDT Tnp_update::find_new_cdt_constrains(CDT &l_cdt, int agent_id){
 
+
+        // qtnp_uav::GlobalConstraints global_constraints <-- this is where you push all agents;
+        qtnp_uav::CDTConstraints current_cdt;
+        current_cdt.uav_id = agent_id;
+        qtnp_uav::Coordinates that_constraint;
+
         std::cout << currentDateTime() << " Started Finding new CDT for UAV: " << agent_id << std::endl;
 
         std::set< std::pair<CGAL::Point_2<K> ,CGAL::Point_2<K> > > outer_triangle_vertices;
@@ -848,19 +854,16 @@ namespace qtnp {
                 std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > cw_segment_2(vertex2, vertex3);
                 std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > cw_segment_3(vertex3, vertex1);
 
-                if (faces_iterator->info().coverage_depth == constants::coverage_depth_max) {
-
+                if (faces_iterator->info().coverage_depth == constants::coverage_depth_max)
+                {
                     outer_triangle_vertices.insert(cw_segment_1);
                     outer_triangle_vertices.insert(cw_segment_2);
                     outer_triangle_vertices.insert(cw_segment_3);
-
-                }
-                else {
-
+                } else
+                {
                     std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > ccw_segment_1(vertex1, vertex2);
                     std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > ccw_segment_2(vertex2, vertex3);
                     std::pair<CGAL::Point_2<K>,CGAL::Point_2<K> > ccw_segment_3(vertex3, vertex1);
-
 
                     inner_triangle_vertices.insert(cw_segment_1);
                     inner_triangle_vertices.insert(cw_segment_2);
@@ -869,7 +872,6 @@ namespace qtnp {
                     inner_triangle_vertices.insert(ccw_segment_1);
                     inner_triangle_vertices.insert(ccw_segment_2);
                     inner_triangle_vertices.insert(ccw_segment_3);
-
                 }
             }
         }
@@ -933,6 +935,19 @@ namespace qtnp {
 
         std::pair<CGAL::Point_2<K> ,CGAL::Point_2<K> > new_item(outer_triangle_vertices.begin()->first,
                                                                 outer_triangle_vertices.begin()->second);
+
+        // TODO THIS MIGHT BE UPSIDE DOWN
+        that_constraint.placemark_type = "constrain";
+        current_cdt.constraints.push_back(that_constraint);
+
+        global_constraints.CDTS.push_back(current_cdt);
+
+        // the constraints message must have pairs of vertex handles not lat lon.
+        // it should also have a way to transform again the cdt metric to lat lon..
+
+        //that_constraint.latitude.push_back(outer_triangle_vertices.begin()->first);
+        //that_constraint.latitude.push_back(outer_triangle_vertices.begin()->second);
+
         constrains_list.push_back(new_item);
 
         do {
@@ -1085,9 +1100,7 @@ namespace qtnp {
     }
 
     qtnp_uav::GlobalConstraints Tnp_update::get_global_constraints(){
-
-
-
+        return global_constraints;
     }
 
     void Tnp_update::set_instance_uas_vector(std::vector<qtnp::Uas_model> &uas){

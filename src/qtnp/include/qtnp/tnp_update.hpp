@@ -32,6 +32,7 @@
 
 #include "qtnp_uav/CDTConstraints.h"
 #include "qtnp_uav/GlobalConstraints.h"
+#include "qtnp_uav/Coordinates.h"
 
 #include "mavros_msgs/Waypoint.h"
 #include "mavros_msgs/WaypointList.h"
@@ -144,6 +145,8 @@ class Tnp_update {
 
     CDT m_cdt; // initial/global cdt
     std::vector<CDT> m_sub_cdt_vector; //sub-areas
+
+    qtnp_uav::GlobalConstraints global_constraints;
 
     std::vector<qtnp::Uas_model> m_uas_vector;
 
