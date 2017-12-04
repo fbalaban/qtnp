@@ -19,8 +19,6 @@
 #include <sstream>
 
 #include "../include/qtnp/qnode.hpp"
-#include "../include/qtnp/rviz_objects.hpp"
-#include "../include/qtnp/tnp_update.hpp"
 
 #include "mavros/mavros.h"
 #include "mavros_msgs/WaypointList.h"
@@ -140,6 +138,10 @@ void QNode::run() {
           rviz_objects.set_planning_ready(false);
         }
 
+        if (broadcasting_constraints){
+            global_constraints_pub.publish(tnp_update.get_global_constraints());
+        }
+
 		ros::spinOnce();
 		loop_rate.sleep();
 		++count;
@@ -200,6 +202,8 @@ void QNode::init_publishers(ros::NodeHandle n){
     grid_marker_pub = n.advertise<visualization_msgs::Marker>("dummy_grid_marker", 1000);
     // publishing the produced path(s)(?)
     path_pub = n.advertise<nav_msgs::Path>("path_planning", 1500);
+    // publishing to airborne agents
+    global_constraints_pub = n.advertise<qtnp_uav::CDTConstraints>("global_constraints", 100);
     // publishing waypoint lists in mavros nodes
     // waypoints_pub = n.advertise<mavros_msgs::WaypointList>("mavros/mission/waypoints", 150);
     // waypoints_s_client = n.serviceClient<mavros_msgs::WaypointPush>("/mavros/mission/push");

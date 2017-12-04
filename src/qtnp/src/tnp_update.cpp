@@ -17,17 +17,9 @@
 #include <ros/ros.h>
 
 #include "../include/qtnp/tnp_update.hpp"
-#include "../include/qtnp/utilities.hpp"
 
 #include <std_msgs/String.h>
-#include "../include/qtnp/qnode.hpp"
 
-#include "qtnp/InitialCoordinates.h"
-#include "qtnp/Coordinates.h"
-#include "qtnp/Placemarks.h"
-
-#include "mavros_msgs/Waypoint.h"
-#include "mavros_msgs/WaypointList.h"
 
 struct comp
 {
@@ -1075,6 +1067,8 @@ namespace qtnp {
             m_sub_cdt_vector.push_back(m_cdt);
         }
 
+        // Here the m_sub_cdt_vector has all CDTs
+        is_broadcast_ready = true;
 
         // TODO V2 remove that, make either connected UAS class or member vector through code.
         set_instance_uas_vector(uas);
@@ -1083,6 +1077,16 @@ namespace qtnp {
 
         mesh_coloring();
         rviz_objects_ref.set_polygon_ready(true);
+
+    }
+
+    bool Tnp_update::has_global_constraints(){
+        return is_broadcast_ready;
+    }
+
+    qtnp_uav::GlobalConstraints Tnp_update::get_global_constraints(){
+
+
 
     }
 

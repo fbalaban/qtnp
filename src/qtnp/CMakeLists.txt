@@ -32,6 +32,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   visualization_msgs
+  qtnp_uav
 )
 
 include_directories(${catkin_INCLUDE_DIRS})
@@ -55,7 +56,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 # exporting anything. 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime visualization_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime visualization_msgs qtnp_uav
   #  DEPENDS system_lib
 )
 

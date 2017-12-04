@@ -229,7 +229,15 @@ void MainWindow::on_button_browse_clicked(bool check ) {
 
 void MainWindow::on_button_broadcast_clicked(bool check ) {
 
-    // TODO: The partitioned and ready CDTs are boradcasted by publishing to topic "global_constraints"
+    if ( qnode.get_tnp_update_pointer()->has_global_constraints())
+    {
+        qnode.enable_broadcasting();
+    } else
+    {
+        showGenericMessage("Area definition and partition must be completed first");
+    }
+
+    // TODO: The partitioned and ready CDTs are broadcasted by publishing to topic "global_constraints"
 
 }
 

@@ -26,14 +26,13 @@ msg/_*.py
 *.dox
 *.wikidoc
 .gitignore
-CMakeLists.txt.user
 
 # eclipse stuff
 .project
 .cproject
 
 # qcreator stuff
-CMakeLists.txt.user
+src/CMakeLists.txt.user
 
 srv/_*.py
 *.pcd

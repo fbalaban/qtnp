@@ -65,6 +65,8 @@ public:
 	QStringListModel* loggingModel() { return &logging_model; }
 	void log( const LogLevel &level, const std::string &msg);
 
+    void enable_broadcasting(){broadcasting_constraints = true;}
+
 Q_SIGNALS:
 	void loggingUpdated();
     void rosShutdown();
@@ -76,10 +78,11 @@ private:
     Rviz_objects rviz_objects;
     Tnp_update tnp_update;
 
-    ros::Publisher chatter_publisher, edges_pub, polygon_pub, triangulation_mesh_pub, center_pub, path_pub, grid_marker_pub;
+    ros::Publisher chatter_publisher, edges_pub, polygon_pub, triangulation_mesh_pub, center_pub, path_pub, grid_marker_pub, global_constraints_pub;
     ros::ServiceClient waypoints_s_client;
 
     QStringListModel logging_model;
+    bool broadcasting_constraints{false};
 };
 
 }  // namespace qtnp

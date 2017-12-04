@@ -23,12 +23,18 @@
 #include "cdt_types.hpp"
 #include "uas_model.hpp"
 
+#include "utilities.hpp"
+//#include "qnode.hpp"
+
 #include "qtnp/InitialCoordinates.h"
 #include "qtnp/Coordinates.h"
 #include "qtnp/Placemarks.h"
 
-#include "mavros_msgs/WaypointList.h"
+#include "qtnp_uav/CDTConstraints.h"
+#include "qtnp_uav/GlobalConstraints.h"
 
+#include "mavros_msgs/Waypoint.h"
+#include "mavros_msgs/WaypointList.h"
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
@@ -57,6 +63,7 @@ struct Area_extremes {
 *****************************************************************************/
 // TODO refactor cdt to m_cdt
 class Tnp_update {
+
   public:
 
     static int globalCounter;
@@ -127,6 +134,9 @@ class Tnp_update {
 
     void print_cdt_cells(const CDT& l_cdt);
 
+    bool has_global_constraints();
+    qtnp_uav::GlobalConstraints get_global_constraints();
+
   private:
 
     // a reference to the rviz objects, responsible for visualization
@@ -143,6 +153,7 @@ class Tnp_update {
     mavros_msgs::WaypointList m_waypoint_list;
 
     int lloyd_iter;
+    bool is_broadcast_ready{false};
 
 };
 
